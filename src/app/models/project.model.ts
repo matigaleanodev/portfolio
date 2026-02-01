@@ -5,6 +5,7 @@ export interface Porject {
   description: string;
   links: ProjectLink[];
 
+  technologies?: string[];
   highlight?: boolean;
   order?: number;
 }
