@@ -22,7 +22,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'foodly-notes',
     name: 'Foodly Notes',
-    image: '/assets/foodly-notes.png',
+    image: '/assets/foodly-notes.webp',
     description:
       'Foodly Notes es una aplicación de recetas pensada como producto real para el uso cotidiano. Su objetivo es ayudar a descubrir recetas nuevas de forma simple, guardarlas para más adelante y organizar todo lo necesario para cocinarlas. La experiencia está basada en el descubrimiento: explorar recetas, marcar favoritas, encontrar recetas similares y generar automáticamente una lista de compras a partir de lo que el usuario quiere cocinar.',
     technologies: ['Angular', 'Ionic', 'NestJS', 'MongoDB'],
