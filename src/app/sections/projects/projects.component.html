@@ -1,0 +1,19 @@
+<section class="py-24 md:py-32">
+  <div class="max-w-6xl mx-auto px-6 space-y-16">
+    <!-- Título de sección -->
+    <header class="space-y-2">
+      <h2 class="text-3xl font-medium">Proyectos</h2>
+      <p class="text-base opacity-70 max-w-2xl">
+        Proyectos personales desarrollados como productos reales, pensados para resolver problemas
+        concretos y explorar decisiones técnicas en contexto.
+      </p>
+    </header>
+
+    <!-- Lista de proyectos -->
+    <div class="space-y-24">
+      @for (project of sortedProjects(); track $index) {
+        <project-card [project]="project" />
+      }
+    </div>
+  </div>
+</section>
