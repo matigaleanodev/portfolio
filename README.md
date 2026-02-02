@@ -1,59 +1,40 @@
-# Portfolio
+# Matías Galeano
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+Desarrollador Frontend / Fullstack especializado en Angular.
 
-## Development server
+Trabajo en aplicaciones web y móviles en producción, con foco en **mantenimiento evolutivo, refactors, optimización de rendimiento y mejora continua de la experiencia de usuario**.
 
-To start a local development server, run:
+Actualmente trabajo en **Ingertec Argentina** como **Frontend / Mobile Developer**, participando en el desarrollo y evolución de plataformas reales de monitoreo, gestión y control de sistemas.
 
-```bash
-ng serve
-```
+En paralelo, desarrollo proyectos personales orientados a construir **productos completos**, documentando decisiones técnicas, arquitectura y procesos de trabajo.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+🌐 **Portfolio:** https://matiasgaleano.dev
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🚀 Stack principal
 
-```bash
-ng generate component component-name
-```
+### Frontend
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+[![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
+[![Ionic](https://img.shields.io/badge/Ionic-3880FF?style=for-the-badge&logo=ionic&logoColor=white)](https://ionicframework.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-```bash
-ng generate --help
-```
+### Backend y servicios
 
-## Building
+[![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 
-To build the project run:
+### Bases de datos
 
-```bash
-ng build
-```
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## 📫 Contacto
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+[![Website](https://img.shields.io/badge/Website-000000?style=for-the-badge&logo=appveyor&logoColor=white)](https://matiasgaleano.dev)
+[![Email](https://img.shields.io/badge/Email-FFCA28?style=for-the-badge&logo=gmail&logoColor=white)](mailto:contacto@matiasgaleano.com.ar)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/matigaleanodev)
