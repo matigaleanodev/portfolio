@@ -1,1 +1,37 @@
-<p>project-card works!</p>
+<article class="grid gap-8 md:grid-cols-[275px_1fr] md:items-start">
+  <h3 class="order-1 md:order-2 text-2xl font-medium text-center md:text-left md:col-start-2">
+    {{ project().name }}
+  </h3>
+
+  <div
+    class="order-2 md:order-3 w-full max-w-xs md:max-w-none overflow-hidden rounded-lg bg-neutral-200 mx-auto md:mx-0"
+  >
+    <img [src]="project().image" [alt]="project().name" class="w-full h-auto object-cover" />
+  </div>
+
+  <div class="order-3 md:order-4 space-y-4 md:col-start-2">
+    @if (project().technologies?.length) {
+      <p class="text-sm opacity-60">
+        {{ project().technologies?.join(' · ') }}
+      </p>
+    }
+
+    <p class="text-base opacity-80">
+      {{ project().description }}
+    </p>
+
+    <div class="flex flex-wrap gap-4 pt-2 justify-center md:justify-start">
+      @for (link of project().links; track link.id) {
+        <a
+          [href]="link.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-sm font-medium hover:text-(--color-accent) transition"
+        >
+          <lucide-icon [img]="icons[link.icon]" size="16" />
+          {{ link.name }}
+        </a>
+      }
+    </div>
+  </div>
+</article>

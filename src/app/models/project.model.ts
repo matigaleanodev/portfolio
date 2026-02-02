@@ -1,7 +1,7 @@
-export interface Porject {
+export interface Project {
   id: string;
   name: string;
-  imagen: string;
+  image: string;
   description: string;
   links: ProjectLink[];
 
