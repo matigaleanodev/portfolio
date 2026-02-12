@@ -1,6 +1,7 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Project } from '../../../models/project.model';
 import { LucideAngularModule, Code, Server, BookOpen } from 'lucide-angular';
+import { AnalyticsService } from '../../../analytics.service';
 
 @Component({
   selector: 'project-card',
@@ -11,9 +12,18 @@ import { LucideAngularModule, Code, Server, BookOpen } from 'lucide-angular';
 export class ProjectCardComponent {
   readonly project = input.required<Project>();
 
+  private readonly analytics = inject(AnalyticsService);
+
   readonly icons: { [key: string]: any } = {
     code: Code,
     server: Server,
     bookopen: BookOpen,
   };
+
+  trackProjectClick(linkName: string): void {
+    this.analytics.trackEvent('click_project_link', {
+      project_name: this.project().name,
+      link_name: linkName,
+    });
+  }
 }
