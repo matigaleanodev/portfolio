@@ -26,6 +26,7 @@
           [href]="link.url"
           target="_blank"
           rel="noopener noreferrer"
+          (click)="trackProjectClick(link.name)"
           class="inline-flex items-center gap-2 text-sm font-medium hover:text-(--color-accent) transition"
         >
           <lucide-icon [img]="icons[link.icon]" size="16" />
