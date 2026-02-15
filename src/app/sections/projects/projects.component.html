@@ -1,6 +1,5 @@
 <section class="py-24 md:py-32">
   <div class="max-w-6xl mx-auto px-6 space-y-16">
-    <!-- Título de sección -->
     <header class="space-y-2">
       <h2 class="text-3xl font-medium">Proyectos</h2>
       <p class="text-base opacity-70 max-w-2xl">
@@ -9,10 +8,17 @@
       </p>
     </header>
 
-    <!-- Lista de proyectos -->
     <div class="space-y-24">
-      @for (project of sortedProjects(); track $index) {
-        <project-card [project]="project" />
+      @for (project of sortedProjects(); track $index; let i = $index) {
+        <div
+          class="opacity-0"
+          [ngStyle]="{
+            animation: 'projectEnter 1200ms cubic-bezier(0.25,0.8,0.25,1) forwards',
+            animationDelay: i * 220 + 'ms',
+          }"
+        >
+          <project-card [project]="project" />
+        </div>
       }
     </div>
   </div>

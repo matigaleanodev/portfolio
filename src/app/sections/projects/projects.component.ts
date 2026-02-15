@@ -1,21 +1,29 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Project } from '../../models/project.model';
 import { ProjectCardComponent } from './project-card/project-card.component';
+import { ApiService } from '../../services/api.service';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'projects',
-  imports: [ProjectCardComponent],
+  imports: [ProjectCardComponent, NgStyle],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
 })
 export class ProjectsComponent {
-  readonly projects = signal<Project[]>(PROJECTS);
+  private readonly api = inject(ApiService);
 
-  readonly sortedProjects = computed(() =>
-    [...this.projects()].sort(
+  readonly projects = computed(() => this.api.projectsResource.value());
+  //readonly projects = signal<Project[]>(PROJECTS);
+
+  readonly sortedProjects = computed(() => {
+    const projects = this.projects();
+    if (!projects) return [];
+
+    return [...projects].sort(
       (a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER),
-    ),
-  );
+    );
+  });
 }
 
 export const PROJECTS: Project[] = [
