@@ -28,3 +28,31 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
 }
+
+@keyframes projectEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.99);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.005);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes errorFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

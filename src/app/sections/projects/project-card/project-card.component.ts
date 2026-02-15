@@ -1,7 +1,7 @@
 import { Component, inject, input } from '@angular/core';
 import { Project } from '../../../models/project.model';
-import { LucideAngularModule, Code, Server, BookOpen } from 'lucide-angular';
-import { AnalyticsService } from '../../../analytics.service';
+import { LucideAngularModule, Code, Server, BookOpen, Play } from 'lucide-angular';
+import { AnalyticsService } from '../../../services/analytics.service';
 
 @Component({
   selector: 'project-card',
@@ -18,6 +18,7 @@ export class ProjectCardComponent {
     code: Code,
     server: Server,
     bookopen: BookOpen,
+    play: Play,
   };
 
   trackProjectClick(linkName: string): void {

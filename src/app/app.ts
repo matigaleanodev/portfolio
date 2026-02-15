@@ -4,10 +4,18 @@ import { FooterComponent } from './layout/footer/footer.component';
 import { ProjectsComponent } from './sections/projects/projects.component';
 import { HeroComponent } from './sections/hero/hero.component';
 import { ContactComponent } from './sections/contact/contact.component';
+import { ToastComponent } from './ui/toast/toast.component';
 
 @Component({
   selector: 'app-root',
-  imports: [HeaderComponent, FooterComponent, ProjectsComponent, HeroComponent, ContactComponent],
+  imports: [
+    HeaderComponent,
+    FooterComponent,
+    ProjectsComponent,
+    HeroComponent,
+    ContactComponent,
+    ToastComponent,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

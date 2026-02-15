@@ -1,21 +1,116 @@
 <section class="py-24 md:py-32 bg-(--color-bg)">
-  <div class="max-w-6xl mx-auto px-6 space-y-8">
+  <div class="max-w-3xl mx-auto px-6 space-y-10">
     <header class="space-y-2">
       <h2 class="text-3xl font-medium">Contacto</h2>
 
-      <p class="max-w-2xl text-base opacity-70">
+      <p class="text-base opacity-70">
         Si te interesa mi perfil o querés charlar sobre algún proyecto, podés escribirme
         directamente.
       </p>
     </header>
 
-    <div>
-      <a
-        href="mailto:contacto@matiasgaleano.dev"
-        class="inline-flex items-center gap-2 text-sm font-medium text-(--color-accent) hover:underline"
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-6">
+      <!-- Nombre -->
+      <div class="space-y-2">
+        <label for="contact-name" class="text-sm font-medium">Nombre</label>
+
+        <input
+          id="contact-name"
+          type="text"
+          formControlName="name"
+          class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
+          [ngClass]="{
+            'border-gray-300 focus:ring-(--color-accent)':
+              !form.get('name')?.touched || !form.get('name')?.invalid,
+            'border-rose-500 focus:ring-rose-500':
+              form.get('name')?.touched && form.get('name')?.invalid,
+          }"
+        />
+
+        @if (form.get('name')?.touched && form.get('name')?.invalid) {
+          <p class="text-sm text-rose-600/90 error-animate">
+            @if (form.get('name')?.errors?.['required']) {
+              El nombre es obligatorio
+            }
+            @if (form.get('name')?.errors?.['minlength']) {
+              El nombre debe tener al menos 4 caracteres
+            }
+          </p>
+        }
+      </div>
+
+      <!-- Email -->
+      <div class="space-y-2">
+        <label for="contact-email" class="text-sm font-medium">Email</label>
+
+        <input
+          id="contact-email"
+          type="email"
+          formControlName="email"
+          class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
+          [ngClass]="{
+            'border-gray-300 focus:ring-(--color-accent)':
+              !form.get('email')?.touched || !form.get('email')?.invalid,
+            'border-rose-500 focus:ring-rose-500':
+              form.get('email')?.touched && form.get('email')?.invalid,
+          }"
+        />
+
+        @if (form.get('email')?.touched && form.get('email')?.invalid) {
+          <p class="text-sm text-rose-600/90 error-animate">
+            @if (form.get('email')?.errors?.['required']) {
+              El email es obligatorio
+            }
+            @if (form.get('email')?.errors?.['email']) {
+              Ingrese un email válido
+            }
+          </p>
+        }
+      </div>
+
+      <!-- Mensaje -->
+      <div class="space-y-2">
+        <label for="contact-message" class="text-sm font-medium">Mensaje</label>
+
+        <textarea
+          id="contact-message"
+          rows="5"
+          formControlName="message"
+          class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
+          [ngClass]="{
+            'border-gray-300 focus:ring-(--color-accent)':
+              !form.get('message')?.touched || !form.get('message')?.invalid,
+            'border-rose-500 focus:ring-rose-500':
+              form.get('message')?.touched && form.get('message')?.invalid,
+          }"
+        ></textarea>
+
+        @if (form.get('message')?.touched && form.get('message')?.invalid) {
+          <p class="text-sm text-rose-600/90 error-animate">
+            @if (form.get('message')?.errors?.['required']) {
+              El mensaje es obligatorio
+            }
+            @if (form.get('message')?.errors?.['minlength']) {
+              El mensaje debe tener al menos 10 caracteres
+            }
+          </p>
+        }
+      </div>
+
+      <!-- Botón -->
+      <button
+        type="submit"
+        [disabled]="loading() || form.invalid"
+        class="inline-flex items-center gap-3 px-6 py-3 bg-(--color-accent) text-white rounded-md disabled:opacity-50 transition-all duration-200"
       >
-        Escribirme por email →
-      </a>
-    </div>
+        @if (loading()) {
+          <span
+            class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+          ></span>
+        }
+
+        Enviar mensaje
+      </button>
+    </form>
   </div>
 </section>
