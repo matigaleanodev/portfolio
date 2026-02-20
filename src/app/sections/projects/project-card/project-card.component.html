@@ -1,15 +1,20 @@
-<article class="grid gap-8 md:grid-cols-[275px_1fr] md:items-start">
-  <h3 class="order-1 md:order-2 text-2xl font-medium text-center md:text-left md:col-start-2">
+<article class="grid gap-6 md:grid-cols-[275px_1fr] md:grid-rows-[auto_1fr]">
+  <!-- TITULO -->
+  <h3
+    class="order-1 md:order-0 md:col-start-2 md:row-start-1 text-2xl font-medium text-center md:text-left"
+  >
     {{ project().name }}
   </h3>
 
+  <!-- IMAGEN -->
   <div
-    class="order-2 md:order-3 w-full max-w-xs md:max-w-none overflow-hidden rounded-lg bg-neutral-200 mx-auto md:mx-0"
+    class="order-2 md:order-0 md:col-start-1 md:row-span-2 w-full max-w-xs md:max-w-none mx-auto md:mx-0 overflow-hidden rounded-lg bg-neutral-200"
   >
     <img [src]="project().image" [alt]="project().name" class="w-full h-auto object-cover" />
   </div>
 
-  <div class="order-3 md:order-4 space-y-4 md:col-start-2">
+  <!-- CONTENIDO -->
+  <div class="order-3 md:order-0 md:col-start-2 md:row-start-2 space-y-4 text-center md:text-left">
     @if (project().technologies?.length) {
       <p class="text-sm opacity-60">
         {{ project().technologies?.join(' · ') }}
@@ -21,7 +26,7 @@
     </p>
 
     <div class="flex flex-wrap gap-4 pt-2 justify-center md:justify-start">
-      @for (link of project().links; track link.id) {
+      @for (link of project().links; track $index) {
         <a
           [href]="link.url"
           target="_blank"
