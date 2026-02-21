@@ -1,10 +1,10 @@
 import { Component, inject, input } from '@angular/core';
 import { Project } from '../../../models/project.model';
-import { LucideAngularModule, Code, Server, BookOpen, Play } from 'lucide-angular';
+import { LucideAngularModule, Code, Server, BookOpen, Play, LucideIconData } from 'lucide-angular';
 import { AnalyticsService } from '../../../services/analytics.service';
 
 @Component({
-  selector: 'project-card',
+  selector: 'app-project-card',
   imports: [LucideAngularModule],
   templateUrl: './project-card.component.html',
   styleUrl: './project-card.component.css',
@@ -14,7 +14,7 @@ export class ProjectCardComponent {
 
   private readonly analytics = inject(AnalyticsService);
 
-  readonly icons: { [key: string]: any } = {
+  readonly icons: Record<string, LucideIconData> = {
     code: Code,
     server: Server,
     bookopen: BookOpen,

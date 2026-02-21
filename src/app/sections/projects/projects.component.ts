@@ -1,11 +1,10 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { Project } from '../../models/project.model';
+import { Component, computed, inject } from '@angular/core';
 import { ProjectCardComponent } from './project-card/project-card.component';
 import { ApiService } from '../../services/api.service';
 import { NgStyle } from '@angular/common';
 
 @Component({
-  selector: 'projects',
+  selector: 'app-projects',
   imports: [ProjectCardComponent, NgStyle],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
@@ -14,7 +13,6 @@ export class ProjectsComponent {
   private readonly api = inject(ApiService);
 
   readonly projects = computed(() => this.api.projectsResource.value());
-  //readonly projects = signal<Project[]>(PROJECTS);
 
   readonly sortedProjects = computed(() => {
     const projects = this.projects();
@@ -25,39 +23,3 @@ export class ProjectsComponent {
     );
   });
 }
-
-export const PROJECTS: Project[] = [
-  {
-    id: 'foodly-notes',
-    name: 'Foodly Notes',
-    image: '/assets/foodly-notes.webp',
-    description:
-      'Foodly Notes es una aplicación de recetas pensada como producto real para el uso cotidiano. Su objetivo es ayudar a descubrir recetas nuevas de forma simple, guardarlas para más adelante y organizar todo lo necesario para cocinarlas. La experiencia está basada en el descubrimiento: explorar recetas, marcar favoritas, encontrar recetas similares y generar automáticamente una lista de compras a partir de lo que el usuario quiere cocinar.',
-    technologies: ['Angular', 'Ionic', 'NestJS', 'MongoDB'],
-    links: [
-      {
-        id: 'frontend',
-        name: 'Repositorio Frontend',
-        icon: 'code',
-        color: '',
-        url: 'https://github.com/matigaleanodev/foodly-notes',
-      },
-      {
-        id: 'backend',
-        name: 'Repositorio Backend',
-        icon: 'server',
-        color: '',
-        url: 'https://github.com/matigaleanodev/foodly-notes-api',
-      },
-      {
-        id: 'documentation',
-        name: 'Documentación',
-        icon: 'bookopen',
-        color: '',
-        url: 'https://matigaleano-dev.notion.site/Foodly-Notes-2f9aa07ef7dd80f0b9a0f2af1030bdb0',
-      },
-    ],
-    highlight: true,
-    order: 1,
-  },
-];

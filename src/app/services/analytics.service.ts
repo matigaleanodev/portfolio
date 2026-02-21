@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 
-declare const gtag: Function;
+type GtagFn = (command: 'event', eventName: string, params?: Record<string, unknown>) => void;
+
+declare const gtag: GtagFn;
 
 @Injectable({
   providedIn: 'root',

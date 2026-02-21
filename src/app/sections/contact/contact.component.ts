@@ -7,7 +7,7 @@ import { finalize } from 'rxjs';
 import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'contact',
+  selector: 'app-contact',
   imports: [ReactiveFormsModule, NgClass],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css',
