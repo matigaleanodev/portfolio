@@ -3,7 +3,7 @@ import { Component, computed, inject } from '@angular/core';
 import { ToastService } from '../../services/toast.service';
 
 @Component({
-  selector: 'toast',
+  selector: 'app-toast',
   imports: [NgClass],
   templateUrl: './toast.component.html',
   styleUrl: './toast.component.css',

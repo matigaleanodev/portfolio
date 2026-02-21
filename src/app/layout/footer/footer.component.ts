@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { LucideAngularModule, ArrowUp } from 'lucide-angular';
 
 @Component({
-  selector: 'layout-footer',
+  selector: 'app-footer',
   imports: [LucideAngularModule],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.css',
