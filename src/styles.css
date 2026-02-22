@@ -19,11 +19,20 @@
 
 html {
   font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
   background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.45;
+}
+
+::selection {
+  background: rgb(91 95 143 / 0.24);
   color: var(--color-text);
 }
 

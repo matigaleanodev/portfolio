@@ -1,0 +1,18 @@
+.hero-shell {
+  position: relative;
+}
+
+.hero-shell::after {
+  content: '';
+  display: block;
+  width: min(420px, 76vw);
+  height: 1px;
+  margin-top: 0.75rem;
+  background: linear-gradient(90deg, rgb(229 231 235 / 0.5), rgb(229 231 235 / 0));
+}
+
+.hero-accent__line {
+  width: min(420px, 76vw);
+  height: 1px;
+  background: linear-gradient(90deg, rgb(229 231 235 / 0.5), rgb(229 231 235 / 0));
+}

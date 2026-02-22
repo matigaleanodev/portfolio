@@ -1,17 +1,17 @@
-<footer class="bg-(--color-text) text-(--color-bg) py-12 md:py-24">
+<footer class="footer-shell bg-(--color-text) text-(--color-bg) py-12 md:py-24">
   <div class="max-w-6xl mx-auto px-6 grid gap-12 md:grid-cols-3 md:items-center">
     <div class="text-center md:text-left space-y-2">
       <p class="text-lg font-medium">Matias Galeano</p>
       <p class="text-sm opacity-70">Software Developer</p>
     </div>
 
-    <div class="flex justify-center gap-6 text-(--color-bg)">
+    <div class="flex justify-center gap-3 text-(--color-bg)">
       <a
         [href]="github"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="GitHub"
-        class="hover:text-(--color-accent) transition"
+        class="footer-icon-link hover:text-(--color-accent) transition"
       >
         <i class="inline-flex w-6 h-6">
           <svg
@@ -33,7 +33,7 @@
         target="_blank"
         rel="noopener noreferrer"
         aria-label="LinkedIn"
-        class="hover:text-(--color-accent) transition"
+        class="footer-icon-link hover:text-(--color-accent) transition"
       >
         <i class="inline-flex w-6 h-6">
           <svg
@@ -64,7 +64,7 @@
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Notion"
-        class="hover:text-(--color-accent) transition"
+        class="footer-icon-link hover:text-(--color-accent) transition"
       >
         <i class="inline-flex w-6 h-6">
           <svg
@@ -85,7 +85,7 @@
     <div class="flex justify-center md:justify-end">
       <button
         (click)="backToTop()"
-        class="flex items-center gap-2 text-sm text-(--color-bg) hover:text-(--color-accent) transition cursor-pointer"
+        class="footer-top-btn flex items-center gap-2 text-sm text-(--color-bg) hover:text-(--color-accent) transition cursor-pointer"
       >
         <lucide-icon [img]="arrowUpIcon" size="16" />
         Volver arriba
