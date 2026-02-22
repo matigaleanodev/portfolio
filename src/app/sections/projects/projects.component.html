@@ -8,18 +8,29 @@
       </p>
     </header>
 
-    <div class="space-y-24">
-      @for (project of sortedProjects(); track $index; let i = $index) {
-        <div
-          class="opacity-0"
-          [ngStyle]="{
-            animation: 'projectEnter 1200ms cubic-bezier(0.25,0.8,0.25,1) forwards',
-            animationDelay: i * 220 + 'ms',
-          }"
-        >
-          <app-project-card [project]="project" />
-        </div>
-      }
-    </div>
+    @if (isLoading() && !sortedProjects().length) {
+      <p class="text-sm opacity-70" aria-live="polite">Cargando proyectos...</p>
+    } @else if (errorMessage() && !sortedProjects().length) {
+      <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+        No se pudieron cargar los proyectos.
+        @if (errorMessage()) {
+          <span class="block opacity-80">{{ errorMessage() }}</span>
+        }
+      </div>
+    } @else {
+      <div class="space-y-24">
+        @for (project of sortedProjects(); track project.id || $index; let i = $index) {
+          <div
+            class="opacity-0"
+            [ngStyle]="{
+              animation: 'projectEnter 1200ms cubic-bezier(0.25,0.8,0.25,1) forwards',
+              animationDelay: i * 220 + 'ms',
+            }"
+          >
+            <app-project-card [project]="project" />
+          </div>
+        }
+      </div>
+    }
   </div>
 </section>

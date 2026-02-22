@@ -10,7 +10,13 @@
   <div
     class="order-2 md:order-0 md:col-start-1 md:row-span-2 w-full max-w-xs md:max-w-none mx-auto md:mx-0 overflow-hidden rounded-lg bg-neutral-200"
   >
-    <img [src]="project().image" [alt]="project().name" class="w-full h-auto object-cover" />
+    <img
+      [src]="project().image"
+      [alt]="project().name"
+      loading="lazy"
+      decoding="async"
+      class="w-full h-auto object-cover"
+    />
   </div>
 
   <!-- CONTENIDO -->
@@ -26,7 +32,7 @@
     </p>
 
     <div class="flex flex-wrap gap-4 pt-2 justify-center md:justify-start">
-      @for (link of project().links; track $index) {
+      @for (link of project().links; track link.id || link.url || $index) {
         <a
           [href]="link.url"
           target="_blank"
@@ -34,7 +40,7 @@
           (click)="trackProjectClick(link.name)"
           class="inline-flex items-center gap-2 text-sm font-medium hover:text-(--color-accent) transition"
         >
-          <lucide-icon [img]="icons[link.icon]" size="16" />
+          <lucide-icon [img]="iconFor(link.icon)" size="16" />
           {{ link.name }}
         </a>
       }
