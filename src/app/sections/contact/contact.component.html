@@ -9,7 +9,7 @@
       </p>
     </header>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-6">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-6" [attr.aria-busy]="loading()">
       <!-- Nombre -->
       <div class="space-y-2">
         <label for="contact-name" class="text-sm font-medium">Nombre</label>
@@ -18,6 +18,13 @@
           id="contact-name"
           type="text"
           formControlName="name"
+          autocomplete="name"
+          required
+          maxlength="100"
+          [attr.aria-invalid]="form.get('name')?.touched && form.get('name')?.invalid ? 'true' : 'false'"
+          [attr.aria-describedby]="
+            form.get('name')?.touched && form.get('name')?.invalid ? 'contact-name-error' : null
+          "
           class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
           [ngClass]="{
             'border-gray-300 focus:ring-(--color-accent)':
@@ -28,7 +35,7 @@
         />
 
         @if (form.get('name')?.touched && form.get('name')?.invalid) {
-          <p class="text-sm text-rose-600/90 error-animate">
+          <p id="contact-name-error" class="text-sm text-rose-600/90 error-animate">
             @if (form.get('name')?.errors?.['required']) {
               El nombre es obligatorio
             }
@@ -47,6 +54,16 @@
           id="contact-email"
           type="email"
           formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          required
+          maxlength="150"
+          [attr.aria-invalid]="
+            form.get('email')?.touched && form.get('email')?.invalid ? 'true' : 'false'
+          "
+          [attr.aria-describedby]="
+            form.get('email')?.touched && form.get('email')?.invalid ? 'contact-email-error' : null
+          "
           class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
           [ngClass]="{
             'border-gray-300 focus:ring-(--color-accent)':
@@ -57,7 +74,7 @@
         />
 
         @if (form.get('email')?.touched && form.get('email')?.invalid) {
-          <p class="text-sm text-rose-600/90 error-animate">
+          <p id="contact-email-error" class="text-sm text-rose-600/90 error-animate">
             @if (form.get('email')?.errors?.['required']) {
               El email es obligatorio
             }
@@ -76,6 +93,17 @@
           id="contact-message"
           rows="5"
           formControlName="message"
+          autocomplete="off"
+          required
+          maxlength="2000"
+          [attr.aria-invalid]="
+            form.get('message')?.touched && form.get('message')?.invalid ? 'true' : 'false'
+          "
+          [attr.aria-describedby]="
+            form.get('message')?.touched && form.get('message')?.invalid
+              ? 'contact-message-error'
+              : null
+          "
           class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
           [ngClass]="{
             'border-gray-300 focus:ring-(--color-accent)':
@@ -86,7 +114,7 @@
         ></textarea>
 
         @if (form.get('message')?.touched && form.get('message')?.invalid) {
-          <p class="text-sm text-rose-600/90 error-animate">
+          <p id="contact-message-error" class="text-sm text-rose-600/90 error-animate">
             @if (form.get('message')?.errors?.['required']) {
               El mensaje es obligatorio
             }
@@ -101,6 +129,7 @@
       <button
         type="submit"
         [disabled]="loading() || form.invalid"
+        [attr.aria-disabled]="loading() || form.invalid"
         class="inline-flex items-center gap-3 px-6 py-3 bg-(--color-accent) text-white rounded-md disabled:opacity-50 transition-all duration-200"
       >
         @if (loading()) {

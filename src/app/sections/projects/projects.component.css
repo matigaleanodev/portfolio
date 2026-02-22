@@ -1,0 +1,27 @@
+.project-skeleton__block {
+  background:
+    linear-gradient(
+      90deg,
+      rgb(31 41 55 / 0.06) 0%,
+      rgb(31 41 55 / 0.12) 35%,
+      rgb(31 41 55 / 0.06) 70%
+    );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.25s linear infinite;
+}
+
+@keyframes skeletonShimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-skeleton__block {
+    animation: none;
+  }
+}

@@ -34,6 +34,20 @@ export class ContactComponent {
     }),
   });
 
+  private getErrorMessage(err: unknown): string {
+    if (typeof err === 'object' && err !== null) {
+      const error = err as { message?: unknown; error?: { message?: unknown } | unknown };
+      if (typeof error.error === 'object' && error.error !== null) {
+        const nested = error.error as { message?: unknown };
+        if (typeof nested.message === 'string' && nested.message.trim()) return nested.message;
+      }
+
+      if (typeof error.message === 'string' && error.message.trim()) return error.message;
+    }
+
+    return 'No se pudo enviar el mensaje. Intentalo nuevamente.';
+  }
+
   submit() {
     if (this.form.invalid || this.loading()) return;
 
@@ -50,7 +64,7 @@ export class ContactComponent {
           this.form.reset();
         },
         error: (err) => {
-          this.toast.show(err.error.message, 'error');
+          this.toast.show(this.getErrorMessage(err), 'error');
         },
       });
   }

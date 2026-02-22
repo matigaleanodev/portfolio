@@ -21,6 +21,10 @@ export class ProjectCardComponent {
     play: Play,
   };
 
+  iconFor(iconName: string): LucideIconData {
+    return this.icons[iconName] ?? Code;
+  }
+
   trackProjectClick(linkName: string): void {
     this.analytics.trackEvent('click_project_link', {
       project_name: this.project().name,
