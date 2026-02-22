@@ -8,14 +8,14 @@
 
   <!-- IMAGEN -->
   <div
-    class="order-2 md:order-0 md:col-start-1 md:row-span-2 w-full max-w-xs md:max-w-none mx-auto md:mx-0 overflow-hidden rounded-lg bg-neutral-200"
+    class="order-2 md:order-0 md:col-start-1 md:row-span-2 w-full max-w-xs md:max-w-none mx-auto md:mx-0 overflow-hidden rounded-lg bg-neutral-200 aspect-[4/3]"
   >
     <img
       [src]="project().image"
       [alt]="project().name"
       loading="lazy"
       decoding="async"
-      class="w-full h-auto object-cover"
+      class="w-full h-full object-cover"
     />
   </div>
 
