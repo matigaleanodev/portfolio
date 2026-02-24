@@ -1,0 +1,125 @@
+<button
+  type="button"
+  class="chat-fab"
+  [class.chat-fab--hidden]="isOpen()"
+  (click)="openChat()"
+  aria-label="Abrir chatbot asistente"
+>
+  <lucide-icon [img]="botIcon" size="22" />
+</button>
+
+@if (isOpen()) {
+  <div class="chat-overlay" (click)="closeChat()" aria-hidden="true"></div>
+
+  <section class="chat-widget" role="dialog" aria-modal="true" aria-label="Chatbot Asistente">
+    <header class="chat-widget__header">
+      <div class="chat-widget__title">
+        <lucide-icon [img]="botIcon" size="16" />
+        <span>Chatbot Asistente</span>
+      </div>
+
+      <button type="button" class="chat-icon-btn" (click)="closeChat()" aria-label="Cerrar chat">
+        <lucide-icon [img]="closeIcon" size="18" />
+      </button>
+    </header>
+
+    <div class="chat-widget__body">
+      <div class="chat-messages" #messagesViewport aria-live="polite" aria-label="Conversación">
+        @for (message of messages(); track message.id) {
+          <article
+            class="chat-bubble"
+            [class.chat-bubble--user]="message.role === 'user'"
+            [class.chat-bubble--assistant]="message.role === 'assistant'"
+          >
+            <div class="chat-bubble__meta">
+              <span class="chat-bubble__role">{{ message.role === 'user' ? 'Vos' : 'Asistente' }}</span>
+
+              @if (message.role === 'assistant' && sourceLabel(message.source); as sourceLabel) {
+                <span class="chat-badge">{{ sourceLabel }}</span>
+              }
+            </div>
+
+            <p class="chat-bubble__text">{{ message.text }}</p>
+          </article>
+        }
+
+        @if (sending()) {
+          <article class="chat-bubble chat-bubble--assistant">
+            <div class="chat-bubble__meta">
+              <span class="chat-bubble__role">Asistente</span>
+            </div>
+            <div class="chat-typing" aria-label="Escribiendo">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </article>
+        }
+      </div>
+
+      <div class="chat-suggestions" aria-label="Preguntas sugeridas">
+        @if (loadingStarters() && !hasConversation()) {
+          @for (i of [1, 2, 3, 4]; track i) {
+            <span class="chat-chip chat-chip--loading" aria-hidden="true"></span>
+          }
+        } @else if (visibleSuggestions().length > 0) {
+          @for (question of visibleSuggestions(); track question) {
+            <button
+              type="button"
+              class="chat-chip"
+              [class.chat-chip--selected]="activeSuggestion() === question"
+              (click)="useSuggestion(question)"
+              [disabled]="sending()"
+            >
+              {{ question }}
+            </button>
+          }
+        }
+      </div>
+
+      <form class="chat-form" (ngSubmit)="submit()">
+        <label for="chat-input" class="sr-only">Escribí tu pregunta</label>
+
+        <textarea
+          id="chat-input"
+          rows="3"
+          maxlength="500"
+          autocomplete="off"
+          [value]="draft()"
+          (input)="updateDraft(($any($event.target)).value)"
+          (keydown)="onTextareaKeydown($event)"
+          [disabled]="sending()"
+          class="chat-input"
+          [class.chat-input--has-text]="draft().trim().length > 0"
+          placeholder="Ej: ¿Publicaste apps en Play Store?"
+        ></textarea>
+
+        <div class="chat-form__footer">
+          <div
+            class="chat-counter"
+            [class.chat-counter--active]="draft().trim().length > 0"
+            aria-live="polite"
+          >
+            {{ draft().trim().length }}/500
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="!canSend()"
+            class="chat-submit"
+            [class.chat-submit--ready]="canSend()"
+          >
+            @if (sending()) {
+              <span class="chat-submit__spinner" aria-hidden="true"></span>
+            }
+            Enviar
+          </button>
+        </div>
+
+        @if (apiError(); as error) {
+          <p class="chat-error">{{ error }}</p>
+        }
+      </form>
+    </div>
+  </section>
+}

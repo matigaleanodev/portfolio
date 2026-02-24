@@ -5,6 +5,7 @@ import { ProjectsComponent } from './sections/projects/projects.component';
 import { HeroComponent } from './sections/hero/hero.component';
 import { ContactComponent } from './sections/contact/contact.component';
 import { ToastComponent } from './ui/toast/toast.component';
+import { ChatComponent } from './sections/chat/chat.component';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import { ToastComponent } from './ui/toast/toast.component';
     HeaderComponent,
     FooterComponent,
     ProjectsComponent,
+    ChatComponent,
     HeroComponent,
     ContactComponent,
     ToastComponent,
