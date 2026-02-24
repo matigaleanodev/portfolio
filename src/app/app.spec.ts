@@ -18,6 +18,9 @@ class HeroStubComponent {}
 @Component({ selector: 'app-contact', standalone: true, template: '' })
 class ContactStubComponent {}
 
+@Component({ selector: 'app-chat', standalone: true, template: '' })
+class ChatStubComponent {}
+
 @Component({ selector: 'app-toast', standalone: true, template: '' })
 class ToastStubComponent {}
 
@@ -34,6 +37,7 @@ describe('App', () => {
             ProjectsStubComponent,
             HeroStubComponent,
             ContactStubComponent,
+            ChatStubComponent,
             ToastStubComponent,
           ],
         },
@@ -60,6 +64,7 @@ describe('App', () => {
     expect(el.querySelector('app-contact')).toBeTruthy();
 
     expect(el.querySelector('app-footer')).toBeTruthy();
+    expect(el.querySelector('app-chat')).toBeTruthy();
     expect(el.querySelector('app-toast')).toBeTruthy();
   });
 });
