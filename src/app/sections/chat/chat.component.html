@@ -1,6 +1,6 @@
 <button
   type="button"
-  class="chat-fab"
+  class="chat-fab fixed bottom-4 right-4 grid h-14 w-14 place-items-center rounded-full"
   [class.chat-fab--hidden]="isOpen()"
   (click)="openChat()"
   aria-label="Abrir chatbot asistente"
@@ -9,64 +9,104 @@
 </button>
 
 @if (isOpen()) {
-  <div class="chat-overlay" (click)="closeChat()" aria-hidden="true"></div>
+  <div class="chat-overlay fixed inset-0" (click)="closeChat()" aria-hidden="true"></div>
 
-  <section class="chat-widget" role="dialog" aria-modal="true" aria-label="Chatbot Asistente">
-    <header class="chat-widget__header">
-      <div class="chat-widget__title">
+  <section
+    class="chat-widget fixed inset-0 flex flex-col overflow-hidden md:bottom-4 md:right-4 md:h-[575px] md:w-[400px] md:inset-auto md:rounded-2xl"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Chatbot Asistente"
+  >
+    <header
+      class="chat-widget__header flex min-h-12 items-center justify-between px-[0.85rem] py-3"
+    >
+      <div
+        class="chat-widget__title inline-flex items-center gap-2 text-[0.85rem] font-bold tracking-[0.02em]"
+      >
         <lucide-icon [img]="botIcon" size="16" />
         <span>Chatbot Asistente</span>
       </div>
 
-      <button type="button" class="chat-icon-btn" (click)="closeChat()" aria-label="Cerrar chat">
+      <button
+        type="button"
+        class="chat-icon-btn grid h-8 w-8 place-items-center rounded-[0.6rem]"
+        (click)="closeChat()"
+        aria-label="Cerrar chat"
+      >
         <lucide-icon [img]="closeIcon" size="18" />
       </button>
     </header>
 
-    <div class="chat-widget__body">
-      <div class="chat-messages" #messagesViewport aria-live="polite" aria-label="Conversación">
+    <div class="chat-widget__body flex min-h-0 flex-1 flex-col gap-[0.65rem] p-3">
+      <div
+        class="chat-messages grid min-h-0 flex-1 content-start justify-items-start gap-[0.65rem] overflow-auto pr-[0.1rem]"
+        #messagesViewport
+        aria-live="polite"
+        aria-label="Conversación"
+      >
         @for (message of messages(); track message.id) {
           <article
-            class="chat-bubble"
+            class="chat-bubble self-start rounded-[0.9rem] px-[0.78rem] py-[0.72rem]"
             [class.chat-bubble--user]="message.role === 'user'"
             [class.chat-bubble--assistant]="message.role === 'assistant'"
           >
-            <div class="chat-bubble__meta">
-              <span class="chat-bubble__role">{{ message.role === 'user' ? 'Vos' : 'Asistente' }}</span>
+            <div class="chat-bubble__meta mb-1 flex items-center gap-[0.4rem]">
+              <span class="chat-bubble__role text-[0.68rem] font-bold uppercase tracking-[0.06em]">
+                {{ message.role === 'user' ? 'Vos' : 'Asistente' }}
+              </span>
 
               @if (message.role === 'assistant' && sourceLabel(message.source); as sourceLabel) {
-                <span class="chat-badge">{{ sourceLabel }}</span>
+                <span
+                  class="chat-badge rounded-full px-[0.35rem] py-[0.08rem] text-[0.62rem] font-bold uppercase tracking-[0.05em]"
+                >
+                  {{ sourceLabel }}
+                </span>
               }
             </div>
 
-            <p class="chat-bubble__text">{{ message.text }}</p>
+            <p class="chat-bubble__text m-0 whitespace-pre-wrap text-[0.92rem] leading-[1.4]">
+              {{ message.text }}
+            </p>
           </article>
         }
 
         @if (sending()) {
-          <article class="chat-bubble chat-bubble--assistant">
-            <div class="chat-bubble__meta">
-              <span class="chat-bubble__role">Asistente</span>
+          <article
+            class="chat-bubble chat-bubble--assistant self-start rounded-[0.9rem] px-[0.78rem] py-[0.72rem]"
+          >
+            <div class="chat-bubble__meta mb-1 flex items-center gap-[0.4rem]">
+              <span class="chat-bubble__role text-[0.68rem] font-bold uppercase tracking-[0.06em]"
+                >Asistente</span
+              >
             </div>
-            <div class="chat-typing" aria-label="Escribiendo">
-              <span></span>
-              <span></span>
-              <span></span>
+            <div
+              class="chat-typing inline-flex h-4 items-center gap-[0.3rem]"
+              aria-label="Escribiendo"
+            >
+              <span class="h-[0.35rem] w-[0.35rem] rounded-full"></span>
+              <span class="h-[0.35rem] w-[0.35rem] rounded-full"></span>
+              <span class="h-[0.35rem] w-[0.35rem] rounded-full"></span>
             </div>
           </article>
         }
       </div>
 
-      <div class="chat-suggestions" aria-label="Preguntas sugeridas">
+      <div
+        class="chat-suggestions flex flex-wrap gap-[0.45rem] pt-[0.1rem]"
+        aria-label="Preguntas sugeridas"
+      >
         @if (loadingStarters() && !hasConversation()) {
           @for (i of [1, 2, 3, 4]; track i) {
-            <span class="chat-chip chat-chip--loading" aria-hidden="true"></span>
+            <span
+              class="chat-chip chat-chip--loading rounded-full text-left text-[0.76rem] leading-[1.2]"
+              aria-hidden="true"
+            ></span>
           }
         } @else if (visibleSuggestions().length > 0) {
           @for (question of visibleSuggestions(); track question) {
             <button
               type="button"
-              class="chat-chip"
+              class="chat-chip rounded-full px-[0.68rem] py-[0.42rem] text-left text-[0.76rem] leading-[1.2]"
               [class.chat-chip--selected]="activeSuggestion() === question"
               (click)="useSuggestion(question)"
               [disabled]="sending()"
@@ -77,7 +117,7 @@
         }
       </div>
 
-      <form class="chat-form" (ngSubmit)="submit()">
+      <form class="chat-form grid gap-[0.4rem]" (ngSubmit)="submit()">
         <label for="chat-input" class="sr-only">Escribí tu pregunta</label>
 
         <textarea
@@ -86,17 +126,17 @@
           maxlength="500"
           autocomplete="off"
           [value]="draft()"
-          (input)="updateDraft(($any($event.target)).value)"
+          (input)="updateDraft($any($event.target).value)"
           (keydown)="onTextareaKeydown($event)"
           [disabled]="sending()"
-          class="chat-input"
+          class="chat-input w-full resize-none rounded-[0.85rem] px-[0.85rem] py-[0.62rem] leading-[1.35] min-h-[5.1rem] md:h-[3.125rem] md:min-h-0 md:pb-[0.55rem] md:pt-[0.8rem] md:leading-[1.2]"
           [class.chat-input--has-text]="draft().trim().length > 0"
           placeholder="Ej: ¿Publicaste apps en Play Store?"
         ></textarea>
 
-        <div class="chat-form__footer">
+        <div class="chat-form__footer flex items-center justify-between gap-3">
           <div
-            class="chat-counter"
+            class="chat-counter text-[0.7rem] tracking-[0.04em]"
             [class.chat-counter--active]="draft().trim().length > 0"
             aria-live="polite"
           >
@@ -106,18 +146,21 @@
           <button
             type="submit"
             [disabled]="!canSend()"
-            class="chat-submit"
+            class="chat-submit inline-flex min-w-[5.2rem] items-center justify-center gap-[0.35rem] rounded-xl px-[0.9rem] py-2 text-white"
             [class.chat-submit--ready]="canSend()"
           >
             @if (sending()) {
-              <span class="chat-submit__spinner" aria-hidden="true"></span>
+              <span
+                class="chat-submit__spinner inline-block h-[0.8rem] w-[0.8rem] rounded-full"
+                aria-hidden="true"
+              ></span>
             }
             Enviar
           </button>
         </div>
 
         @if (apiError(); as error) {
-          <p class="chat-error">{{ error }}</p>
+          <p class="chat-error m-0 text-[0.78rem] leading-[1.25]">{{ error }}</p>
         }
       </form>
     </div>
