@@ -5,15 +5,15 @@
         <span class="hero-accent__line" aria-hidden="true"></span>
       </div>
 
-      <p class="blog-hero-kicker">Blog Tecnico</p>
+      <p class="blog-hero-kicker">Blog Técnico</p>
 
       <div class="blog-hero-grid">
         <div class="blog-hero__copy">
           <h1 class="text-4xl md:text-6xl font-bold leading-[0.98] tracking-[-0.03em]">
-            Arquitectura, producto e infraestructura con lenguaje de ingenieria.
+            Arquitectura, producto e infraestructura con lenguaje de ingeniería.
           </h1>
           <p class="text-base md:text-lg opacity-78 leading-relaxed max-w-3xl">
-            Posts tecnicos en espanol, escritos desde proyectos reales: Angular, NestJS, AWS y
+            Posts técnicos en español, escritos desde proyectos reales: Angular, NestJS, AWS y
             decisiones de arquitectura.
           </p>
         </div>
@@ -42,12 +42,13 @@
       } @else {
         <div class="blog-cards-grid">
           @for (post of sortedPosts(); track post.slug; let i = $index) {
-          <article class="blog-card" [style.--blog-delay]="i * 120 + 'ms'">
-            <a
-              [routerLink]="['/blog', post.slug]"
-              (click)="trackPostClick(post, i + 1)"
-              class="blog-card__link"
-            >
+            <article class="blog-card" [style.--blog-delay]="i * 120 + 'ms'">
+              <a
+                [routerLink]="['/blog', post.slug]"
+                (click)="trackPostClick(post, i + 1)"
+                class="blog-card__link"
+                [attr.aria-label]="'Leer ' + post.title"
+              >
                 <div class="blog-card__meta">
                   <time [attr.datetime]="post.date">{{ post.date | date: 'd MMM y' }}</time>
                   <span>{{ post.readingTimeMinutes }} min</span>

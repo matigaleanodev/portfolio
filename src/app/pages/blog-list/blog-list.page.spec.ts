@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BlogPostSummary } from '../../models/blog.model';
 import { AnalyticsService } from '../../services/analytics.service';
 import { BlogContentService } from '../../services/blog-content.service';
+import { SeoService } from '../../services/seo.service';
 import { BlogListPage } from './blog-list.page';
 
 describe('BlogListPage', () => {
@@ -14,7 +15,7 @@ describe('BlogListPage', () => {
   const postsMock: BlogPostSummary[] = [
     {
       slug: 'arquitectura-angular-real',
-      title: 'Como estructuro mis proyectos Angular (arquitectura real)',
+      title: 'Cómo estructuro mis proyectos Angular (arquitectura real)',
       excerpt: 'Framework personal',
       date: '2026-03-05',
       tags: ['angular'],
@@ -25,11 +26,13 @@ describe('BlogListPage', () => {
 
   const getPostsMock = vi.fn(() => of(postsMock));
   const trackEventMock = vi.fn();
+  const setPageSeoMock = vi.fn();
 
   beforeEach(async () => {
     getPostsMock.mockReset();
     getPostsMock.mockReturnValue(of(postsMock));
     trackEventMock.mockReset();
+    setPageSeoMock.mockReset();
 
     await TestBed.configureTestingModule({
       imports: [BlogListPage],
@@ -47,6 +50,12 @@ describe('BlogListPage', () => {
             trackEvent: trackEventMock,
           },
         },
+        {
+          provide: SeoService,
+          useValue: {
+            setPageSeo: setPageSeoMock,
+          },
+        },
       ],
     }).compileComponents();
   });
@@ -54,6 +63,14 @@ describe('BlogListPage', () => {
   it('deberia trackear la vista del indice del blog', () => {
     fixture = TestBed.createComponent(BlogListPage);
 
+    expect(setPageSeoMock).toHaveBeenCalledWith({
+      title: 'Blog técnico en español | Matias Galeano',
+      description:
+        'Posts técnicos en español sobre Angular, NestJS, AWS, arquitectura y decisiones de producto escritos desde proyectos reales.',
+      canonicalUrl: 'https://matiasgaleano.dev/blog',
+      ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
+      type: 'website',
+    });
     expect(trackEventMock).toHaveBeenCalledWith('view_blog_index', {
       post_count: 1,
     });
@@ -67,7 +84,7 @@ describe('BlogListPage', () => {
 
     expect(trackEventMock).toHaveBeenCalledWith('click_blog_post_card', {
       post_slug: 'arquitectura-angular-real',
-      post_title: 'Como estructuro mis proyectos Angular (arquitectura real)',
+      post_title: 'Cómo estructuro mis proyectos Angular (arquitectura real)',
       position: 1,
     });
   });

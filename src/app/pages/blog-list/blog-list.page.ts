@@ -28,9 +28,9 @@ export class BlogListPage {
 
   constructor() {
     this.seo.setPageSeo({
-      title: 'Blog tecnico en espanol | Matias Galeano',
+      title: 'Blog técnico en español | Matias Galeano',
       description:
-        'Posts tecnicos en espanol sobre Angular, NestJS, AWS, arquitectura y decisiones de producto escritos desde proyectos reales.',
+        'Posts técnicos en español sobre Angular, NestJS, AWS, arquitectura y decisiones de producto escritos desde proyectos reales.',
       canonicalUrl: 'https://matiasgaleano.dev/blog',
       ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
       type: 'website',
@@ -47,7 +47,8 @@ export class BlogListPage {
           });
         },
         error: (error: unknown) => {
-          const message = error instanceof Error ? error.message : 'Unexpected error loading blog posts.';
+          const message =
+            error instanceof Error ? error.message : 'Unexpected error loading blog posts.';
           this.errorMessage.set(message);
         },
       });

@@ -1,7 +1,10 @@
 <header class="header-shell bg-(--color-bg) py-3">
   <div class="max-w-6xl mx-auto px-6 flex items-center justify-between gap-4">
     <a routerLink="/" class="brand-tile" aria-label="Marca personal Matias Galeano">
-      <i style="height: 40px; width: auto; color: var(--color-text); display: inline-block">
+      <i
+        style="height: 40px; width: auto; color: var(--color-text); display: inline-block"
+        aria-hidden="true"
+      >
       <svg
         version="1.0"
         xmlns="http://www.w3.org/2000/svg"
@@ -9,6 +12,8 @@
         preserveAspectRatio="xMidYMid meet"
         fill="currentColor"
         class="w-full h-full"
+        aria-hidden="true"
+        focusable="false"
       >
         <g transform="translate(0.000000,400.000000) scale(0.100000,-0.100000)" stroke="none">
           <path
@@ -36,11 +41,24 @@
       </i>
     </a>
 
-    <nav class="header-nav" aria-label="Navegacion principal">
-      <a routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="is-active">
+    <nav class="header-nav" aria-label="Navegación principal">
+      <a
+        routerLink="/"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="is-active"
+        #homeLink="routerLinkActive"
+        [attr.aria-current]="homeLink.isActive ? 'page' : null"
+      >
         Inicio
       </a>
-      <a routerLink="/blog" routerLinkActive="is-active">Blog</a>
+      <a
+        routerLink="/blog"
+        routerLinkActive="is-active"
+        #blogLink="routerLinkActive"
+        [attr.aria-current]="blogLink.isActive ? 'page' : null"
+      >
+        Blog
+      </a>
     </nav>
   </div>
 </header>

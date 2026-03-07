@@ -17,7 +17,7 @@ export class HomePage {
     this.seo.setPageSeo({
       title: 'Matias Galeano · Software Developer',
       description:
-        'Portfolio de Matias Galeano, Software Developer especializado en Angular, Ionic y NestJS. Desarrollo de productos digitales con foco en claridad, mantenimiento y decisiones tecnicas bien pensadas.',
+        'Portfolio de Matias Galeano, Software Developer especializado en Angular, Ionic y NestJS. Desarrollo de productos digitales con foco en claridad, mantenimiento y decisiones técnicas bien pensadas.',
       canonicalUrl: 'https://matiasgaleano.dev/',
       ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
       type: 'website',

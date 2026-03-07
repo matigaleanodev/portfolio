@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
@@ -23,31 +24,37 @@ marked.setOptions({
   breaks: false,
 });
 
-await ensureDirectory(assetsDir);
-await ensureDirectory(contentDir);
-await ensureDirectory(publicDir);
+export async function runBuildContent() {
+  await ensureDirectory(assetsDir);
+  await ensureDirectory(contentDir);
+  await ensureDirectory(publicDir);
 
-const projects = await loadProjects();
-const posts = await loadPosts();
+  const projects = await loadProjects();
+  const posts = await loadPosts();
 
-await fs.writeFile(projectsOutputPath, `${JSON.stringify(projects, null, 2)}\n`);
+  await fs.writeFile(projectsOutputPath, `${JSON.stringify(projects, null, 2)}\n`);
 
-await ensureCleanDirectory(blogDir);
-await ensureDirectory(postsOutputDir);
-await fs.writeFile(postsIndexOutputPath, `${JSON.stringify(posts.index, null, 2)}\n`);
+  await ensureCleanDirectory(blogDir);
+  await ensureDirectory(postsOutputDir);
+  await fs.writeFile(postsIndexOutputPath, `${JSON.stringify(posts.index, null, 2)}\n`);
 
-for (const post of posts.details) {
-  const outputPath = path.join(postsOutputDir, `${post.slug}.json`);
-  await fs.writeFile(outputPath, `${JSON.stringify(post, null, 2)}\n`);
+  for (const post of posts.details) {
+    const outputPath = path.join(postsOutputDir, `${post.slug}.json`);
+    await fs.writeFile(outputPath, `${JSON.stringify(post, null, 2)}\n`);
+  }
+
+  await fs.writeFile(rssOutputPath, buildRss(posts.details));
+  await fs.writeFile(sitemapBlogOutputPath, buildSitemap(posts.details));
+
+  console.log(`Generated ${projects.length} projects.`);
+  console.log(`Generated ${posts.index.length} blog index entries.`);
+  console.log(`Generated ${posts.details.length} blog post artifacts.`);
+  console.log('Generated rss.xml and sitemap-blog.xml.');
 }
 
-await fs.writeFile(rssOutputPath, buildRss(posts.details));
-await fs.writeFile(sitemapBlogOutputPath, buildSitemap(posts.details));
-
-console.log(`Generated ${projects.length} projects.`);
-console.log(`Generated ${posts.index.length} blog index entries.`);
-console.log(`Generated ${posts.details.length} blog post artifacts.`);
-console.log('Generated rss.xml and sitemap-blog.xml.');
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  await runBuildContent();
+}
 
 async function loadProjects() {
   const files = await getIndexMarkdownFiles(projectsDir);
@@ -63,13 +70,23 @@ async function loadProjects() {
     validateUnique(slugRegistry, slug, `Duplicate project slug "${slug}"`);
     validateRequiredString(entry.data.title, `Missing project title in ${relative(filePath)}`);
     validateRequiredString(entry.data.excerpt, `Missing project excerpt in ${relative(filePath)}`);
-    const projectDate = normalizeDate(entry.data.date, `Invalid project date in ${relative(filePath)}`);
-    validateRequiredString(entry.data.coverImage, `Missing project coverImage in ${relative(filePath)}`);
+    const projectDate = normalizeDate(
+      entry.data.date,
+      `Invalid project date in ${relative(filePath)}`,
+    );
+    validateRequiredString(
+      entry.data.coverImage,
+      `Missing project coverImage in ${relative(filePath)}`,
+    );
     validateStringArray(entry.data.stack, `Invalid project stack in ${relative(filePath)}`);
     validateProjectLinks(entry.data.links, relative(filePath));
     validateBoolean(entry.data.featured, `Invalid project featured flag in ${relative(filePath)}`);
     validateNumber(entry.data.order, `Invalid project order in ${relative(filePath)}`);
-    validateUnique(orderRegistry, entry.data.order, `Duplicate project order "${entry.data.order}"`);
+    validateUnique(
+      orderRegistry,
+      entry.data.order,
+      `Duplicate project order "${entry.data.order}"`,
+    );
 
     projects.push({
       slug,
@@ -105,12 +122,16 @@ async function loadPosts() {
     validateRequiredString(entry.data.title, `Missing post title in ${relative(filePath)}`);
     validateRequiredString(entry.data.excerpt, `Missing post excerpt in ${relative(filePath)}`);
     const postDate = normalizeDate(entry.data.date, `Invalid post date in ${relative(filePath)}`);
-    validateRequiredString(entry.data.coverImage, `Missing post coverImage in ${relative(filePath)}`);
+    validateRequiredString(
+      entry.data.coverImage,
+      `Missing post coverImage in ${relative(filePath)}`,
+    );
     validateStringArray(entry.data.tags, `Invalid post tags in ${relative(filePath)}`);
 
-    const updatedAt = entry.data.updatedAt != null
-      ? normalizeDate(entry.data.updatedAt, `Invalid post updatedAt in ${relative(filePath)}`)
-      : null;
+    const updatedAt =
+      entry.data.updatedAt != null
+        ? normalizeDate(entry.data.updatedAt, `Invalid post updatedAt in ${relative(filePath)}`)
+        : null;
 
     const readingTimeMinutes = calculateReadingTime(entry.content);
     const sanitizedHtml = sanitizeGeneratedHtml(marked.parse(entry.content));
@@ -174,7 +195,7 @@ function resolveSlug(frontmatter, folderName) {
   return slug;
 }
 
-function slugify(value) {
+export function slugify(value) {
   return String(value)
     .trim()
     .toLowerCase()
@@ -184,7 +205,7 @@ function slugify(value) {
     .replace(/^-+|-+$/g, '');
 }
 
-function calculateReadingTime(content) {
+export function calculateReadingTime(content) {
   const words = content.split(/\s+/).filter(Boolean).length;
 
   if (words === 0) {
@@ -194,7 +215,7 @@ function calculateReadingTime(content) {
   return Math.max(1, Math.ceil(words / 200));
 }
 
-function sanitizeGeneratedHtml(html) {
+export function sanitizeGeneratedHtml(html) {
   return sanitizeHtml(html, {
     allowedTags: [
       'h1',
@@ -269,7 +290,7 @@ function validateRequiredString(value, message) {
   }
 }
 
-function normalizeDate(value, message) {
+export function normalizeDate(value, message) {
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return value;
   }
@@ -282,7 +303,11 @@ function normalizeDate(value, message) {
 }
 
 function validateStringArray(value, message) {
-  if (!Array.isArray(value) || value.length === 0 || value.some((item) => typeof item !== 'string')) {
+  if (
+    !Array.isArray(value) ||
+    value.length === 0 ||
+    value.some((item) => typeof item !== 'string')
+  ) {
     throw new Error(message);
   }
 }
@@ -326,7 +351,7 @@ function stringifyOptional(value) {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
-function buildRss(posts) {
+export function buildRss(posts) {
   const items = posts
     .map((post) => {
       const pubDate = new Date(`${post.date}T00:00:00.000Z`).toUTCString();
@@ -348,7 +373,7 @@ function buildRss(posts) {
 <channel>
   <title>Matias Galeano Blog</title>
   <link>${siteUrl}/blog</link>
-  <description>Posts tecnicos en espanol sobre Angular, NestJS, AWS, arquitectura y producto.</description>
+  <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
 ${items}
 </channel>
@@ -356,7 +381,7 @@ ${items}
 `;
 }
 
-function buildSitemap(posts) {
+export function buildSitemap(posts) {
   const urls = [
     {
       loc: `${siteUrl}/blog`,
@@ -382,7 +407,7 @@ ${urls}
 `;
 }
 
-function xmlEscape(value) {
+export function xmlEscape(value) {
   return String(value)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

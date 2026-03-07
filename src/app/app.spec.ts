@@ -58,10 +58,13 @@ describe('App', () => {
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
+    const skipLink = el.querySelector('.skip-link') as HTMLAnchorElement | null;
+    const mainContent = el.querySelector('#main-content') as HTMLDivElement | null;
 
     expect(el.querySelector('app-header')).toBeTruthy();
     expect(el.querySelector('router-outlet')).toBeTruthy();
-
+    expect(skipLink?.getAttribute('href')).toBe('#main-content');
+    expect(mainContent?.getAttribute('tabindex')).toBe('-1');
     expect(el.querySelector('app-footer')).toBeTruthy();
     expect(el.querySelector('app-chat')).toBeTruthy();
     expect(el.querySelector('app-toast')).toBeTruthy();

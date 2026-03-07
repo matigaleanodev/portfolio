@@ -1,7 +1,7 @@
 ---
-title: Como desplegar APIs con Docker en un EC2 (paso a paso)
+title: Cómo desplegar APIs con Docker en un EC2 (paso a paso)
 slug: desplegar-apis-docker-ec2
-excerpt: "Asi despliego mis APIs NestJS en un EC2 compartido: imagenes en GHCR, Docker Compose por app, HTTPS en el reverse proxy y deploy automatico con GitHub Actions."
+excerpt: "Así despliego mis APIs NestJS en un EC2 compartido: imágenes en GHCR, Docker Compose por app, HTTPS en el reverse proxy y deploy automático con GitHub Actions."
 date: 2026-03-02
 tags:
   - docker
@@ -21,16 +21,16 @@ La decisión no fue ideológica. Fue operativa.
 
 - Menos moving parts.
 - Menos costo fijo.
-- Menos tiempo perdido en configuracion para cambios chicos.
-- Un modelo facil de repetir entre proyectos.
+- Menos tiempo perdido en configuración para cambios chicos.
+- Un modelo fácil de repetir entre proyectos.
 
 En este setup conviven APIs como **Foodly Notes**, **Modo Playa** y **Portfolio API**, cada una con su propio directorio y su propio `docker compose`, pero compartiendo la misma máquina.
 
-## Por que migre de ECS a EC2
+## Por qué migré de ECS a EC2
 
 ECS resuelve muy bien escenarios con varios servicios, scaling horizontal y equipos más grandes. Pero para mi caso real aparecían dos problemas:
 
-1. El costo operativo era mas alto que el beneficio.
+1. El costo operativo era más alto que el beneficio.
 2. El deploy diario se volvía menos transparente.
 
 Para tres APIs chicas, el valor estaba en tener un pipeline que pudiera mirar de punta a punta:
@@ -55,11 +55,11 @@ Tomando como referencia **AWS us-east-1**, **Linux On-Demand** y una carga chica
 
 La lectura importante no es solo el número unitario. Es el patrón de crecimiento.
 
-Si quisiera correr tres APIs chicas en Fargate, con una tarea base por API de ese tamano, el costo de compute quedaria cerca de:
+Si quisiera correr tres APIs chicas en Fargate, con una tarea base por API de ese tamaño, el costo de compute quedaría cerca de:
 
 - **3 x Fargate 1 vCPU + 2 GB**: ~**USD 108.12/mes**
 
-Mientras que en EC2 hoy puedo consolidarlas sobre una sola maquina compartida y moverme en un rango mucho mas controlado:
+Mientras que en EC2 hoy puedo consolidarlas sobre una sola máquina compartida y moverme en un rango mucho más controlado:
 
 - **1 x EC2 t3.small**: ~**USD 15.26/mes**
 - **1 x EC2 t3.medium**: ~**USD 30.51/mes**
@@ -73,15 +73,15 @@ La contracara es clara: ECS escala mejor.
 Con ECS me queda más natural:
 
 - escalar tareas horizontalmente
-- separar servicios con mas aislamiento operativo
+- separar servicios con más aislamiento operativo
 - distribuir carga por servicio
-- evolucionar a una plataforma mas orientada a orquestacion
+- evolucionar a una plataforma más orientada a orquestación
 
 Con EC2 compartido, en cambio, el escalado es más manual:
 
-- primero optimizo recursos dentro de la misma maquina
-- despues subo tamano de instancia
-- recien si hace falta, separo servicios o reparto carga entre hosts
+- primero optimizo recursos dentro de la misma máquina
+- después subo tamaño de instancia
+- recién si hace falta, separo servicios o reparto carga entre hosts
 
 Para un workload chico, eso me parece un tradeoff razonable. Prefiero una infraestructura un poco menos elástica pero mucho más simple de operar. Si una API necesitara crecimiento sostenido o comportamiento muy variable, ahí sí ECS volvería a tener más sentido.
 
@@ -103,7 +103,7 @@ Ese layout aparece reflejado en los workflows de deploy de los tres proyectos:
 
 La idea es simple: cada app tiene su compose, su `.env`, su imagen y su ciclo de release. El acoplamiento compartido queda reducido a la misma VM y a la capa de entrada HTTP/HTTPS.
 
-## Docker Compose por aplicacion
+## Docker Compose por aplicación
 
 No estoy usando un compose gigante para todo el servidor. Prefiero aislar cada backend en su carpeta y que el workflow de cada repo apunte a su propio stack.
 
@@ -125,7 +125,7 @@ El deploy que hoy ejecutan mis repos hace exactamente esto:
 Además, cada release fija la variable `IMAGE` en el `.env` con el tag `sha-<commit>`. Eso me da dos ventajas:
 
 - cada deploy apunta a una imagen inmutable
-- volver a una version anterior es mucho mas simple
+- volver a una versión anterior es mucho más simple
 
 ## Traefik, HTTPS y dominios
 
@@ -134,9 +134,9 @@ En un servidor compartido, el problema no es solo correr contenedores. El proble
 Mi enfoque es dejar que cada API corra internamente en su servicio y resolver afuera:
 
 - enrutamiento por dominio
-- terminacion HTTPS
-- renovacion de certificados
-- separacion entre trafico publico y contenedores
+- terminación HTTPS
+- renovación de certificados
+- separación entre tráfico público y contenedores
 
 La pieza natural para eso es Traefik como reverse proxy del host. Esa capa me permite publicar múltiples APIs en una sola máquina sin meter configuración manual por proyecto en cada release.
 
@@ -159,9 +159,9 @@ Los tres backends que mantengo hoy siguen la misma idea:
 5. SSH a EC2
 6. `docker compose pull`
 7. `docker compose up -d`
-8. limpieza de imagenes viejas
+8. limpieza de imágenes viejas
 
-El patron se repite en:
+El patrón se repite en:
 
 - `foodly-notes-api/.github/workflows/deploy.yml`
 - `modo-playa-api/.github/workflows/deploy.yml`
@@ -192,6 +192,6 @@ EC2 + Docker Compose + GHCR + GitHub Actions me da:
 - una base repetible
 - deploys trazables por commit
 - independencia entre APIs
-- menor complejidad que ECS para este tamano de carga
+- menor complejidad que ECS para este tamaño de carga
 
 Si algún proyecto necesita escalar distinto, ese cambio se puede hacer más adelante. Pero para el estado actual del ecosistema, este modelo me deja priorizar producto y arquitectura sin pagar complejidad antes de tiempo.

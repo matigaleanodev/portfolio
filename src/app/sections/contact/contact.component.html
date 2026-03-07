@@ -1,9 +1,9 @@
 <section class="py-14 md:py-20 bg-(--color-bg)">
   <div class="max-w-3xl mx-auto px-6 space-y-8 md:space-y-10">
     <header class="space-y-2">
-      <h2 class="text-3xl font-medium">Contacto</h2>
+      <h2 id="contact-title" class="text-3xl font-medium">Contacto</h2>
 
-      <p class="text-base opacity-70">
+      <p id="contact-description" class="text-base opacity-70">
         Si te interesa mi perfil o querés charlar sobre algún proyecto, podés escribirme
         directamente.
       </p>
@@ -14,6 +14,8 @@
       (ngSubmit)="submit()"
       class="contact-form-panel space-y-6"
       [attr.aria-busy]="loading()"
+      aria-labelledby="contact-title"
+      aria-describedby="contact-description"
     >
       <!-- Nombre -->
       <div class="space-y-2">

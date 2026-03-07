@@ -32,6 +32,24 @@ body {
   line-height: 1.45;
 }
 
+.skip-link {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000;
+  padding: 0.7rem 1rem;
+  border-radius: 0.75rem;
+  background-color: var(--color-text);
+  color: var(--color-bg);
+  text-decoration: none;
+  transform: translateY(-140%);
+  transition: transform 180ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 ::selection {
   background: rgb(91 95 143 / 0.24);
   color: var(--color-text);

@@ -1,7 +1,7 @@
 ---
-title: Como estructuro mis proyectos Angular (arquitectura real)
+title: Cómo estructuro mis proyectos Angular (arquitectura real)
 slug: arquitectura-angular-real
-excerpt: "Asi organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegacion, storage e i18n."
+excerpt: "Así organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegación, storage e i18n."
 date: 2026-03-05
 tags:
   - angular
@@ -20,9 +20,9 @@ Por eso en mis proyectos tiendo a repetir un framework interno chico: no una lib
 
 La mejor referencia de ese enfoque hoy está en `modo-playa-admin`, con piezas complementarias que también aparecen en `foodly-notes-front`.
 
-## 1. ApiService: un punto unico para construir endpoints
+## 1. ApiService: un punto único para construir endpoints
 
-La base mas simple es `ApiService`.
+La base más simple es `ApiService`.
 
 ```ts
 export abstract class ApiService {
@@ -50,7 +50,7 @@ Sobre `ApiService` monto `CrudService<T>`, que resuelve las operaciones repetida
 
 Además centraliza la construcción de query params. Eso hace que cada servicio concreto herede un contrato ya estable y que la lógica de red no quede desparramada por features.
 
-## 3. ResourceService: estado de lista, paginacion y acciones
+## 3. ResourceService: estado de lista, paginación y acciones
 
 La capa que más me sirve en apps admin es `ResourceService`.
 
@@ -73,7 +73,7 @@ También expone derivados como:
 - `totalPages`
 - `hasItems`
 
-Y metodos listos para uso real:
+Y métodos listos para uso real:
 
 - `loadPage`
 - `refresh`
@@ -94,7 +94,7 @@ Para formularios uso una pieza abstracta que evita reescribir el mismo flujo una
 - `onSubmit`
 - `guardar`
 - `cancelar`
-- generacion de `FormGroup` a partir de metadata
+- generación de `FormGroup` a partir de metadata
 - mapeo de validaciones
 
 La ventaja no es solamente ahorrar líneas. La ventaja es que todos los formularios terminan comportándose igual: submit, validación, marcado de touched, persistencia y cancelación.
@@ -121,13 +121,13 @@ export abstract class BaseList<T extends BaseEntity> {
 
 Eso deja la parte mecánica resuelta:
 
-- confirmacion de borrado
-- delegacion a `ResourceService`
-- acciones comunes de edicion y alta
+- confirmación de borrado
+- delegación a `ResourceService`
+- acciones comunes de edición y alta
 
 Las páginas concretas se quedan con lo que realmente cambia: columnas, cards, filtros o comportamiento puntual.
 
-## 6. NavService: navegacion como servicio, no como detalle de UI
+## 6. NavService: navegación como servicio, no como detalle de UI
 
 En `foodly-notes-front` encapsulé la navegación sobre `NavController` en un `NavService`.
 
@@ -149,7 +149,7 @@ Mi criterio acá es:
 
 - loading local si pertenece a una sola vista
 - loading de recurso dentro de `ResourceService`
-- loading global solo cuando hay una operacion transversal o bloqueo de pantalla
+- loading global solo cuando hay una operación transversal o bloqueo de pantalla
 
 En otras palabras: no me interesa tener un spinner genérico por tenerlo. Me interesa que el estado de carga tenga un dueño claro.
 
@@ -171,11 +171,11 @@ También en Foodly Notes aparece un `TranslateService` propio, basado en:
 - diccionarios locales
 - `currentLang` como signal
 - persistencia de idioma en `StorageService`
-- actualizacion de `document.documentElement.lang`
+- actualización de `document.documentElement.lang`
 
 No es un i18n académicamente perfecto. Es una solución pragmática para una app bilingüe que necesito controlar sin sobredimensionar el stack.
 
-## Como baja esto a una pantalla real
+## Cómo baja esto a una pantalla real
 
 La página `lodgings-list` de `modo-playa-admin` muestra bien la idea:
 
@@ -186,14 +186,14 @@ La página `lodgings-list` de `modo-playa-admin` muestra bien la idea:
 
 Eso hace que la pantalla se enfoque en la feature y no en reimplementar infraestructura de frontend.
 
-## Por que me sirve este enfoque
+## Por qué me sirve este enfoque
 
 No busco una arquitectura ultra abstracta. Busco una arquitectura que soporte crecimiento sin volverse caótica.
 
 Este framework personal me sirve porque:
 
-- define limites claros entre HTTP, estado y UI
-- reduce duplicacion en CRUDs
+- define límites claros entre HTTP, estado y UI
+- reduce duplicación en CRUDs
 - vuelve consistentes listas y formularios
 - me deja mezclar Angular standalone, signals e Ionic sin desorden
 

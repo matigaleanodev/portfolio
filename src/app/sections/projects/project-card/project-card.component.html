@@ -45,9 +45,10 @@
           target="_blank"
           rel="noopener noreferrer"
           (click)="trackProjectClick(link.label)"
+          [attr.aria-label]="link.label + ' de ' + project().title"
           class="project-link inline-flex items-center gap-2 text-sm font-medium hover:text-(--color-accent) transition"
         >
-          <lucide-icon [img]="iconFor(link.icon ?? '')" size="16" />
+          <lucide-icon [img]="iconFor(link.icon ?? '')" size="16" aria-hidden="true" />
           {{ link.label }}
         </a>
       }
