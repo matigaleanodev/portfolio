@@ -1,6 +1,6 @@
 # Arquitectura del blog
 
-Estado: baseline aprobado para la migracion static-first.
+Estado: aprobado e implementado hasta prerender + SEO.
 
 ## Objetivo
 
@@ -18,7 +18,7 @@ Este documento define el contrato local para:
 
 ## Baseline actual
 
-Actualizado el 2026-03-07 despues del arranque de la fase 2:
+Actualizado el 2026-03-07 despues del cierre de la fase 4:
 
 - La app Angular sigue siendo una landing SPA compuesta directamente en `src/app/app.ts`.
 - `src/app/app.routes.ts` sigue vacio.
@@ -28,7 +28,11 @@ Actualizado el 2026-03-07 despues del arranque de la fase 2:
 - `POST /contact`, `GET /chat/starters` y `POST /chat` siguen siendo responsabilidades validas del backend.
 - `build:content` ya existe y genera artifacts JSON de proyectos y blog antes del build de Angular.
 - `src/assets/blog/posts.json` se genera incluso cuando todavia no hay posts publicados.
-- `angular.json` todavia no tiene configuracion de prerender.
+- Angular ahora builda en `outputMode: static`.
+- `/`, `/blog` y `/blog/:slug` se prerenderizan durante `ng build`.
+- `rss.xml` y `sitemap-blog.xml` se generan desde `build:content` dentro de `public/`.
+- La metadata SEO por ruta se configura desde Angular y queda presente en el HTML prerenderizado.
+- Los artifacts JSON de blog y proyectos se leen directo desde archivo durante SSR/prerender, mientras que en browser se mantiene el consumo por `/assets/...`.
 
 ## Stack del pipeline de contenido
 
@@ -53,6 +57,7 @@ El frontend es responsable de:
 - contenido del catalogo de proyectos
 - metadata SEO generada desde contenido editorial
 - rutas prerenderizadas del blog
+- artifacts SEO estaticos (`rss.xml`, `sitemap-blog.xml`)
 
 ### Responsabilidades del backend
 
@@ -254,6 +259,25 @@ Reglas:
 - Angular no parsea Markdown en runtime.
 - No se genera HTML de detalle de proyectos hasta que exista una ruta real `/projects/:slug`.
 
+### `public/rss.xml`
+
+Proposito: feed del blog generado durante `build:content` y copiado al output estatico.
+
+Reglas:
+
+- Incluye solo posts publicados.
+- Usa las URLs canonicas del blog.
+- Usa `date` como `pubDate`.
+
+### `public/sitemap-blog.xml`
+
+Proposito: sitemap del blog generado durante `build:content`.
+
+Reglas:
+
+- Incluye `/blog` y cada ruta publicada `/blog/<slug>`.
+- Usa `updatedAt` cuando existe y, si no, `date`.
+
 ## Mapa actual de dependencias frontend a backend
 
 | Concern | Endpoint | Se mantiene en backend | Notas |
@@ -282,3 +306,4 @@ El endpoint del backend puede quedar temporalmente durante la transicion, pero d
 3. Agregar `build:content` y la generacion de artifacts del blog.
 4. Introducir rutas Angular para `/`, `/blog` y `/blog/:slug`.
 5. Habilitar prerender y artifacts SEO.
+6. Ajustar reglas de deploy en Firebase para el output prerenderizado.

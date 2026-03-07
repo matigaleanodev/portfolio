@@ -9,10 +9,13 @@ const contentDir = path.join(rootDir, 'content');
 const projectsDir = path.join(contentDir, 'projects');
 const postsDir = path.join(contentDir, 'posts');
 const assetsDir = path.join(rootDir, 'src', 'assets');
+const publicDir = path.join(rootDir, 'public');
 const projectsOutputPath = path.join(assetsDir, 'projects.json');
 const blogDir = path.join(assetsDir, 'blog');
 const postsIndexOutputPath = path.join(blogDir, 'posts.json');
 const postsOutputDir = path.join(blogDir, 'posts');
+const rssOutputPath = path.join(publicDir, 'rss.xml');
+const sitemapBlogOutputPath = path.join(publicDir, 'sitemap-blog.xml');
 const siteUrl = 'https://matiasgaleano.dev';
 
 marked.setOptions({
@@ -22,6 +25,7 @@ marked.setOptions({
 
 await ensureDirectory(assetsDir);
 await ensureDirectory(contentDir);
+await ensureDirectory(publicDir);
 
 const projects = await loadProjects();
 const posts = await loadPosts();
@@ -37,9 +41,13 @@ for (const post of posts.details) {
   await fs.writeFile(outputPath, `${JSON.stringify(post, null, 2)}\n`);
 }
 
+await fs.writeFile(rssOutputPath, buildRss(posts.details));
+await fs.writeFile(sitemapBlogOutputPath, buildSitemap(posts.details));
+
 console.log(`Generated ${projects.length} projects.`);
 console.log(`Generated ${posts.index.length} blog index entries.`);
 console.log(`Generated ${posts.details.length} blog post artifacts.`);
+console.log('Generated rss.xml and sitemap-blog.xml.');
 
 async function loadProjects() {
   const files = await getIndexMarkdownFiles(projectsDir);
@@ -316,6 +324,71 @@ function validateUnique(registry, value, message) {
 
 function stringifyOptional(value) {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function buildRss(posts) {
+  const items = posts
+    .map((post) => {
+      const pubDate = new Date(`${post.date}T00:00:00.000Z`).toUTCString();
+      const description = xmlEscape(post.excerpt);
+      const link = `${siteUrl}/blog/${post.slug}`;
+
+      return `  <item>
+    <title>${xmlEscape(post.title)}</title>
+    <link>${link}</link>
+    <guid>${link}</guid>
+    <pubDate>${pubDate}</pubDate>
+    <description>${description}</description>
+  </item>`;
+    })
+    .join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>Matias Galeano Blog</title>
+  <link>${siteUrl}/blog</link>
+  <description>Posts tecnicos en espanol sobre Angular, NestJS, AWS, arquitectura y producto.</description>
+  <language>es-ar</language>
+${items}
+</channel>
+</rss>
+`;
+}
+
+function buildSitemap(posts) {
+  const urls = [
+    {
+      loc: `${siteUrl}/blog`,
+      lastmod: posts[0]?.updatedAt ?? posts[0]?.date ?? new Date().toISOString().slice(0, 10),
+    },
+    ...posts.map((post) => ({
+      loc: `${siteUrl}/blog/${post.slug}`,
+      lastmod: post.updatedAt ?? post.date,
+    })),
+  ]
+    .map(
+      ({ loc, lastmod }) => `  <url>
+    <loc>${xmlEscape(loc)}</loc>
+    <lastmod>${lastmod}</lastmod>
+  </url>`,
+    )
+    .join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>
+`;
+}
+
+function xmlEscape(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
 
 async function ensureDirectory(directoryPath) {

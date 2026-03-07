@@ -6,6 +6,7 @@ import { switchMap } from 'rxjs';
 import { BlogPost } from '../../models/blog.model';
 import { AnalyticsService } from '../../services/analytics.service';
 import { BlogContentService } from '../../services/blog-content.service';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-blog-post-page',
@@ -19,6 +20,7 @@ export class BlogPostPage {
   private readonly route = inject(ActivatedRoute);
   private readonly blogContent = inject(BlogContentService);
   private readonly analytics = inject(AnalyticsService);
+  private readonly seo = inject(SeoService);
 
   readonly post = signal<BlogPost | null>(null);
   readonly errorMessage = signal('');
@@ -45,6 +47,17 @@ export class BlogPostPage {
       .subscribe({
         next: (post) => {
           this.post.set(post);
+          this.seo.setPageSeo({
+            title: post.seo.title,
+            description: post.seo.description,
+            canonicalUrl: post.seo.canonicalUrl,
+            ogImage: post.seo.ogImage.startsWith('http')
+              ? post.seo.ogImage
+              : `https://matiasgaleano.dev${post.seo.ogImage}`,
+            type: 'article',
+            publishedTime: `${post.date}T00:00:00.000Z`,
+            modifiedTime: post.updatedAt ? `${post.updatedAt}T00:00:00.000Z` : undefined,
+          });
           this.analytics.trackEvent('view_blog_post', {
             post_slug: post.slug,
             post_title: post.title,

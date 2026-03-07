@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BlogPostSummary } from '../../models/blog.model';
 import { AnalyticsService } from '../../services/analytics.service';
 import { BlogContentService } from '../../services/blog-content.service';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-blog-list-page',
@@ -16,6 +17,7 @@ export class BlogListPage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly blogContent = inject(BlogContentService);
   private readonly analytics = inject(AnalyticsService);
+  private readonly seo = inject(SeoService);
 
   readonly posts = signal<BlogPostSummary[]>([]);
   readonly errorMessage = signal('');
@@ -25,6 +27,15 @@ export class BlogListPage {
   );
 
   constructor() {
+    this.seo.setPageSeo({
+      title: 'Blog tecnico en espanol | Matias Galeano',
+      description:
+        'Posts tecnicos en espanol sobre Angular, NestJS, AWS, arquitectura y decisiones de producto escritos desde proyectos reales.',
+      canonicalUrl: 'https://matiasgaleano.dev/blog',
+      ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
+      type: 'website',
+    });
+
     this.blogContent
       .getPosts()
       .pipe(takeUntilDestroyed(this.destroyRef))

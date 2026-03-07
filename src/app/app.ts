@@ -1,4 +1,5 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, DestroyRef, PLATFORM_ID, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HeaderComponent } from './layout/header/header.component';
@@ -20,6 +21,7 @@ import { ChatComponent } from './sections/chat/chat.component';
 })
 export class App {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
 
   readonly routeTransitionActive = signal(false);
@@ -31,6 +33,10 @@ export class App {
       }
 
       this.routeTransitionActive.set(false);
+
+      if (!isPlatformBrowser(this.platformId) || typeof requestAnimationFrame !== 'function') {
+        return;
+      }
 
       requestAnimationFrame(() => {
         this.routeTransitionActive.set(true);

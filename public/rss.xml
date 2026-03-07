@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>Matias Galeano Blog</title>
+  <link>https://matiasgaleano.dev/blog</link>
+  <description>Posts tecnicos en espanol sobre Angular, NestJS, AWS, arquitectura y producto.</description>
+  <language>es-ar</language>
+  <item>
+    <title>Como disene la arquitectura de Modo Playa</title>
+    <link>https://matiasgaleano.dev/blog/arquitectura-modo-playa</link>
+    <guid>https://matiasgaleano.dev/blog/arquitectura-modo-playa</guid>
+    <pubDate>Sat, 07 Mar 2026 00:00:00 GMT</pubDate>
+    <description>Modo Playa esta pensado como un producto multi-tenant real: API NestJS, MongoDB, aislamiento por ownerId, separacion entre catalogo publico y admin, y un pipeline backend para uploads e imagenes.</description>
+  </item>
+  <item>
+    <title>Como estructuro mis proyectos Angular (arquitectura real)</title>
+    <link>https://matiasgaleano.dev/blog/arquitectura-angular-real</link>
+    <guid>https://matiasgaleano.dev/blog/arquitectura-angular-real</guid>
+    <pubDate>Thu, 05 Mar 2026 00:00:00 GMT</pubDate>
+    <description>Asi organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegacion, storage e i18n.</description>
+  </item>
+  <item>
+    <title>Como desplegar APIs con Docker en un EC2 (paso a paso)</title>
+    <link>https://matiasgaleano.dev/blog/desplegar-apis-docker-ec2</link>
+    <guid>https://matiasgaleano.dev/blog/desplegar-apis-docker-ec2</guid>
+    <pubDate>Mon, 02 Mar 2026 00:00:00 GMT</pubDate>
+    <description>Asi despliego mis APIs NestJS en un EC2 compartido: imagenes en GHCR, Docker Compose por app, HTTPS en el reverse proxy y deploy automatico con GitHub Actions.</description>
+  </item>
+</channel>
+</rss>
