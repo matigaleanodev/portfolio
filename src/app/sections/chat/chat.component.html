@@ -4,28 +4,37 @@
   [class.chat-fab--hidden]="isOpen()"
   (click)="openChat()"
   aria-label="Abrir chatbot asistente"
+  aria-haspopup="dialog"
+  [attr.aria-expanded]="isOpen()"
+  aria-controls="chat-widget"
 >
-  <lucide-icon [img]="botIcon" size="22" />
+  <lucide-icon [img]="botIcon" size="22" aria-hidden="true" />
 </button>
 
 @if (isOpen()) {
   <div class="chat-overlay fixed inset-0" (click)="closeChat()" aria-hidden="true"></div>
 
   <section
+    id="chat-widget"
     class="chat-widget fixed inset-0 flex flex-col overflow-hidden md:bottom-4 md:right-4 md:h-[575px] md:w-[400px] md:inset-auto md:rounded-2xl"
     role="dialog"
     aria-modal="true"
-    aria-label="Chatbot Asistente"
+    aria-labelledby="chat-title"
+    aria-describedby="chat-description"
   >
     <header
       class="chat-widget__header flex min-h-12 items-center justify-between px-[0.85rem] py-3"
     >
       <div
         class="chat-widget__title inline-flex items-center gap-2 text-[0.85rem] font-bold tracking-[0.02em]"
+        id="chat-title"
       >
-        <lucide-icon [img]="botIcon" size="16" />
+        <lucide-icon [img]="botIcon" size="16" aria-hidden="true" />
         <span>Chatbot Asistente</span>
       </div>
+      <p id="chat-description" class="sr-only">
+        Podés hacer preguntas sobre experiencia, stack, proyectos y disponibilidad.
+      </p>
 
       <button
         type="button"
@@ -33,7 +42,7 @@
         (click)="closeChat()"
         aria-label="Cerrar chat"
       >
-        <lucide-icon [img]="closeIcon" size="18" />
+        <lucide-icon [img]="closeIcon" size="18" aria-hidden="true" />
       </button>
     </header>
 
@@ -43,6 +52,7 @@
         #messagesViewport
         aria-live="polite"
         aria-label="Conversación"
+        [attr.aria-busy]="sending()"
       >
         @for (message of messages(); track message.id) {
           <article
@@ -82,6 +92,7 @@
             <div
               class="chat-typing inline-flex h-4 items-center gap-[0.3rem]"
               aria-label="Escribiendo"
+              role="status"
             >
               <span class="h-[0.35rem] w-[0.35rem] rounded-full"></span>
               <span class="h-[0.35rem] w-[0.35rem] rounded-full"></span>
@@ -94,6 +105,7 @@
       <div
         class="chat-suggestions flex flex-wrap gap-[0.45rem] pt-[0.1rem]"
         aria-label="Preguntas sugeridas"
+        [attr.aria-busy]="loadingStarters() && !hasConversation()"
       >
         @if (loadingStarters() && !hasConversation()) {
           @for (i of [1, 2, 3, 4]; track i) {
@@ -117,6 +129,22 @@
         }
       </div>
 
+      @if (startersError() && !hasConversation()) {
+        <div class="flex items-center justify-between gap-3" aria-live="polite">
+          <p class="chat-error m-0 text-[0.78rem] leading-[1.25]">
+            {{ startersError() }}
+          </p>
+          <button
+            type="button"
+            class="chat-chip rounded-full px-[0.68rem] py-[0.42rem] text-[0.76rem] leading-[1.2]"
+            (click)="retryStarters()"
+            [disabled]="loadingStarters()"
+          >
+            Reintentar
+          </button>
+        </div>
+      }
+
       <form class="chat-form grid gap-[0.4rem]" (ngSubmit)="submit()">
         <label for="chat-input" class="sr-only">Escribí tu pregunta</label>
 
@@ -129,6 +157,7 @@
           (input)="updateDraft($any($event.target).value)"
           (keydown)="onTextareaKeydown($event)"
           [disabled]="sending()"
+          [attr.aria-describedby]="apiError() ? 'chat-error' : 'chat-counter'"
           class="chat-input w-full resize-none rounded-[0.85rem] px-[0.85rem] py-[0.62rem] leading-[1.35] min-h-[5.1rem] md:h-[3.125rem] md:min-h-0 md:pb-[0.55rem] md:pt-[0.8rem] md:leading-[1.2]"
           [class.chat-input--has-text]="draft().trim().length > 0"
           placeholder="Ej: ¿Publicaste apps en Play Store?"
@@ -136,6 +165,7 @@
 
         <div class="chat-form__footer flex items-center justify-between gap-3">
           <div
+            id="chat-counter"
             class="chat-counter text-[0.7rem] tracking-[0.04em]"
             [class.chat-counter--active]="draft().trim().length > 0"
             aria-live="polite"
@@ -160,7 +190,9 @@
         </div>
 
         @if (apiError(); as error) {
-          <p class="chat-error m-0 text-[0.78rem] leading-[1.25]">{{ error }}</p>
+          <p id="chat-error" class="chat-error m-0 text-[0.78rem] leading-[1.25]" role="alert">
+            {{ error }}
+          </p>
         }
       </form>
     </div>

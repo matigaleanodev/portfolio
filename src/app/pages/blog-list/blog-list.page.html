@@ -1,0 +1,77 @@
+<main class="blog-page">
+  <section class="blog-hero-surface bg-(--color-text) text-(--color-bg) py-16 md:py-20">
+    <div class="max-w-6xl mx-auto px-6 blog-hero-shell hero-shell">
+      <div class="hero-accent inline-flex items-center" aria-hidden="true">
+        <span class="hero-accent__line" aria-hidden="true"></span>
+      </div>
+
+      <p class="blog-hero-kicker">Blog Técnico</p>
+
+      <div class="blog-hero-grid">
+        <div class="blog-hero__copy">
+          <h1 class="text-4xl md:text-6xl font-bold leading-[0.98] tracking-[-0.03em]">
+            Arquitectura, producto e infraestructura con lenguaje de ingeniería.
+          </h1>
+          <p class="text-base md:text-lg opacity-78 leading-relaxed max-w-3xl">
+            Posts técnicos en español, escritos desde proyectos reales: Angular, NestJS, AWS y
+            decisiones de arquitectura.
+          </p>
+        </div>
+
+        <aside class="blog-hero__aside" aria-label="Resumen editorial">
+          <div>
+            <span class="blog-hero__aside-label">Enfoque</span>
+            <p>Experiencia real, sin posts de laboratorio.</p>
+          </div>
+          <div>
+            <span class="blog-hero__aside-label">Stack</span>
+            <p>Angular, NestJS, AWS, producto y sistemas.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="blog-list-surface py-14 md:py-18">
+    <div class="max-w-6xl mx-auto px-6 space-y-10">
+      @if (errorMessage() && !sortedPosts().length) {
+        <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          No se pudieron cargar los posts.
+          <span class="block opacity-80">{{ errorMessage() }}</span>
+        </div>
+      } @else {
+        <div class="blog-cards-grid">
+          @for (post of sortedPosts(); track post.slug; let i = $index) {
+            <article class="blog-card" [style.--blog-delay]="i * 120 + 'ms'">
+              <a
+                [routerLink]="['/blog', post.slug]"
+                (click)="trackPostClick(post, i + 1)"
+                class="blog-card__link"
+                [attr.aria-label]="'Leer ' + post.title"
+              >
+                <div class="blog-card__meta">
+                  <time [attr.datetime]="post.date">{{ post.date | date: 'd MMM y' }}</time>
+                  <span>{{ post.readingTimeMinutes }} min</span>
+                </div>
+
+                <h2 class="blog-card__title">{{ post.title }}</h2>
+                <p class="blog-card__excerpt">{{ post.excerpt }}</p>
+
+                <ul class="blog-card__tags" aria-label="Etiquetas del post">
+                  @for (tag of post.tags; track tag) {
+                    <li>{{ tag }}</li>
+                  }
+                </ul>
+
+                <div class="blog-card__footer">
+                  <span class="blog-card__cta">Leer post</span>
+                  <span class="blog-card__pulse" aria-hidden="true"></span>
+                </div>
+              </a>
+            </article>
+          }
+        </div>
+      }
+    </div>
+  </section>
+</main>

@@ -1,7 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { ProjectCardComponent } from './project-card/project-card.component';
-import { ApiService } from '../../services/api.service';
 import { NgStyle } from '@angular/common';
+import { ProjectContentService } from '../../services/project-content.service';
+import { Project } from '../../models/project.model';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-projects',
@@ -10,27 +12,28 @@ import { NgStyle } from '@angular/common';
   styleUrl: './projects.component.css',
 })
 export class ProjectsComponent {
-  private readonly api = inject(ApiService);
-  private readonly projectsResource = this.api.projectsResource;
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly projectContent = inject(ProjectContentService);
 
-  readonly isLoading = computed(() =>
-    typeof this.projectsResource.isLoading === 'function' ? this.projectsResource.isLoading() : false,
+  readonly projects = signal<Project[]>([]);
+  readonly errorMessage = signal('');
+
+  constructor() {
+    this.projectContent
+      .getProjects()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (projects) => {
+          this.projects.set(projects);
+        },
+        error: (error: unknown) => {
+          const message = error instanceof Error ? error.message : 'Unexpected error loading projects.';
+          this.errorMessage.set(message);
+        },
+      });
+  }
+
+  readonly sortedProjects = computed(() =>
+    [...this.projects()].sort((a, b) => a.order - b.order),
   );
-
-  readonly errorMessage = computed(() =>
-    typeof this.projectsResource.error === 'function' ? (this.projectsResource.error()?.message ?? '') : '',
-  );
-
-  readonly sortedProjects = computed(() => {
-    if (typeof this.projectsResource.hasValue === 'function' && !this.projectsResource.hasValue()) {
-      return [];
-    }
-
-    const projects = this.projectsResource.value();
-    if (!projects) return [];
-
-    return [...projects].sort(
-      (a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER),
-    );
-  });
 }

@@ -10,6 +10,17 @@ En paralelo, desarrollo proyectos personales orientados a construir **productos 
 
 🌐 **Portfolio:** https://matiasgaleano.dev
 
+## Build y deploy
+
+El sitio sigue una arquitectura `static-first`:
+
+- contenido editorial en `content/`
+- generación de artifacts con `npm run build:content`
+- build Angular prerenderizado con `npm run build`
+- deploy estático en Firebase Hosting
+
+El detalle operativo actual está documentado en [Docs/deploy-workflow.md](./Docs/deploy-workflow.md).
+
 ---
 
 ## 🚀 Stack principal

@@ -1,0 +1,55 @@
+<main class="blog-post-page">
+  @if (post(); as currentPost) {
+    <section class="blog-post-hero bg-(--color-text) text-(--color-bg) py-16 md:py-20">
+      <div class="max-w-4xl mx-auto px-6 blog-post-hero__shell hero-shell">
+        <div class="hero-accent inline-flex items-center" aria-hidden="true">
+          <span class="hero-accent__line" aria-hidden="true"></span>
+        </div>
+
+        <a routerLink="/blog" class="blog-post-back" aria-label="Volver al listado del blog">
+          Volver al blog
+        </a>
+
+        <p class="blog-post__eyebrow">Post Técnico</p>
+        <h1 class="blog-post__title">{{ currentPost.title }}</h1>
+
+        <div class="blog-post__meta">
+          <time [attr.datetime]="currentPost.date">
+            {{ currentPost.date | date: 'd MMM y' }}
+          </time>
+          <span>{{ currentPost.readingTimeMinutes }} min de lectura</span>
+          @if (currentPost.updatedAt) {
+            <span>Actualizado {{ currentPost.updatedAt | date: 'd MMM y' }}</span>
+          }
+        </div>
+
+        <p class="blog-post__excerpt">{{ currentPost.excerpt }}</p>
+
+        <ul class="blog-post__tags" aria-label="Etiquetas del post">
+          @for (tag of currentPost.tags; track tag) {
+            <li>{{ tag }}</li>
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="blog-post-body py-12 md:py-14">
+      <div class="max-w-4xl mx-auto px-6">
+        <article class="blog-post">
+          <div class="blog-post__content prose-terminal" [innerHTML]="currentPost.contentHtml"></div>
+        </article>
+      </div>
+    </section>
+  } @else if (errorMessage()) {
+    <section class="max-w-4xl mx-auto px-6 py-14 md:py-20">
+      <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+        No se pudo cargar el post.
+        <span class="block opacity-80">{{ errorMessage() }}</span>
+      </div>
+    </section>
+  } @else {
+    <section class="max-w-4xl mx-auto px-6 py-14 md:py-20">
+      <div class="blog-post-loading" aria-live="polite">Cargando post...</div>
+    </section>
+  }
+</main>

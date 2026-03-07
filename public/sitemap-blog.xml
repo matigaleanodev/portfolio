@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://matiasgaleano.dev/blog</loc>
+    <lastmod>2026-03-07</lastmod>
+  </url>
+  <url>
+    <loc>https://matiasgaleano.dev/blog/arquitectura-modo-playa</loc>
+    <lastmod>2026-03-07</lastmod>
+  </url>
+  <url>
+    <loc>https://matiasgaleano.dev/blog/arquitectura-angular-real</loc>
+    <lastmod>2026-03-05</lastmod>
+  </url>
+  <url>
+    <loc>https://matiasgaleano.dev/blog/desplegar-apis-docker-ec2</loc>
+    <lastmod>2026-03-02</lastmod>
+  </url>
+</urlset>

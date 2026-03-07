@@ -1,0 +1,31 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.app-view {
+  display: block;
+  flex: 1 0 auto;
+  position: relative;
+  min-height: 0;
+}
+
+.app-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.1), transparent 26%),
+    radial-gradient(circle at top center, rgb(91 95 143 / 0.08), transparent 28%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app-view--transition {
+  animation: routeContentIn 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-view--transition::before {
+  animation: routeVeilIn 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}

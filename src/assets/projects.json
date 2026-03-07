@@ -1,0 +1,72 @@
+[
+  {
+    "slug": "foodly-notes",
+    "title": "Foodly Notes",
+    "excerpt": "Foodly Notes es una aplicacion de recetas pensada como producto real para el uso cotidiano. Su objetivo es ayudar a descubrir recetas nuevas de forma simple, guardarlas para mas adelante y organizar todo lo necesario para cocinarlas. La experiencia esta basada en el descubrimiento: explorar recetas, marcar favoritas, encontrar recetas similares y generar automaticamente una lista de compras a partir de lo que el usuario quiere cocinar.",
+    "date": "2026-03-07",
+    "coverImage": "/assets/foodly-notes.webp",
+    "stack": [
+      "Angular",
+      "Ionic",
+      "NestJS",
+      "MongoDB"
+    ],
+    "links": [
+      {
+        "label": "Repositorio Frontend",
+        "url": "https://github.com/matigaleanodev/foodly-notes",
+        "icon": "code"
+      },
+      {
+        "label": "Repositorio Backend",
+        "url": "https://github.com/matigaleanodev/foodly-notes-api",
+        "icon": "server"
+      },
+      {
+        "label": "Documentacion",
+        "url": "https://matigaleano-dev.notion.site/Foodly-Notes-2f9aa07ef7dd80f0b9a0f2af1030bdb0",
+        "icon": "bookopen"
+      },
+      {
+        "label": "Play Store",
+        "url": "https://play.google.com/store/apps/details?id=io.matiasgaleano.foodlynotes",
+        "icon": "play"
+      }
+    ],
+    "featured": true,
+    "order": 1
+  },
+  {
+    "slug": "modo-playa",
+    "title": "Modo Playa",
+    "excerpt": "Modo Playa es una plataforma de gestion y catalogo de alojamientos turisticos compuesta por una API multi-tenant, un panel administrativo y un catalogo publico. Esta disenada para garantizar aislamiento de datos por propietario mediante ownerId y autenticacion JWT, manteniendo una arquitectura modular y escalable.",
+    "date": "2026-03-07",
+    "coverImage": "/assets/modo_playa.webp",
+    "stack": [
+      "Angular",
+      "Ionic",
+      "NestJS",
+      "MongoDB",
+      "JWT"
+    ],
+    "links": [
+      {
+        "label": "Repositorio Backend",
+        "url": "https://github.com/matigaleanodev/modo-playa-api",
+        "icon": "server"
+      },
+      {
+        "label": "Repositorio Catalogo",
+        "url": "https://github.com/matigaleanodev/modo-playa-app",
+        "icon": "code"
+      },
+      {
+        "label": "Repositorio Admin",
+        "url": "https://github.com/matigaleanodev/modo-playa-admin",
+        "icon": "code"
+      }
+    ],
+    "featured": false,
+    "order": 2
+  }
+]

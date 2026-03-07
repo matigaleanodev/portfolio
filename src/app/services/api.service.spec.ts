@@ -34,6 +34,7 @@ describe('ApiService', () => {
       name: 'Matías',
       email: 'matias@test.com',
       message: 'Hola',
+      company: '',
     };
 
     service.sendContact(dto).subscribe();
@@ -43,10 +44,6 @@ describe('ApiService', () => {
     expect(req.request.body).toEqual(dto);
 
     req.flush({});
-  });
-
-  it('projectsResource debería existir', () => {
-    expect(service.projectsResource).toBeTruthy();
   });
 
   it('getChatStarters debería hacer GET a /chat/starters', () => {

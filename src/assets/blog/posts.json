@@ -1,0 +1,46 @@
+[
+  {
+    "slug": "arquitectura-modo-playa",
+    "title": "Cómo diseñé la arquitectura de Modo Playa",
+    "excerpt": "Modo Playa está pensado como un producto multi-tenant real: API NestJS, MongoDB, aislamiento por ownerId, separación entre catálogo público y admin, y un pipeline backend para uploads e imágenes.",
+    "date": "2026-03-07",
+    "tags": [
+      "nestjs",
+      "mongodb",
+      "architecture",
+      "multitenant",
+      "backend"
+    ],
+    "coverImage": "/assets/blog/arquitectura-modo-playa/cover.webp",
+    "readingTimeMinutes": 4
+  },
+  {
+    "slug": "arquitectura-angular-real",
+    "title": "Cómo estructuro mis proyectos Angular (arquitectura real)",
+    "excerpt": "Así organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegación, storage e i18n.",
+    "date": "2026-03-05",
+    "tags": [
+      "angular",
+      "architecture",
+      "ionic",
+      "frontend"
+    ],
+    "coverImage": "/assets/blog/arquitectura-angular-real/cover.webp",
+    "readingTimeMinutes": 5
+  },
+  {
+    "slug": "desplegar-apis-docker-ec2",
+    "title": "Cómo desplegar APIs con Docker en un EC2 (paso a paso)",
+    "excerpt": "Así despliego mis APIs NestJS en un EC2 compartido: imágenes en GHCR, Docker Compose por app, HTTPS en el reverse proxy y deploy automático con GitHub Actions.",
+    "date": "2026-03-02",
+    "tags": [
+      "docker",
+      "aws",
+      "ec2",
+      "nestjs",
+      "devops"
+    ],
+    "coverImage": "/assets/blog/desplegar-apis-docker-ec2/cover.webp",
+    "readingTimeMinutes": 6
+  }
+]
