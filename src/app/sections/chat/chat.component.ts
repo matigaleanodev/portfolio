@@ -58,6 +58,7 @@ export class ChatComponent {
   protected readonly starters = signal<string[]>([]);
   protected readonly suggestedQuestions = signal<string[]>([]);
   protected readonly loadingStarters = signal(true);
+  protected readonly startersError = signal<string | null>(null);
   protected readonly sending = signal(false);
   protected readonly apiError = signal<string | null>(null);
   protected readonly activeSuggestion = signal<string | null>(null);
@@ -170,21 +171,25 @@ export class ChatComponent {
 
   private loadStarters() {
     this.loadingStarters.set(true);
+    this.startersError.set(null);
 
     this.api
       .getChatStarters()
       .pipe(finalize(() => this.loadingStarters.set(false)))
       .subscribe({
         next: (response) => {
-          this.starters.set(response.suggestedQuestions ?? []);
+          const suggestedQuestions = response.suggestedQuestions ?? [];
+          this.starters.set(suggestedQuestions);
+          this.analytics.trackEvent('chat_starters_loaded', {
+            count: suggestedQuestions.length,
+          });
         },
-        error: () => {
-          this.starters.set([
-            '¿Qué tecnologías usás?',
-            '¿Qué proyecto destacás?',
-            '¿Tenés experiencia con NestJS?',
-            '¿Cómo te puedo contactar?',
-          ]);
+        error: (error: unknown) => {
+          this.starters.set(this.getFallbackStarters());
+          this.startersError.set('No pude cargar las sugerencias ahora. Podés reintentar o escribir directo.');
+          this.analytics.trackEvent('chat_starters_error', {
+            status: this.getErrorStatus(error),
+          });
         },
       });
   }
@@ -217,7 +222,7 @@ export class ChatComponent {
         },
         error: () => {
           this.analytics.trackEvent('chat_receive_error');
-          this.apiError.set('No se pudo obtener respuesta del chatbot. Probá nuevamente en unos segundos.');
+          this.apiError.set(this.getChatErrorMessage());
           this.appendMessage({
             role: 'assistant',
             text: 'No pude responder en este momento. Si querés, probá con otra pregunta o usá el formulario de contacto.',
@@ -232,6 +237,13 @@ export class ChatComponent {
     this.idCounter.set(id);
     this.messages.update((current) => [...current, { id, ...message }]);
     this.shouldAutoScroll = true;
+  }
+
+  protected retryStarters() {
+    if (this.loadingStarters()) return;
+
+    this.analytics.trackEvent('chat_retry_starters');
+    this.loadStarters();
   }
 
   private setupEffects() {
@@ -351,6 +363,26 @@ export class ChatComponent {
       typeof candidate.text === 'string' &&
       validSource
     );
+  }
+
+  private getFallbackStarters(): string[] {
+    return [
+      '¿Qué tecnologías usás?',
+      '¿Qué proyecto destacás?',
+      '¿Tenés experiencia con NestJS?',
+      '¿Cómo te puedo contactar?',
+    ];
+  }
+
+  private getChatErrorMessage(): string {
+    return 'No se pudo obtener respuesta del chatbot. Probá nuevamente en unos segundos.';
+  }
+
+  private getErrorStatus(error: unknown): number | undefined {
+    if (typeof error !== 'object' || error === null) return undefined;
+
+    const status = (error as { status?: unknown }).status;
+    return typeof status === 'number' ? status : undefined;
   }
 
   private createSessionId(): string {

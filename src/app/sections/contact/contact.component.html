@@ -17,6 +17,17 @@
       aria-labelledby="contact-title"
       aria-describedby="contact-description"
     >
+      <div class="contact-honeypot" aria-hidden="true">
+        <label for="contact-company">Empresa</label>
+        <input
+          id="contact-company"
+          type="text"
+          formControlName="company"
+          tabindex="-1"
+          autocomplete="off"
+        />
+      </div>
+
       <!-- Nombre -->
       <div class="space-y-2">
         <label for="contact-name" class="contact-label">Nombre</label>
@@ -47,7 +58,7 @@
               El nombre es obligatorio
             }
             @if (form.get('name')?.errors?.['minlength']) {
-              El nombre debe tener al menos 4 caracteres
+              El nombre debe tener al menos 2 caracteres
             }
           </p>
         }
@@ -147,6 +158,18 @@
 
         Enviar mensaje
       </button>
+
+      <div class="space-y-2" aria-live="polite">
+        @if (loading()) {
+          <p class="text-sm opacity-70">Enviando mensaje...</p>
+        }
+
+        @if (submitError()) {
+          <p class="text-sm text-rose-600/90 error-animate" role="alert">{{ submitError() }}</p>
+        } @else if (submitSucceeded()) {
+          <p class="text-sm text-emerald-700/90">Mensaje enviado. Te respondo a la brevedad.</p>
+        }
+      </div>
     </form>
   </div>
 </section>

@@ -195,6 +195,46 @@ describe('ChatComponent', () => {
     expect(trackEventMock).toHaveBeenCalledWith('chat_receive_error');
   });
 
+  it('debería mostrar estado de error y permitir reintentar starters', () => {
+    fixture.destroy();
+    getChatStartersMock.mockReset();
+    getChatStartersMock
+      .mockReturnValueOnce(throwError(() => ({ status: 503 })))
+      .mockReturnValueOnce(
+        of({
+          suggestedQuestions: ['¿Qué tecnologías usás?'],
+        }),
+      );
+
+    fixture = TestBed.createComponent(ChatComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    (el.querySelector('.chat-fab') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(el.textContent).toContain('No pude cargar las sugerencias ahora');
+    expect(trackEventMock).toHaveBeenCalledWith(
+      'chat_starters_error',
+      expect.objectContaining({ status: 503 }),
+    );
+
+    const retryButton = Array.from(el.querySelectorAll('button')).find((button) =>
+      button.textContent?.includes('Reintentar'),
+    ) as HTMLButtonElement | undefined;
+
+    retryButton?.click();
+    fixture.detectChanges();
+
+    expect(getChatStartersMock).toHaveBeenCalledTimes(2);
+    expect(trackEventMock).toHaveBeenCalledWith('chat_retry_starters');
+    expect(trackEventMock).toHaveBeenCalledWith(
+      'chat_starters_loaded',
+      expect.objectContaining({ count: 1 }),
+    );
+  });
+
   it('debería persistir y restaurar mensajes desde localStorage', async () => {
     fixture.destroy();
 

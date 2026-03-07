@@ -17,7 +17,7 @@ export class ApiService {
   private readonly baseUrl = environment.API_URL;
 
   sendContact(dto: ContactDto) {
-    return this.http.post(`${this.baseUrl}/contact`, dto);
+    return this.http.post<void>(`${this.baseUrl}/contact`, dto);
   }
 
   getChatStarters() {

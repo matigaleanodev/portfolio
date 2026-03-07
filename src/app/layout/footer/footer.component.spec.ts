@@ -44,9 +44,15 @@ describe('FooterComponent', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
 
-    const github = el.querySelector('a[aria-label="GitHub"]') as HTMLAnchorElement;
-    const linkedin = el.querySelector('a[aria-label="LinkedIn"]') as HTMLAnchorElement;
-    const notion = el.querySelector('a[aria-label="Notion"]') as HTMLAnchorElement;
+    const github = el.querySelector(
+      'a[aria-label="GitHub de Matias Galeano"]',
+    ) as HTMLAnchorElement;
+    const linkedin = el.querySelector(
+      'a[aria-label="LinkedIn de Matias Galeano"]',
+    ) as HTMLAnchorElement;
+    const notion = el.querySelector(
+      'a[aria-label="Notion de Matias Galeano"]',
+    ) as HTMLAnchorElement;
 
     expect(github).toBeTruthy();
     expect(linkedin).toBeTruthy();

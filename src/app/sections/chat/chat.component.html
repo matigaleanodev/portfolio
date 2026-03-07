@@ -129,6 +129,22 @@
         }
       </div>
 
+      @if (startersError() && !hasConversation()) {
+        <div class="flex items-center justify-between gap-3" aria-live="polite">
+          <p class="chat-error m-0 text-[0.78rem] leading-[1.25]">
+            {{ startersError() }}
+          </p>
+          <button
+            type="button"
+            class="chat-chip rounded-full px-[0.68rem] py-[0.42rem] text-[0.76rem] leading-[1.2]"
+            (click)="retryStarters()"
+            [disabled]="loadingStarters()"
+          >
+            Reintentar
+          </button>
+        </div>
+      }
+
       <form class="chat-form grid gap-[0.4rem]" (ngSubmit)="submit()">
         <label for="chat-input" class="sr-only">Escribí tu pregunta</label>
 

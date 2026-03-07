@@ -34,6 +34,7 @@ describe('ApiService', () => {
       name: 'Matías',
       email: 'matias@test.com',
       message: 'Hola',
+      company: '',
     };
 
     service.sendContact(dto).subscribe();
