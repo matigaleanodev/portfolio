@@ -45,10 +45,6 @@ describe('ApiService', () => {
     req.flush({});
   });
 
-  it('projectsResource debería existir', () => {
-    expect(service.projectsResource).toBeTruthy();
-  });
-
   it('getChatStarters debería hacer GET a /chat/starters', () => {
     service.getChatStarters().subscribe((response) => {
       expect(response.suggestedQuestions).toEqual(['¿Qué tecnologías usás?']);

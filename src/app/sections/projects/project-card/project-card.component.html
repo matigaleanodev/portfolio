@@ -1,50 +1,47 @@
 <article class="project-card grid gap-6 md:grid-cols-[275px_1fr] md:grid-rows-[auto_1fr]">
-  <!-- TITULO -->
   <h3
     class="order-1 md:order-0 md:col-start-2 md:row-start-1 text-2xl font-medium text-center md:text-left"
   >
-    {{ project().name }}
+    {{ project().title }}
   </h3>
 
-  <!-- IMAGEN -->
   <div
     class="project-card__media order-2 md:order-0 md:col-start-1 md:row-span-2 w-full max-w-xs md:max-w-none mx-auto md:mx-0 overflow-hidden rounded-lg bg-neutral-200"
   >
     <img
-      [src]="project().image"
-      [alt]="project().name"
+      [src]="project().coverImage"
+      [alt]="project().title"
       loading="lazy"
       decoding="async"
       class="w-full h-full object-cover"
     />
   </div>
 
-  <!-- CONTENIDO -->
   <div class="order-3 md:order-0 md:col-start-2 md:row-start-2 space-y-4 text-center md:text-left">
-    @if (project().technologies?.length) {
+    @if (project().stack.length) {
       <div class="flex flex-wrap gap-2 justify-center md:justify-start">
-        <span class="sr-only">{{ project().technologies?.join(' · ') }}</span>
-        @for (tech of project().technologies ?? []; track tech) {
+        <span class="sr-only">{{ project().stack.join(' · ') }}</span>
+        @for (tech of project().stack; track tech) {
           <span class="project-tech-chip">{{ tech }}</span>
         }
       </div>
     }
 
     <p class="text-base opacity-80 leading-relaxed">
-      {{ project().description }}
+      {{ project().excerpt }}
     </p>
 
     <div class="flex flex-wrap gap-4 pt-2 justify-center md:justify-start">
-      @for (link of project().links; track link.id || link.url || $index) {
+      @for (link of project().links; track link.url) {
         <a
           [href]="link.url"
           target="_blank"
           rel="noopener noreferrer"
-          (click)="trackProjectClick(link.name)"
+          (click)="trackProjectClick(link.label)"
           class="project-link inline-flex items-center gap-2 text-sm font-medium hover:text-(--color-accent) transition"
         >
-          <lucide-icon [img]="iconFor(link.icon)" size="16" />
-          {{ link.name }}
+          <lucide-icon [img]="iconFor(link.icon ?? '')" size="16" />
+          {{ link.label }}
         </a>
       }
     </div>

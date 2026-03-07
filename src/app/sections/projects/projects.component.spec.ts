@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { ProjectsComponent } from './projects.component';
-import { ApiService } from '../../services/api.service';
 import { Project } from '../../models/project.model';
+import { ProjectContentService } from '../../services/project-content.service';
 
 @Component({
   selector: 'app-project-card',
@@ -16,64 +17,81 @@ class ProjectCardStubComponent {
   @Input({ required: true }) project!: Project;
 }
 
+const createProject = (overrides: Partial<Project>): Project => ({
+  slug: 'project',
+  title: 'Project',
+  excerpt: 'Excerpt',
+  date: '2026-03-07',
+  coverImage: '/assets/project.webp',
+  featured: false,
+  order: 1,
+  stack: [],
+  links: [],
+  ...overrides,
+});
+
 describe('ProjectsComponent', () => {
   let fixture: ComponentFixture<ProjectsComponent>;
 
-  const projectsValueMock = vi.fn<() => Project[] | null>();
+  const getProjectsMock = vi.fn(() => of([] as Project[]));
 
-  const apiMock: Pick<ApiService, 'projectsResource'> = {
-    projectsResource: {
-      value: projectsValueMock,
-    } as unknown as ApiService['projectsResource'],
+  const projectContentMock: Pick<ProjectContentService, 'getProjects'> = {
+    getProjects: getProjectsMock,
   };
 
   beforeEach(async () => {
+    getProjectsMock.mockReset();
+    getProjectsMock.mockReturnValue(of([]));
+
     await TestBed.configureTestingModule({
       imports: [ProjectsComponent],
-      providers: [{ provide: ApiService, useValue: apiMock }],
+      providers: [{ provide: ProjectContentService, useValue: projectContentMock }],
     })
       .overrideComponent(ProjectsComponent, {
         set: {
-          // IMPORTANTE: no pisar NgStyle, si no ngStyle explota
           imports: [NgStyle, ProjectCardStubComponent],
         },
       })
       .compileComponents();
-
-    fixture = TestBed.createComponent(ProjectsComponent);
   });
 
   it('debería crearse', () => {
+    fixture = TestBed.createComponent(ProjectsComponent);
+
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('sortedProjects debería devolver [] cuando projects es null', () => {
-    projectsValueMock.mockReturnValueOnce(null);
+  it('sortedProjects debería devolver [] cuando no hay proyectos', () => {
+    fixture = TestBed.createComponent(ProjectsComponent);
 
     expect(fixture.componentInstance.sortedProjects()).toEqual([]);
   });
 
-  it('sortedProjects debería ordenar por order (undefined al final)', () => {
-    projectsValueMock.mockReturnValueOnce([
-      { name: 'B', order: 2 } as Project,
-      { name: 'Sin order' } as Project,
-      { name: 'A', order: 1 } as Project,
-    ]);
+  it('sortedProjects debería ordenar por order', () => {
+    getProjectsMock.mockReturnValueOnce(
+      of([
+        createProject({ slug: 'b', title: 'B', order: 2 }),
+        createProject({ slug: 'a', title: 'A', order: 1 }),
+      ]),
+    );
+
+    fixture = TestBed.createComponent(ProjectsComponent);
 
     const sorted = fixture.componentInstance.sortedProjects();
 
-    expect(sorted[0]?.name).toBe('A');
-    expect(sorted[1]?.name).toBe('B');
-    expect(sorted[2]?.name).toBe('Sin order');
+    expect(sorted.map((project) => project.title)).toEqual(['A', 'B']);
   });
 
   it('debería renderizar un card por cada proyecto ordenado', () => {
-    projectsValueMock.mockReturnValueOnce([
-      { name: 'B', order: 2 } as Project,
-      { name: 'A', order: 1 } as Project,
-      { name: 'C', order: 3 } as Project,
-    ]);
+    getProjectsMock.mockReturnValueOnce(
+      of([
+        createProject({ slug: 'b', title: 'B', order: 2 }),
+        createProject({ slug: 'a', title: 'A', order: 1 }),
+        createProject({ slug: 'c', title: 'C', order: 3 }),
+      ]),
+    );
 
+    fixture = TestBed.createComponent(ProjectsComponent);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;

@@ -18,13 +18,14 @@ Este documento define el contrato local para:
 
 ## Baseline actual
 
-Confirmado el 2026-03-07:
+Actualizado el 2026-03-07 despues de la fase 1:
 
 - La app Angular sigue siendo una landing SPA compuesta directamente en `src/app/app.ts`.
-- `src/app/app.routes.ts` esta vacio.
-- `ApiService` sigue llamando a `GET /projects` desde `https://api.matiasgaleano.dev/api`.
+- `src/app/app.routes.ts` sigue vacio.
+- La seccion de proyectos ahora lee `/assets/projects.json` mediante un servicio de contenido estatico.
+- `content/projects/` ya existe con el catalogo inicial migrado desde el payload de la API.
 - `POST /contact`, `GET /chat/starters` y `POST /chat` siguen siendo responsabilidades validas del backend.
-- Todavia no existe `content/` ni el script `build:content`.
+- `build:content` todavia no existe, por lo que el JSON generado sigue manteniendose de forma manual durante la transicion.
 - `angular.json` todavia no tiene configuracion de prerender.
 
 ## Limites del sistema
@@ -125,8 +126,10 @@ stack:
 links:
   - label: Live
     url: https://example.com
+    icon: play
   - label: GitHub
     url: https://github.com/example/repo
+    icon: code
 featured: true
 order: 1
 ---
@@ -147,6 +150,7 @@ Reglas de validacion:
 - `title`, `slug`, `excerpt`, `date`, `coverImage`, `stack`, `links`, `featured` y `order` son obligatorios.
 - `links` debe tener al menos una entrada.
 - Cada link necesita `label` y `url`.
+- `icon` es opcional y puede usarse para conservar las affordances visuales de la landing.
 - `order` debe ser numerico y unico en el catalogo visible.
 - `featured` es obligatorio para que la landing renderice destacados de forma determinista.
 
@@ -221,8 +225,8 @@ Proposito: catalogo estatico consumido por la seccion de proyectos de la landing
     "coverImage": "/assets/projects/foodly-notes/cover.webp",
     "stack": ["Angular", "Firebase"],
     "links": [
-      { "label": "Live", "url": "https://example.com" },
-      { "label": "GitHub", "url": "https://github.com/example/repo" }
+      { "label": "Live", "url": "https://example.com", "icon": "play" },
+      { "label": "GitHub", "url": "https://github.com/example/repo", "icon": "code" }
     ],
     "featured": true,
     "order": 1

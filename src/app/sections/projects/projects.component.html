@@ -8,36 +8,7 @@
       </p>
     </header>
 
-    @if (isLoading() && !sortedProjects().length) {
-      <div class="space-y-24" aria-live="polite" aria-label="Cargando proyectos">
-        @for (_ of [1, 2]; track $index) {
-          <article
-            class="project-skeleton-card grid gap-6 md:grid-cols-[275px_1fr] md:grid-rows-[auto_1fr]"
-          >
-            <div
-              class="project-skeleton__block md:col-start-1 md:row-span-2 rounded-lg h-[180px] aspect-[4/3] md:aspect-auto md:h-auto"
-            ></div>
-            <div class="space-y-4 md:col-start-2 md:row-start-1">
-              <div class="project-skeleton__block h-8 rounded-md w-2/3"></div>
-            </div>
-            <div class="space-y-3 md:col-start-2 md:row-start-2">
-              <div class="flex flex-wrap gap-2">
-                <div class="project-skeleton__block h-7 rounded-full w-20"></div>
-                <div class="project-skeleton__block h-7 rounded-full w-16"></div>
-                <div class="project-skeleton__block h-7 rounded-full w-18"></div>
-              </div>
-              <div class="project-skeleton__block h-4 rounded-md w-full"></div>
-              <div class="project-skeleton__block h-4 rounded-md w-11/12"></div>
-              <div class="project-skeleton__block h-4 rounded-md w-2/3"></div>
-              <div class="flex gap-3 pt-2">
-                <div class="project-skeleton__block h-6 rounded-md w-20"></div>
-                <div class="project-skeleton__block h-6 rounded-md w-18"></div>
-              </div>
-            </div>
-          </article>
-        }
-      </div>
-    } @else if (errorMessage() && !sortedProjects().length) {
+    @if (errorMessage() && !sortedProjects().length) {
       <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
         No se pudieron cargar los proyectos.
         @if (errorMessage()) {
@@ -46,7 +17,7 @@
       </div>
     } @else {
       <div class="space-y-24">
-        @for (project of sortedProjects(); track project.id || $index; let i = $index) {
+        @for (project of sortedProjects(); track project.slug; let i = $index) {
           <div
             class="opacity-0"
             [ngStyle]="{

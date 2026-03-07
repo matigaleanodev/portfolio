@@ -18,13 +18,14 @@ This document defines the local contract for:
 
 ## Current baseline
 
-Confirmed on 2026-03-07:
+Updated on 2026-03-07 after phase 1:
 
 - The Angular app is still a landing SPA composed directly in `src/app/app.ts`.
-- `src/app/app.routes.ts` is empty.
-- `ApiService` still calls `GET /projects` from `https://api.matiasgaleano.dev/api`.
+- `src/app/app.routes.ts` is still empty.
+- The projects section now reads `/assets/projects.json` through a static content service.
+- `content/projects/` already exists with the initial catalog migrated from the API payload.
 - `POST /contact`, `GET /chat/starters`, and `POST /chat` remain valid backend responsibilities.
-- There is no local `content/` folder and no `build:content` script yet.
+- `build:content` does not exist yet, so the generated JSON is still maintained manually during the transition.
 - `angular.json` has no prerender configuration yet.
 
 ## System boundaries
@@ -125,8 +126,10 @@ stack:
 links:
   - label: Live
     url: https://example.com
+    icon: play
   - label: GitHub
     url: https://github.com/example/repo
+    icon: code
 featured: true
 order: 1
 ---
@@ -147,6 +150,7 @@ Validation rules:
 - `title`, `slug`, `excerpt`, `date`, `coverImage`, `stack`, `links`, `featured`, and `order` are mandatory.
 - `links` must contain at least one entry.
 - Every link needs `label` and `url`.
+- `icon` is optional and can be used by the landing UI to preserve link affordances.
 - `order` must be numeric and unique in the visible catalog.
 - `featured` is required so the landing can render deterministic highlights.
 
@@ -221,8 +225,8 @@ Purpose: static catalog consumed by the landing projects section.
     "coverImage": "/assets/projects/foodly-notes/cover.webp",
     "stack": ["Angular", "Firebase"],
     "links": [
-      { "label": "Live", "url": "https://example.com" },
-      { "label": "GitHub", "url": "https://github.com/example/repo" }
+      { "label": "Live", "url": "https://example.com", "icon": "play" },
+      { "label": "GitHub", "url": "https://github.com/example/repo", "icon": "code" }
     ],
     "featured": true,
     "order": 1
