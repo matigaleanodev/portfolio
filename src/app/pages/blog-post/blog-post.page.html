@@ -1,0 +1,41 @@
+<main class="blog-post-page py-14 md:py-20">
+  <section class="max-w-4xl mx-auto px-6">
+    <a routerLink="/blog" class="blog-post-back">Volver al blog</a>
+
+    @if (post(); as currentPost) {
+      <article class="blog-post">
+        <header class="blog-post__header">
+          <p class="blog-post__eyebrow">Post Tecnico</p>
+          <h1 class="blog-post__title">{{ currentPost.title }}</h1>
+
+          <div class="blog-post__meta">
+            <time [attr.datetime]="currentPost.date">
+              {{ currentPost.date | date: 'd MMM y' }}
+            </time>
+            <span>{{ currentPost.readingTimeMinutes }} min de lectura</span>
+            @if (currentPost.updatedAt) {
+              <span>Actualizado {{ currentPost.updatedAt | date: 'd MMM y' }}</span>
+            }
+          </div>
+
+          <p class="blog-post__excerpt">{{ currentPost.excerpt }}</p>
+
+          <ul class="blog-post__tags" aria-label="Etiquetas del post">
+            @for (tag of currentPost.tags; track tag) {
+              <li>{{ tag }}</li>
+            }
+          </ul>
+        </header>
+
+        <div class="blog-post__content" [innerHTML]="currentPost.contentHtml"></div>
+      </article>
+    } @else if (errorMessage()) {
+      <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+        No se pudo cargar el post.
+        <span class="block opacity-80">{{ errorMessage() }}</span>
+      </div>
+    } @else {
+      <div class="blog-post-loading" aria-live="polite">Cargando post...</div>
+    }
+  </section>
+</main>

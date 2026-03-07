@@ -1,0 +1,45 @@
+<main class="blog-page py-14 md:py-20">
+  <section class="max-w-6xl mx-auto px-6 space-y-12">
+    <header class="space-y-4 max-w-3xl">
+      <p class="blog-kicker">Blog Tecnico</p>
+      <h1 class="text-4xl md:text-6xl font-semibold leading-[0.98] tracking-[-0.03em]">
+        Arquitectura, producto e infraestructura sin relleno.
+      </h1>
+      <p class="text-base md:text-lg opacity-75 leading-relaxed">
+        Posts escritos desde proyectos reales: Angular, NestJS, despliegue en AWS, decisiones de
+        arquitectura y tradeoffs de producto.
+      </p>
+    </header>
+
+    @if (errorMessage() && !sortedPosts().length) {
+      <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+        No se pudieron cargar los posts.
+        <span class="block opacity-80">{{ errorMessage() }}</span>
+      </div>
+    } @else {
+      <div class="grid gap-6 lg:grid-cols-2">
+        @for (post of sortedPosts(); track post.slug) {
+          <article class="blog-card">
+            <a [routerLink]="['/blog', post.slug]" class="blog-card__link">
+              <div class="blog-card__meta">
+                <time [attr.datetime]="post.date">{{ post.date | date: 'd MMM y' }}</time>
+                <span>{{ post.readingTimeMinutes }} min</span>
+              </div>
+
+              <h2 class="blog-card__title">{{ post.title }}</h2>
+              <p class="blog-card__excerpt">{{ post.excerpt }}</p>
+
+              <ul class="blog-card__tags" aria-label="Etiquetas del post">
+                @for (tag of post.tags; track tag) {
+                  <li>{{ tag }}</li>
+                }
+              </ul>
+
+              <span class="blog-card__cta">Leer post</span>
+            </a>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</main>

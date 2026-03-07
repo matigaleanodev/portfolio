@@ -1,6 +1,6 @@
 <header class="header-shell bg-(--color-bg) py-3">
-  <div class="max-w-6xl mx-auto px-6 flex items-center">
-    <div class="brand-tile" aria-label="Marca personal Matias Galeano">
+  <div class="max-w-6xl mx-auto px-6 flex items-center justify-between gap-4">
+    <a routerLink="/" class="brand-tile" aria-label="Marca personal Matias Galeano">
       <i style="height: 40px; width: auto; color: var(--color-text); display: inline-block">
       <svg
         version="1.0"
@@ -34,6 +34,13 @@
         </g>
       </svg>
       </i>
-    </div>
+    </a>
+
+    <nav class="header-nav" aria-label="Navegacion principal">
+      <a routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="is-active">
+        Inicio
+      </a>
+      <a routerLink="/blog" routerLinkActive="is-active">Blog</a>
+    </nav>
   </div>
 </header>

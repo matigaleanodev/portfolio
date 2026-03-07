@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter, RouterOutlet } from '@angular/router';
 
 import { App } from './app';
 
@@ -28,10 +29,12 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideRouter([])],
     })
       .overrideComponent(App, {
         set: {
           imports: [
+            RouterOutlet,
             HeaderStubComponent,
             FooterStubComponent,
             ProjectsStubComponent,
@@ -57,11 +60,7 @@ describe('App', () => {
     const el = fixture.nativeElement as HTMLElement;
 
     expect(el.querySelector('app-header')).toBeTruthy();
-    expect(el.querySelector('main')).toBeTruthy();
-
-    expect(el.querySelector('app-hero')).toBeTruthy();
-    expect(el.querySelector('app-projects')).toBeTruthy();
-    expect(el.querySelector('app-contact')).toBeTruthy();
+    expect(el.querySelector('router-outlet')).toBeTruthy();
 
     expect(el.querySelector('app-footer')).toBeTruthy();
     expect(el.querySelector('app-chat')).toBeTruthy();
