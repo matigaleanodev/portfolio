@@ -18,15 +18,29 @@ Este documento define el contrato local para:
 
 ## Baseline actual
 
-Actualizado el 2026-03-07 despues de la fase 1:
+Actualizado el 2026-03-07 despues del arranque de la fase 2:
 
 - La app Angular sigue siendo una landing SPA compuesta directamente en `src/app/app.ts`.
 - `src/app/app.routes.ts` sigue vacio.
 - La seccion de proyectos ahora lee `/assets/projects.json` mediante un servicio de contenido estatico.
 - `content/projects/` ya existe con el catalogo inicial migrado desde el payload de la API.
+- `content/posts/` ya existe y esta listo para recibir las primeras entradas del blog.
 - `POST /contact`, `GET /chat/starters` y `POST /chat` siguen siendo responsabilidades validas del backend.
-- `build:content` todavia no existe, por lo que el JSON generado sigue manteniendose de forma manual durante la transicion.
+- `build:content` ya existe y genera artifacts JSON de proyectos y blog antes del build de Angular.
+- `src/assets/blog/posts.json` se genera incluso cuando todavia no hay posts publicados.
 - `angular.json` todavia no tiene configuracion de prerender.
+
+## Stack del pipeline de contenido
+
+El pipeline actual de contenido se implementa con:
+
+- `gray-matter` para parsear frontmatter
+- `marked` para convertir Markdown a HTML
+- `sanitize-html` para sanitizar el HTML antes de que Angular lo consuma
+
+El punto de entrada del script es:
+
+- `scripts/build-content.mjs`
 
 ## Limites del sistema
 

@@ -5,7 +5,12 @@
     "excerpt": "Foodly Notes es una aplicacion de recetas pensada como producto real para el uso cotidiano. Su objetivo es ayudar a descubrir recetas nuevas de forma simple, guardarlas para mas adelante y organizar todo lo necesario para cocinarlas. La experiencia esta basada en el descubrimiento: explorar recetas, marcar favoritas, encontrar recetas similares y generar automaticamente una lista de compras a partir de lo que el usuario quiere cocinar.",
     "date": "2026-03-07",
     "coverImage": "/assets/foodly-notes.webp",
-    "stack": ["Angular", "Ionic", "NestJS", "MongoDB"],
+    "stack": [
+      "Angular",
+      "Ionic",
+      "NestJS",
+      "MongoDB"
+    ],
     "links": [
       {
         "label": "Repositorio Frontend",
@@ -37,7 +42,13 @@
     "excerpt": "Modo Playa es una plataforma de gestion y catalogo de alojamientos turisticos compuesta por una API multi-tenant, un panel administrativo y un catalogo publico. Esta disenada para garantizar aislamiento de datos por propietario mediante ownerId y autenticacion JWT, manteniendo una arquitectura modular y escalable.",
     "date": "2026-03-07",
     "coverImage": "/assets/modo_playa.webp",
-    "stack": ["Angular", "Ionic", "NestJS", "MongoDB", "JWT"],
+    "stack": [
+      "Angular",
+      "Ionic",
+      "NestJS",
+      "MongoDB",
+      "JWT"
+    ],
     "links": [
       {
         "label": "Repositorio Backend",

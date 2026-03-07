@@ -1,7 +1,7 @@
 ---
 title: Foodly Notes
 slug: foodly-notes
-excerpt: Foodly Notes es una aplicacion de recetas pensada como producto real para el uso cotidiano. Su objetivo es ayudar a descubrir recetas nuevas de forma simple, guardarlas para mas adelante y organizar todo lo necesario para cocinarlas. La experiencia esta basada en el descubrimiento: explorar recetas, marcar favoritas, encontrar recetas similares y generar automaticamente una lista de compras a partir de lo que el usuario quiere cocinar.
+excerpt: "Foodly Notes es una aplicacion de recetas pensada como producto real para el uso cotidiano. Su objetivo es ayudar a descubrir recetas nuevas de forma simple, guardarlas para mas adelante y organizar todo lo necesario para cocinarlas. La experiencia esta basada en el descubrimiento: explorar recetas, marcar favoritas, encontrar recetas similares y generar automaticamente una lista de compras a partir de lo que el usuario quiere cocinar."
 date: 2026-03-07
 coverImage: /assets/foodly-notes.webp
 stack:

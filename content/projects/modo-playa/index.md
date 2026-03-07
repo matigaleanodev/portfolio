@@ -1,7 +1,7 @@
 ---
 title: Modo Playa
 slug: modo-playa
-excerpt: Modo Playa es una plataforma de gestion y catalogo de alojamientos turisticos compuesta por una API multi-tenant, un panel administrativo y un catalogo publico. Esta disenada para garantizar aislamiento de datos por propietario mediante ownerId y autenticacion JWT, manteniendo una arquitectura modular y escalable.
+excerpt: "Modo Playa es una plataforma de gestion y catalogo de alojamientos turisticos compuesta por una API multi-tenant, un panel administrativo y un catalogo publico. Esta disenada para garantizar aislamiento de datos por propietario mediante ownerId y autenticacion JWT, manteniendo una arquitectura modular y escalable."
 date: 2026-03-07
 coverImage: /assets/modo_playa.webp
 stack:
