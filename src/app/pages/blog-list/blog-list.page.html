@@ -42,8 +42,12 @@
       } @else {
         <div class="blog-cards-grid">
           @for (post of sortedPosts(); track post.slug; let i = $index) {
-            <article class="blog-card" [style.--blog-delay]="i * 120 + 'ms'">
-              <a [routerLink]="['/blog', post.slug]" class="blog-card__link">
+          <article class="blog-card" [style.--blog-delay]="i * 120 + 'ms'">
+            <a
+              [routerLink]="['/blog', post.slug]"
+              (click)="trackPostClick(post, i + 1)"
+              class="blog-card__link"
+            >
                 <div class="blog-card__meta">
                   <time [attr.datetime]="post.date">{{ post.date | date: 'd MMM y' }}</time>
                   <span>{{ post.readingTimeMinutes }} min</span>

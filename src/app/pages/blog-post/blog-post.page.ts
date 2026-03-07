@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
 import { BlogPost } from '../../models/blog.model';
+import { AnalyticsService } from '../../services/analytics.service';
 import { BlogContentService } from '../../services/blog-content.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class BlogPostPage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly blogContent = inject(BlogContentService);
+  private readonly analytics = inject(AnalyticsService);
 
   readonly post = signal<BlogPost | null>(null);
   readonly errorMessage = signal('');
@@ -43,6 +45,11 @@ export class BlogPostPage {
       .subscribe({
         next: (post) => {
           this.post.set(post);
+          this.analytics.trackEvent('view_blog_post', {
+            post_slug: post.slug,
+            post_title: post.title,
+            reading_time_minutes: post.readingTimeMinutes,
+          });
         },
         error: (error: unknown) => {
           const message =

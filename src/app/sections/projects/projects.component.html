@@ -11,8 +11,8 @@
           Productos construidos con criterio tecnico y foco real de uso.
         </h2>
         <p class="text-base md:text-lg opacity-75 max-w-3xl leading-relaxed">
-        Proyectos personales desarrollados como productos reales, pensados para resolver problemas
-        concretos y explorar decisiones técnicas en contexto.
+          Proyectos personales desarrollados como productos reales, pensados para resolver problemas
+          concretos y explorar decisiones técnicas en contexto.
         </p>
       </div>
     </header>
@@ -26,14 +26,14 @@
       </div>
     } @else {
       <div class="projects-grid">
-        @for (project of sortedProjects(); track project.slug; let i = $index) {
+        @for (project of sortedProjects(); track project.slug) {
           <div
             class="project-stage"
             [ngStyle]="{
-              '--project-delay': i * 130 + 'ms',
+              '--project-delay': $index * 130 + 'ms',
             }"
           >
-            <app-project-card [project]="project" [index]="i + 1" />
+            <app-project-card [project]="project" [index]="$index + 1" />
           </div>
         }
       </div>
