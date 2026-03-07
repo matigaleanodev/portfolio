@@ -11,6 +11,7 @@
   "scripts": {
     "ng": "ng",
     "build:content": "node ./scripts/build-content.mjs",
+    "build:release-manifest": "node ./scripts/build-release-manifest.mjs",
     "start": "npm run build:content && ng serve",
     "build": "npm run build:content && ng build",
     "watch": "ng build --watch --configuration development",

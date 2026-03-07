@@ -25,8 +25,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build content artifacts
+        run: npm run build:content
+
       - name: Build Angular app
         run: npm run build
 
+      - name: Build release manifest
+        run: npm run build:release-manifest
+
       - name: Deploy to Firebase Hosting
         run: npx firebase-tools deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
+
+      - name: Upload release manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-manifest-${{ github.sha }}
+          path: .generated/release-manifest.json
