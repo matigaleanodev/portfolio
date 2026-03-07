@@ -11,6 +11,7 @@ import { AnalyticsService } from '../../../services/analytics.service';
 })
 export class ProjectCardComponent {
   readonly project = input.required<Project>();
+  readonly index = input(1);
 
   private readonly analytics = inject(AnalyticsService);
 

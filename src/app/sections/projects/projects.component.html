@@ -1,11 +1,20 @@
-<section class="py-14 md:py-20">
-  <div class="max-w-6xl mx-auto px-6 space-y-12 md:space-y-14">
-    <header class="space-y-2">
-      <h2 class="text-3xl font-medium">Proyectos</h2>
-      <p class="text-base opacity-70 max-w-2xl">
+<section class="projects-shell py-14 md:py-20">
+  <div class="max-w-6xl mx-auto px-6 space-y-10 md:space-y-12">
+    <header class="projects-intro">
+      <div class="projects-intro__eyebrow">
+        <span class="projects-intro__line" aria-hidden="true"></span>
+        <span>Selected Work</span>
+      </div>
+
+      <div class="projects-intro__copy">
+        <h2 class="text-3xl md:text-5xl font-semibold tracking-[-0.04em] leading-[0.96]">
+          Productos construidos con criterio tecnico y foco real de uso.
+        </h2>
+        <p class="text-base md:text-lg opacity-75 max-w-3xl leading-relaxed">
         Proyectos personales desarrollados como productos reales, pensados para resolver problemas
         concretos y explorar decisiones técnicas en contexto.
-      </p>
+        </p>
+      </div>
     </header>
 
     @if (errorMessage() && !sortedProjects().length) {
@@ -16,16 +25,15 @@
         }
       </div>
     } @else {
-      <div class="space-y-24">
+      <div class="projects-grid">
         @for (project of sortedProjects(); track project.slug; let i = $index) {
           <div
-            class="opacity-0"
+            class="project-stage"
             [ngStyle]="{
-              animation: 'projectEnter 1200ms cubic-bezier(0.25,0.8,0.25,1) forwards',
-              animationDelay: i * 220 + 'ms',
+              '--project-delay': i * 130 + 'ms',
             }"
           >
-            <app-project-card [project]="project" />
+            <app-project-card [project]="project" [index]="i + 1" />
           </div>
         }
       </div>

@@ -1,8 +1,12 @@
-<app-header />
+<div class="app-shell">
+  <app-header />
 
-<router-outlet />
+  <div class="app-view" [class.app-view--transition]="routeTransitionActive()">
+    <router-outlet />
+  </div>
 
-<app-footer />
+  <app-footer />
+</div>
 <app-chat />
 
 <app-toast />

@@ -15,6 +15,7 @@ import { ProjectContentService } from '../../services/project-content.service';
 })
 class ProjectCardStubComponent {
   @Input({ required: true }) project!: Project;
+  @Input() index = 1;
 }
 
 const createProject = (overrides: Partial<Project>): Project => ({

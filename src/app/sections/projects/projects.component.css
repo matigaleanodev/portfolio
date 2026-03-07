@@ -1,0 +1,52 @@
+.projects-shell {
+  position: relative;
+  background-color: var(--color-bg);
+}
+
+.projects-intro {
+  position: relative;
+  display: grid;
+  gap: 1.15rem;
+  background-color: var(--color-bg);
+}
+
+.projects-intro__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.projects-intro__line {
+  width: clamp(2.5rem, 8vw, 5.5rem);
+  height: 1px;
+  background: linear-gradient(90deg, rgb(91 95 143 / 0.85), rgb(91 95 143 / 0.08));
+}
+
+.projects-intro__copy {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.projects-grid {
+  display: grid;
+  gap: 1.15rem;
+  background-color: var(--color-bg);
+}
+
+.project-stage {
+  opacity: 0;
+  animation: sectionReveal 1050ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--project-delay, 0ms);
+}
+
+@media (min-width: 900px) {
+  .projects-grid {
+    gap: 1.4rem;
+  }
+}

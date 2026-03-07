@@ -2,15 +2,27 @@
   min-height: calc(100vh - 14rem);
 }
 
+.blog-post-hero {
+  animation: pageSweepIn 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.blog-post-hero__shell {
+  display: grid;
+  gap: 0.85rem;
+}
+
 .blog-post-back {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
   margin-bottom: 2rem;
-  color: var(--color-accent);
+  color: rgb(229 231 235 / 0.82);
   font-size: 0.92rem;
   font-weight: 600;
   text-decoration: none;
+  transition:
+    transform 240ms ease,
+    color 240ms ease;
 }
 
 .blog-post-back::before {
@@ -19,36 +31,43 @@
   font-size: 0.85rem;
 }
 
+.blog-post-back:hover {
+  transform: translateX(-2px);
+  color: rgb(229 231 235 / 1);
+}
+
+.blog-post-body {
+  background-color: var(--color-bg);
+}
+
 .blog-post {
   border: 1px solid rgb(31 41 55 / 0.1);
   border-radius: 2rem;
   background:
-    radial-gradient(circle at top right, rgb(91 95 143 / 0.1), transparent 24%),
-    linear-gradient(180deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.05));
+    radial-gradient(circle at top right, rgb(91 95 143 / 0.12), transparent 22%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.05));
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.2),
     0 28px 60px -40px rgb(31 41 55 / 0.55);
-}
-
-.blog-post__header {
-  padding: 2.25rem 2.25rem 1.5rem;
-  border-bottom: 1px solid rgb(31 41 55 / 0.08);
+  overflow: hidden;
 }
 
 .blog-post__eyebrow {
-  margin: 0 0 1rem;
+  margin: 0;
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: rgb(229 231 235 / 0.62);
 }
 
 .blog-post__title {
   margin: 0;
-  font-size: clamp(2.4rem, 1.8rem + 2vw, 4.4rem);
-  line-height: 0.96;
+  max-width: 16ch;
+  font-size: clamp(2.55rem, 1.9rem + 2vw, 4.7rem);
+  line-height: 0.92;
   letter-spacing: -0.04em;
+  color: var(--color-bg);
 }
 
 .blog-post__meta {
@@ -60,15 +79,15 @@
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgb(31 41 55 / 0.58);
+  color: rgb(229 231 235 / 0.6);
 }
 
 .blog-post__excerpt {
   margin: 1.4rem 0 0;
-  max-width: 45rem;
-  font-size: 1.08rem;
-  line-height: 1.72;
-  color: var(--color-text-muted);
+  max-width: 42rem;
+  font-size: 1.05rem;
+  line-height: 1.78;
+  color: rgb(229 231 235 / 0.82);
 }
 
 .blog-post__tags {
@@ -83,22 +102,22 @@
 .blog-post__tags li {
   padding: 0.42rem 0.78rem;
   border-radius: 999px;
-  border: 1px solid rgb(31 41 55 / 0.1);
-  background: rgb(255 255 255 / 0.2);
+  border: 1px solid rgb(229 231 235 / 0.14);
+  background: rgb(229 231 235 / 0.05);
   font-size: 0.82rem;
-  color: rgb(31 41 55 / 0.8);
+  color: rgb(229 231 235 / 0.86);
 }
 
 .blog-post__content {
-  padding: 2rem 2.25rem 2.4rem;
-  font-size: 1.02rem;
-  line-height: 1.8;
+  padding: 2rem 2.25rem 2.5rem;
+  font-size: 1.03rem;
+  line-height: 1.86;
   color: var(--color-text);
 }
 
 .blog-post__content :is(h2, h3, h4) {
-  margin: 2.4rem 0 0.85rem;
-  line-height: 1.05;
+  margin: 2.2rem 0 0.75rem;
+  line-height: 1;
   letter-spacing: -0.03em;
 }
 
@@ -115,16 +134,16 @@
 .blog-post__content ol,
 .blog-post__content blockquote,
 .blog-post__content pre {
-  margin: 1rem 0 0;
+  margin: 0.95rem 0 0;
 }
 
 .blog-post__content ul,
 .blog-post__content ol {
-  padding-left: 1.2rem;
+  padding-left: 1.15rem;
 }
 
 .blog-post__content li + li {
-  margin-top: 0.45rem;
+  margin-top: 0.38rem;
 }
 
 .blog-post__content a {
@@ -135,34 +154,91 @@
 }
 
 .blog-post__content blockquote {
-  padding-left: 1rem;
+  padding: 0.35rem 0 0.35rem 1rem;
   border-left: 2px solid rgb(91 95 143 / 0.45);
   color: var(--color-text-muted);
 }
 
 .blog-post__content code {
   font-family: var(--font-mono);
-  font-size: 0.92em;
+  font-size: 0.9em;
 }
 
 .blog-post__content p code,
 .blog-post__content li code {
-  padding: 0.12rem 0.32rem;
-  border-radius: 0.35rem;
-  background: rgb(31 41 55 / 0.08);
+  padding: 0.14rem 0.36rem;
+  border-radius: 0.42rem;
+  border: 1px solid rgb(31 41 55 / 0.08);
+  background: rgb(31 41 55 / 0.06);
 }
 
 .blog-post__content pre {
+  position: relative;
   overflow-x: auto;
-  padding: 1rem 1.1rem;
-  border-radius: 1rem;
-  background: rgb(31 41 55 / 0.92);
+  margin-top: 1.25rem;
+  padding: 2.35rem 1.1rem 1.1rem;
+  border-radius: 1.15rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background:
+    linear-gradient(180deg, rgb(18 22 30) 0%, rgb(11 14 20) 100%);
   color: rgb(229 231 235 / 0.95);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.04),
+    0 22px 38px -30px rgb(0 0 0 / 0.72);
+  scrollbar-width: thin;
+  scrollbar-color: rgb(91 95 143 / 0.6) transparent;
+}
+
+.blog-post__content pre::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2rem;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.02));
+}
+
+.blog-post__content pre::after {
+  content: '';
+  position: absolute;
+  top: 0.72rem;
+  left: 0.9rem;
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 999px;
+  background: #ff5f56;
+  box-shadow:
+    1rem 0 0 #ffbd2e,
+    2rem 0 0 #27c93f,
+    5.4rem 0 0 rgb(255 255 255 / 0.14),
+    5.65rem 0 0 rgb(255 255 255 / 0.14),
+    5.9rem 0 0 rgb(255 255 255 / 0.14),
+    6.15rem 0 0 rgb(255 255 255 / 0.14),
+    6.4rem 0 0 rgb(255 255 255 / 0.14);
+}
+
+.blog-post__content pre::-webkit-scrollbar {
+  height: 0.75rem;
+}
+
+.blog-post__content pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.blog-post__content pre::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgb(91 95 143 / 0.58);
+  background-clip: padding-box;
 }
 
 .blog-post__content pre code {
   background: transparent;
   color: inherit;
+  display: block;
+  min-width: max-content;
+  padding-right: 0.6rem;
+  line-height: 1.7;
 }
 
 .blog-post-loading {
@@ -173,10 +249,6 @@
 @media (max-width: 768px) {
   .blog-post {
     border-radius: 1.35rem;
-  }
-
-  .blog-post__header {
-    padding: 1.5rem 1.25rem 1.15rem;
   }
 
   .blog-post__content {

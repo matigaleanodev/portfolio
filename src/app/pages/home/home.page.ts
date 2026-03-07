@@ -7,5 +7,6 @@ import { ProjectsComponent } from '../../sections/projects/projects.component';
   selector: 'app-home-page',
   imports: [HeroComponent, ProjectsComponent, ContactComponent],
   templateUrl: './home.page.html',
+  styleUrl: './home.page.css',
 })
 export class HomePage {}
