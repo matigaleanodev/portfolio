@@ -2,7 +2,7 @@
 title: Como estructuro mis proyectos Angular (arquitectura real)
 slug: arquitectura-angular-real
 excerpt: "Asi organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegacion, storage e i18n."
-date: 2026-03-07
+date: 2026-03-05
 tags:
   - angular
   - architecture
@@ -14,11 +14,11 @@ ogImage: /assets/blog/arquitectura-angular-real/og.webp
 draft: false
 ---
 
-Cuando un proyecto Angular empieza a crecer, el problema no suele ser el primer modulo. El problema es el sexto. Si cada feature resuelve HTTP, formularios, loading, navegacion y estado a su manera, la base se vuelve inconsistente demasiado rapido.
+Cuando un proyecto Angular empieza a crecer, el problema no suele ser el primer módulo. El problema aparece bastante después, cuando ya vas por el sexto. Si cada feature resuelve HTTP, formularios, loading, navegación y estado a su manera, la base se vuelve inconsistente demasiado rápido.
 
-Por eso en mis proyectos tiendo a repetir un framework interno chico: no una libreria aparte, sino un conjunto de abstracciones reutilizables que me ordenan la aplicacion desde el dia uno.
+Por eso en mis proyectos tiendo a repetir un framework interno chico: no una librería aparte, sino un conjunto de abstracciones reutilizables que me ordenan la aplicación desde el día uno.
 
-La mejor referencia de ese enfoque hoy esta en `modo-playa-admin`, con piezas complementarias que tambien aparecen en `foodly-notes-front`.
+La mejor referencia de ese enfoque hoy está en `modo-playa-admin`, con piezas complementarias que también aparecen en `foodly-notes-front`.
 
 ## 1. ApiService: un punto unico para construir endpoints
 
@@ -36,7 +36,7 @@ export abstract class ApiService {
 }
 ```
 
-No hace magia. Hace algo mas importante: evita que cada servicio arme URLs distinto.
+No hace magia. Hace algo más importante: evita que cada servicio arme URLs distinto.
 
 ## 2. CrudService: operaciones comunes sin repetir HTTP
 
@@ -48,13 +48,13 @@ Sobre `ApiService` monto `CrudService<T>`, que resuelve las operaciones repetida
 - `findOne`
 - `find`
 
-Ademas centraliza la construccion de query params. Eso hace que cada servicio concreto herede un contrato ya estable y que la logica de red no quede desperdigada por features.
+Además centraliza la construcción de query params. Eso hace que cada servicio concreto herede un contrato ya estable y que la lógica de red no quede desparramada por features.
 
 ## 3. ResourceService: estado de lista, paginacion y acciones
 
-La capa que mas me sirve en apps admin es `ResourceService`.
+La capa que más me sirve en apps admin es `ResourceService`.
 
-En `modo-playa-admin` esta implementada con signals y concentra:
+En `modo-playa-admin` está implementada con signals y concentra:
 
 - `items`
 - `page`
@@ -66,7 +66,7 @@ En `modo-playa-admin` esta implementada con signals y concentra:
 - `sortBy`
 - `sortDirection`
 
-Tambien expone derivados como:
+También expone derivados como:
 
 - `pagination`
 - `listState`
@@ -83,7 +83,7 @@ Y metodos listos para uso real:
 - `setSort`
 - `delete`
 
-Esto me permite que una pagina de listado no piense en HTTP ni en sincronizar estado. Solo consume el recurso.
+Esto me permite que una página de listado no piense en HTTP ni en sincronizar estado. Solo consume el recurso.
 
 ## 4. BaseForm: formularios consistentes
 
@@ -97,11 +97,11 @@ Para formularios uso una pieza abstracta que evita reescribir el mismo flujo una
 - generacion de `FormGroup` a partir de metadata
 - mapeo de validaciones
 
-La ventaja no es solamente ahorrar lineas. La ventaja es que todos los formularios terminan comportandose igual: submit, validacion, marcado de touched, persistencia y cancelacion.
+La ventaja no es solamente ahorrar líneas. La ventaja es que todos los formularios terminan comportándose igual: submit, validación, marcado de touched, persistencia y cancelación.
 
 ## 5. BaseList: una lista base de verdad
 
-En `modo-playa-admin` tambien tengo una `BaseList<T>`:
+En `modo-playa-admin` también tengo una `BaseList<T>`:
 
 ```ts
 export abstract class BaseList<T extends BaseEntity> {
@@ -119,19 +119,19 @@ export abstract class BaseList<T extends BaseEntity> {
 }
 ```
 
-Eso deja la parte mecanica resuelta:
+Eso deja la parte mecánica resuelta:
 
 - confirmacion de borrado
 - delegacion a `ResourceService`
 - acciones comunes de edicion y alta
 
-Las paginas concretas se quedan con lo que realmente cambia: columnas, cards, filtros o comportamiento puntual.
+Las páginas concretas se quedan con lo que realmente cambia: columnas, cards, filtros o comportamiento puntual.
 
 ## 6. NavService: navegacion como servicio, no como detalle de UI
 
-En `foodly-notes-front` encapsule la navegacion sobre `NavController` en un `NavService`.
+En `foodly-notes-front` encapsulé la navegación sobre `NavController` en un `NavService`.
 
-Ese wrapper me da un lenguaje mas semantico:
+Ese wrapper me da un lenguaje más semántico:
 
 - `forward(path, queryParams)`
 - `back()`
@@ -139,45 +139,45 @@ Ese wrapper me da un lenguaje mas semantico:
 - `search(query)`
 - `volverHome()`
 
-No es una abstraccion enorme, pero evita que cada componente conozca el detalle del router o de Ionic navigation.
+No es una abstracción enorme, pero evita que cada componente conozca el detalle del router o de Ionic navigation.
 
 ## 7. LoadingService: la pieza que mantengo transversal
 
-Aunque no siempre vive igual en todos los repos, el patron se repite: el loading no deberia quedar disperso entre componentes.
+Aunque no siempre vive igual en todos los repos, el patrón se repite: el loading no debería quedar disperso entre componentes.
 
-Mi criterio aca es:
+Mi criterio acá es:
 
 - loading local si pertenece a una sola vista
 - loading de recurso dentro de `ResourceService`
 - loading global solo cuando hay una operacion transversal o bloqueo de pantalla
 
-En otras palabras: no me interesa tener un spinner generico por tenerlo. Me interesa que el estado de carga tenga dueño claro.
+En otras palabras: no me interesa tener un spinner genérico por tenerlo. Me interesa que el estado de carga tenga un dueño claro.
 
 ## 8. StorageService: persistencia simple y predecible
 
-En `foodly-notes-front`, `StorageService` envuelve `@ionic/storage-angular` y resuelve una inicializacion lazy muy concreta:
+En `foodly-notes-front`, `StorageService` envuelve `@ionic/storage-angular` y resuelve una inicialización lazy muy concreta:
 
 - `getItem`
 - `setItem`
 - `removeItem`
 - `clear`
 
-Eso evita que cada feature tenga que conocer el ciclo de vida del storage y me deja cambiar la implementacion mas adelante sin tocar todo.
+Eso evita que cada feature tenga que conocer el ciclo de vida del storage y me deja cambiar la implementación más adelante sin tocar todo.
 
 ## 9. TranslateService: i18n aplicado al producto real
 
-Tambien en Foodly Notes aparece un `TranslateService` propio, basado en:
+También en Foodly Notes aparece un `TranslateService` propio, basado en:
 
 - diccionarios locales
 - `currentLang` como signal
 - persistencia de idioma en `StorageService`
 - actualizacion de `document.documentElement.lang`
 
-No es un i18n academicamente perfecto. Es una solucion pragmatica para una app bilingue que necesito controlar sin sobredimensionar el stack.
+No es un i18n académicamente perfecto. Es una solución pragmática para una app bilingüe que necesito controlar sin sobredimensionar el stack.
 
 ## Como baja esto a una pantalla real
 
-La pagina `lodgings-list` de `modo-playa-admin` muestra bien la idea:
+La página `lodgings-list` de `modo-playa-admin` muestra bien la idea:
 
 - extiende `BaseList<Lodging>`
 - inyecta `LodgingsResourceService`
@@ -188,7 +188,7 @@ Eso hace que la pantalla se enfoque en la feature y no en reimplementar infraest
 
 ## Por que me sirve este enfoque
 
-No busco una arquitectura ultra abstracta. Busco una arquitectura que soporte crecimiento sin volverse caotica.
+No busco una arquitectura ultra abstracta. Busco una arquitectura que soporte crecimiento sin volverse caótica.
 
 Este framework personal me sirve porque:
 
@@ -197,4 +197,4 @@ Este framework personal me sirve porque:
 - vuelve consistentes listas y formularios
 - me deja mezclar Angular standalone, signals e Ionic sin desorden
 
-No siempre todas las piezas aparecen en todos los proyectos. Pero cuando un producto empieza a tener formularios, panel admin, paginacion y modulos repetidos, esta estructura paga sola.
+No siempre todas las piezas aparecen en todos los proyectos. Pero cuando un producto empieza a tener formularios, panel admin, paginación y módulos repetidos, esta estructura paga sola.

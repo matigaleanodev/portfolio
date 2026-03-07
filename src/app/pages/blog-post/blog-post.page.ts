@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
@@ -11,6 +11,7 @@ import { BlogContentService } from '../../services/blog-content.service';
   imports: [RouterLink, DatePipe],
   templateUrl: './blog-post.page.html',
   styleUrl: './blog-post.page.css',
+  encapsulation: ViewEncapsulation.None,
 })
 export class BlogPostPage {
   private readonly destroyRef = inject(DestroyRef);

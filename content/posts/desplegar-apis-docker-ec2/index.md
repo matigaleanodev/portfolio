@@ -2,7 +2,7 @@
 title: Como desplegar APIs con Docker en un EC2 (paso a paso)
 slug: desplegar-apis-docker-ec2
 excerpt: "Asi despliego mis APIs NestJS en un EC2 compartido: imagenes en GHCR, Docker Compose por app, HTTPS en el reverse proxy y deploy automatico con GitHub Actions."
-date: 2026-03-07
+date: 2026-03-02
 tags:
   - docker
   - aws
@@ -15,23 +15,23 @@ ogImage: /assets/blog/desplegar-apis-docker-ec2/og.webp
 draft: false
 ---
 
-Durante bastante tiempo evalua la opcion mas "enterprise" para desplegar mis APIs: ECS, task definitions, networking separado y mas piezas alrededor del runtime. Para productos chicos y medianos, el tradeoff no me cerraba. Hoy mantengo varias APIs NestJS activas y preferi pasar a un EC2 compartido con contenedores, Compose y un flujo de deploy mucho mas directo.
+Durante bastante tiempo evalué la opción más "enterprise" para desplegar mis APIs: ECS, task definitions, networking separado y más piezas alrededor del runtime. Para productos chicos y medianos, ese tradeoff no me terminaba de cerrar. Hoy mantengo varias APIs NestJS activas y preferí pasar a un EC2 compartido con contenedores, Compose y un flujo de deploy bastante más directo.
 
-La decision no fue ideologica. Fue operativa.
+La decisión no fue ideológica. Fue operativa.
 
 - Menos moving parts.
 - Menos costo fijo.
 - Menos tiempo perdido en configuracion para cambios chicos.
 - Un modelo facil de repetir entre proyectos.
 
-En este setup conviven APIs como **Foodly Notes**, **Modo Playa** y **Portfolio API**, cada una con su propio directorio y su propio `docker compose`, pero compartiendo la misma maquina.
+En este setup conviven APIs como **Foodly Notes**, **Modo Playa** y **Portfolio API**, cada una con su propio directorio y su propio `docker compose`, pero compartiendo la misma máquina.
 
 ## Por que migre de ECS a EC2
 
-ECS resuelve muy bien escenarios con varios servicios, scaling horizontal y equipos mas grandes. Pero para mi caso real aparecian dos problemas:
+ECS resuelve muy bien escenarios con varios servicios, scaling horizontal y equipos más grandes. Pero para mi caso real aparecían dos problemas:
 
 1. El costo operativo era mas alto que el beneficio.
-2. El deploy diario se volvia menos transparente.
+2. El deploy diario se volvía menos transparente.
 
 Para tres APIs chicas, el valor estaba en tener un pipeline que pudiera mirar de punta a punta:
 
@@ -45,7 +45,7 @@ Con eso tengo un flujo entendible, auditable y barato de mantener.
 
 ## Comparativa de costos: ECS vs EC2
 
-La parte economica tambien peso en la decision.
+La parte económica también pesó en la decisión.
 
 Tomando como referencia **AWS us-east-1**, **Linux On-Demand** y una carga chica activa todo el mes:
 
@@ -53,7 +53,7 @@ Tomando como referencia **AWS us-east-1**, **Linux On-Demand** y una carga chica
 - **EC2 t3.small**: ~**USD 15.26/mes**
 - **EC2 t3.medium**: ~**USD 30.51/mes**
 
-La lectura importante no es solo el numero unitario. Es el patron de crecimiento.
+La lectura importante no es solo el número unitario. Es el patrón de crecimiento.
 
 Si quisiera correr tres APIs chicas en Fargate, con una tarea base por API de ese tamano, el costo de compute quedaria cerca de:
 
@@ -64,26 +64,26 @@ Mientras que en EC2 hoy puedo consolidarlas sobre una sola maquina compartida y 
 - **1 x EC2 t3.small**: ~**USD 15.26/mes**
 - **1 x EC2 t3.medium**: ~**USD 30.51/mes**
 
-Esta comparativa deja afuera extras como ALB, NAT Gateway, EBS, logs o trafico. La use asi a proposito para comparar la base de compute de forma limpia. En la practica, ECS suele sumar mas piezas alrededor del runtime, y para mi escala actual eso empujaba aun mas la balanza hacia EC2.
+Esta comparativa deja afuera extras como ALB, NAT Gateway, EBS, logs o tráfico. La usé así a propósito para comparar la base de compute de forma limpia. En la práctica, ECS suele sumar más piezas alrededor del runtime, y para mi escala actual eso empujaba todavía más la balanza hacia EC2.
 
 ## Diferencia de escalado entre ambos
 
 La contracara es clara: ECS escala mejor.
 
-Con ECS tengo mas natural:
+Con ECS me queda más natural:
 
 - escalar tareas horizontalmente
 - separar servicios con mas aislamiento operativo
 - distribuir carga por servicio
 - evolucionar a una plataforma mas orientada a orquestacion
 
-Con EC2 compartido, en cambio, el escalado es mas manual:
+Con EC2 compartido, en cambio, el escalado es más manual:
 
 - primero optimizo recursos dentro de la misma maquina
 - despues subo tamano de instancia
 - recien si hace falta, separo servicios o reparto carga entre hosts
 
-Para un workload pequeno, eso me parece un tradeoff razonable. Prefiero una infraestructura un poco menos elastica pero mucho mas simple de operar. Si una API necesitara crecimiento sostenido o comportamiento muy variable, ahi si ECS volveria a tener mas sentido.
+Para un workload chico, eso me parece un tradeoff razonable. Prefiero una infraestructura un poco menos elástica pero mucho más simple de operar. Si una API necesitara crecimiento sostenido o comportamiento muy variable, ahí sí ECS volvería a tener más sentido.
 
 ## Arquitectura del servidor compartido
 
@@ -122,7 +122,7 @@ El deploy que hoy ejecutan mis repos hace exactamente esto:
       docker compose up -d
 ```
 
-Ademas, cada release fija la variable `IMAGE` en el `.env` con el tag `sha-<commit>`. Eso me deja dos ventajas:
+Además, cada release fija la variable `IMAGE` en el `.env` con el tag `sha-<commit>`. Eso me da dos ventajas:
 
 - cada deploy apunta a una imagen inmutable
 - volver a una version anterior es mucho mas simple
@@ -138,7 +138,7 @@ Mi enfoque es dejar que cada API corra internamente en su servicio y resolver af
 - renovacion de certificados
 - separacion entre trafico publico y contenedores
 
-La pieza natural para eso es Traefik como reverse proxy del host. Esa capa me permite publicar multiples APIs en una sola maquina sin meter configuracion manual por proyecto en cada release.
+La pieza natural para eso es Traefik como reverse proxy del host. Esa capa me permite publicar múltiples APIs en una sola máquina sin meter configuración manual por proyecto en cada release.
 
 Con ese esquema, cada producto conserva su propio dominio:
 
@@ -146,7 +146,7 @@ Con ese esquema, cada producto conserva su propio dominio:
 - Modo Playa API: `api-playa.matiasgaleano.dev`
 - Portfolio: `matiasgaleano.dev`
 
-La regla practica es esta: el contenedor no necesita saber demasiado del borde publico. El borde publico resuelve dominio, TLS y entrada; la app resuelve negocio.
+La regla práctica es esta: el contenedor no necesita saber demasiado del borde público. El borde público resuelve dominio, TLS y entrada; la app resuelve negocio.
 
 ## Deploy con GitHub Actions
 
@@ -167,7 +167,7 @@ El patron se repite en:
 - `modo-playa-api/.github/workflows/deploy.yml`
 - `portfolio-api/.github/workflows/deploy.yml`
 
-El punto importante no es solo automatizar el deploy. Es estandarizarlo entre proyectos para que operar un backend nuevo no implique inventar otra receta.
+El punto importante no es solo automatizar el deploy. Es estandarizarlo entre proyectos para que operar un backend nuevo no implique ponerse a inventar otra receta.
 
 ## Ejemplos reales del workspace
 
@@ -177,15 +177,15 @@ Foodly Notes usa este flujo para publicar una API NestJS orientada a mobile y we
 
 ### Modo Playa
 
-Modo Playa replica la misma estrategia, pero aplicada a una API mas rica en dominio: multi-tenant, JWT, endpoints publicos y admin, media en Cloudflare R2 y pipeline de imagenes en backend. El directorio del host es `/home/ec2-user/infra/apps/modo-playa`.
+Modo Playa replica la misma estrategia, pero aplicada a una API más rica en dominio: multi-tenant, JWT, endpoints públicos y admin, media en Cloudflare R2 y pipeline de imágenes en backend. El directorio del host es `/home/ec2-user/infra/apps/modo-playa`.
 
 ### Portfolio API
 
-Portfolio API tambien deploya con el mismo patron. Eso es importante porque muestra que el stack no esta pensado para un solo producto: sirve tanto para una API de negocio como para un backend chico de contacto y chatbot. En este caso, el directorio remoto es `/home/ec2-user/infra/apps/portfolio`.
+Portfolio API también deploya con el mismo patrón. Eso es importante porque muestra que el stack no está pensado para un solo producto: sirve tanto para una API de negocio como para un backend chico de contacto y chatbot. En este caso, el directorio remoto es `/home/ec2-user/infra/apps/portfolio`.
 
 ## Lo que gano con este enfoque
 
-No estoy persiguiendo "la plataforma perfecta". Estoy buscando una infraestructura que pueda operar solo, con bajo costo mental y con fallas faciles de diagnosticar.
+No estoy persiguiendo "la plataforma perfecta". Estoy buscando una infraestructura que pueda operar yo solo, con bajo costo mental y con fallas fáciles de diagnosticar.
 
 EC2 + Docker Compose + GHCR + GitHub Actions me da:
 
@@ -194,4 +194,4 @@ EC2 + Docker Compose + GHCR + GitHub Actions me da:
 - independencia entre APIs
 - menor complejidad que ECS para este tamano de carga
 
-Si algun proyecto necesita escalar distinto, ese cambio se puede hacer mas adelante. Pero para el estado actual del ecosistema, este modelo me deja priorizar producto y arquitectura sin pagar complejidad antes de tiempo.
+Si algún proyecto necesita escalar distinto, ese cambio se puede hacer más adelante. Pero para el estado actual del ecosistema, este modelo me deja priorizar producto y arquitectura sin pagar complejidad antes de tiempo.

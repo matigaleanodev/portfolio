@@ -15,12 +15,12 @@ ogImage: /assets/blog/arquitectura-modo-playa/og.webp
 draft: false
 ---
 
-Modo Playa no lo pense como una demo aislada. Lo pense como un producto que necesitaba dos superficies distintas:
+Modo Playa no lo pensé como una demo aislada. Lo pensé como un producto que necesitaba dos superficies distintas:
 
 - un catalogo publico para buscar alojamientos
 - un panel administrativo para que cada propietario gestione sus datos
 
-Esa separacion empujo la arquitectura desde el principio. El resultado fue un ecosistema con tres aplicaciones:
+Esa separación empujó la arquitectura desde el principio. El resultado fue un ecosistema con tres aplicaciones:
 
 - `modo-playa-app`
 - `modo-playa-admin`
@@ -30,7 +30,7 @@ La pieza central es la API, construida con NestJS y MongoDB, con un criterio fue
 
 ## El modelo multi-tenant
 
-La base de Modo Playa es multi-tenant. Eso significa que un owner nunca deberia poder ver ni modificar datos de otro owner.
+La base de Modo Playa es multi-tenant. Eso significa que un owner nunca debería poder ver ni modificar datos de otro owner.
 
 En la API ese criterio aparece en varios niveles:
 
@@ -39,11 +39,11 @@ En la API ese criterio aparece en varios niveles:
 - los endpoints administrativos filtran por `ownerId`
 - los endpoints publicos no exponen datos internos del tenant
 
-No quise dejar ese aislamiento como una convencion. Lo quise volver una regla del dominio.
+No quise dejar ese aislamiento como una convención. Quise volverlo una regla del dominio.
 
 ## NestJS como base modular
 
-NestJS me sirvio porque el sistema ya tenia modulos naturalmente separados:
+NestJS me sirvió porque el sistema ya tenía módulos naturalmente separados:
 
 - `Auth`
 - `Users`
@@ -53,22 +53,22 @@ NestJS me sirvio porque el sistema ya tenia modulos naturalmente separados:
 - `Destinations`
 - `Mail`
 
-Eso me permitio dividir responsabilidades sin perder una unica API coherente. Tambien me dio una base clara para guards, DTOs, pipes globales y testing por modulo.
+Eso me permitió dividir responsabilidades sin perder una única API coherente. También me dio una base clara para guards, DTOs, pipes globales y testing por módulo.
 
 ## MongoDB y el criterio de modelado
 
-MongoDB encajo bien porque el dominio combina:
+MongoDB encajó bien porque el dominio combina:
 
 - recursos administrativos con crecimiento incremental
 - documentos con media asociada
 - filtros flexibles para catalogo
-- una evolucion de producto todavia en movimiento
+- una evolución de producto todavía en movimiento
 
-El punto critico no era "usar NoSQL". El punto critico era modelar bien el ownership. Por eso `ownerId` no es un dato accesorio: es parte estructural del diseño.
+El punto crítico no era "usar NoSQL". El punto crítico era modelar bien el ownership. Por eso `ownerId` no es un dato accesorio: es parte estructural del diseño.
 
 ## ownerId isolation como regla de seguridad
 
-La parte mas importante de la arquitectura es esta: el `ownerId` no solo autentica, tambien delimita el universo de datos que un usuario puede operar.
+La parte más importante de la arquitectura es esta: el `ownerId` no solo autentica, también delimita el universo de datos que un usuario puede operar.
 
 En la practica eso significa:
 
@@ -80,7 +80,7 @@ Y cuando existe un rol superior, como `SUPERADMIN`, ese comportamiento queda exp
 
 ## API publica vs API admin
 
-Una decision clave fue separar desde rutas y controladores:
+Una decisión clave fue separar desde rutas y controladores:
 
 - `GET /api/lodgings`
 - `GET /api/lodgings/:id`
@@ -93,14 +93,14 @@ contra:
 
 Eso hace dos cosas:
 
-1. mantiene la superficie publica chica y segura
-2. evita mezclar necesidades operativas con navegacion del catalogo
+1. mantiene la superficie pública chica y segura
+2. evita mezclar necesidades operativas con navegación del catálogo
 
-La app publica consume solo la parte publica. El panel admin consume la parte privada. Esa frontera mejora seguridad, mantenimiento y legibilidad.
+La app pública consume solo la parte pública. El panel admin consume la parte privada. Esa frontera mejora seguridad, mantenimiento y legibilidad.
 
 ## Manejo de imagenes en backend
 
-La gestion de imagenes fue otra decision intencional. No quise dejar la consistencia de media repartida entre frontend y storage.
+La gestión de imágenes fue otra decisión intencional. No quise dejar la consistencia de media repartida entre frontend y storage.
 
 Por eso el backend centraliza:
 
@@ -123,19 +123,19 @@ El flujo de uploads no es "subo una imagen y listo". Tiene varias etapas:
 5. actualizacion del lodging
 6. definicion de imagen principal
 
-En la capa de desarrollo del proyecto tambien quedo documentado que la recomendacion actual es **backend-only flow** para imagenes, sin signed URLs desde el frontend. Para este producto prefiero que el backend siga controlando el pipeline completo.
+En la capa de desarrollo del proyecto también quedó documentado que la recomendación actual es **backend-only flow** para imágenes, sin signed URLs desde el frontend. Para este producto prefiero que el backend siga controlando el pipeline completo.
 
 ## Dominios y separacion operacional
 
-Otra senal de que Modo Playa esta pensado como producto real es la separacion operacional de superficies:
+Otra señal de que Modo Playa está pensado como producto real es la separación operacional de superficies:
 
 - app publica
 - app admin
 - API
 
-La API ya esta preparada para correr como servicio independiente y usa un dominio dedicado de produccion: `api-playa.matiasgaleano.dev`.
+La API ya está preparada para correr como servicio independiente y usa un dominio dedicado de producción: `api-playa.matiasgaleano.dev`.
 
-Esa separacion me deja evolucionar cada parte con ritmos distintos:
+Esa separación me deja evolucionar cada parte con ritmos distintos:
 
 - el catalogo puede cambiar UX y navegacion
 - el admin puede crecer en modulos operativos
@@ -145,14 +145,14 @@ sin convertir todo en una sola aplicacion acoplada.
 
 ## Lo que buscaba demostrar con esta arquitectura
 
-Modo Playa me interesaba como ejercicio de producto, pero tambien como ejercicio de criterio tecnico.
+Modo Playa me interesaba como ejercicio de producto, pero también como ejercicio de criterio técnico.
 
-Queria resolver al mismo tiempo:
+Quería resolver al mismo tiempo:
 
 - multi-tenancy real
-- limites publicos y privados claros
+- límites públicos y privados claros
 - backend modular con NestJS
 - manejo de media desde servidor
 - una base que sirviera para seguir creciendo
 
-Ese equilibrio me parece mas valioso que una arquitectura "impresionante" en abstracto. Lo importante es que las decisiones aguanten el uso real del producto.
+Ese equilibrio me parece más valioso que una arquitectura "impresionante" en abstracto. Lo importante es que las decisiones aguanten el uso real del producto.
