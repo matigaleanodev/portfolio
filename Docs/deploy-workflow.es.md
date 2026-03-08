@@ -12,6 +12,7 @@ Este repositorio se encarga de:
 - exportar un manifiesto de release para `portfolio-cloud`
 - exportar `.generated/chat/knowledge.json` como artifact editorial de handoff
 - invocar `process-release` despues de un deploy exitoso en Firebase
+- invocar `publish-chat-knowledge` despues de `process-release`
 
 Este repositorio todavía no se encarga de:
 
@@ -29,9 +30,11 @@ El flujo actual de GitHub Actions es:
 2. `npm run build:content`
 3. `npm run build`
 4. `npm run build:release-manifest`
-5. deploy de `dist/portfolio/browser` a Firebase Hosting
-6. invocacion de `portfolio-cloud-<stage>-process-release` con `.generated/release-manifest.json`
-7. subida del release manifest, del artifact de conocimiento editorial y de la respuesta de la Lambda como artifacts del workflow
+5. `npm run build:chat-knowledge-payload`
+6. deploy de `dist/portfolio/browser` a Firebase Hosting
+7. invocacion de `portfolio-cloud-<stage>-process-release` con `.generated/release-manifest.json`
+8. invocacion de `portfolio-cloud-<stage>-publish-chat-knowledge` con `.generated/chat/knowledge-payload.json`
+9. subida del release manifest, del artifact de conocimiento editorial, del payload de invocacion y de las respuestas de Lambdas como artifacts del workflow
 
 ## Estrategia de Firebase Hosting
 
@@ -58,6 +61,14 @@ La direccion acordada a partir de ahora es:
 - `portfolio` exporta el artifact
 - `portfolio-cloud` administrara la copia canonica en R2 mediante Lambdas dedicadas
 - `portfolio-api` resolvera ese conocimiento de forma dinamica desde esa fuente cloud, con fallback o cache local cuando haga falta
+
+El pipeline de deploy ahora tambien construye `.generated/chat/knowledge-payload.json` con:
+
+- `artifact`: el artifact editorial crudo generado por `portfolio`
+- `release`: `generatedAt` y `siteUrl` copiados desde `.generated/release-manifest.json`
+- `source`: metadata de repositorio y path del artifact para el envelope cloud
+
+`portfolio` sigue sin construir el envelope cloud final. Esa responsabilidad queda en `publish-chat-knowledge` dentro de `portfolio-cloud`.
 
 ## Manifiesto de release
 
@@ -91,3 +102,4 @@ El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
 - `AWS_ROLE_TO_ASSUME`
 - `AWS_REGION`
 - `PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME` opcional, por defecto `portfolio-cloud-dev-process-release`
+- `PORTFOLIO_CLOUD_PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME` opcional, por defecto `portfolio-cloud-dev-publish-chat-knowledge`

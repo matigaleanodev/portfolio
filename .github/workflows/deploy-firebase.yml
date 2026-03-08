@@ -12,6 +12,7 @@ permissions:
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   PROCESS_RELEASE_FUNCTION_NAME: ${{ vars.PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME || 'portfolio-cloud-dev-process-release' }}
+  PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME: ${{ vars.PORTFOLIO_CLOUD_PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME || 'portfolio-cloud-dev-publish-chat-knowledge' }}
 
 jobs:
   deploy:
@@ -39,6 +40,9 @@ jobs:
       - name: Build release manifest
         run: npm run build:release-manifest
 
+      - name: Build chat knowledge payload
+        run: npm run build:chat-knowledge-payload
+
       - name: Deploy to Firebase Hosting
         run: npx firebase-tools deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
 
@@ -60,6 +64,18 @@ jobs:
 
           node -e "const fs=require('node:fs'); const metadata=JSON.parse(fs.readFileSync('.generated/process-release-metadata.json','utf8')); if (metadata.FunctionError || metadata.StatusCode !== 200) { console.error('process-release invocation failed', metadata); process.exit(1); }"
 
+      - name: Invoke portfolio-cloud publish-chat-knowledge
+        run: |
+          aws lambda invoke \
+            --function-name "${PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME}" \
+            --invocation-type RequestResponse \
+            --cli-binary-format raw-in-base64-out \
+            --payload file://.generated/chat/knowledge-payload.json \
+            .generated/publish-chat-knowledge-response.json \
+            > .generated/publish-chat-knowledge-metadata.json
+
+          node -e "const fs=require('node:fs'); const metadata=JSON.parse(fs.readFileSync('.generated/publish-chat-knowledge-metadata.json','utf8')); if (metadata.FunctionError || metadata.StatusCode !== 200) { console.error('publish-chat-knowledge invocation failed', metadata); process.exit(1); }"
+
       - name: Upload release manifest
         uses: actions/upload-artifact@v4
         with:
@@ -72,6 +88,12 @@ jobs:
           name: chat-knowledge-${{ github.sha }}
           path: .generated/chat/knowledge.json
 
+      - name: Upload chat knowledge payload
+        uses: actions/upload-artifact@v4
+        with:
+          name: chat-knowledge-payload-${{ github.sha }}
+          path: .generated/chat/knowledge-payload.json
+
       - name: Upload process-release response
         uses: actions/upload-artifact@v4
         with:
@@ -79,3 +101,11 @@ jobs:
           path: |
             .generated/process-release-metadata.json
             .generated/process-release-response.json
+
+      - name: Upload publish-chat-knowledge response
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish-chat-knowledge-response-${{ github.sha }}
+          path: |
+            .generated/publish-chat-knowledge-metadata.json
+            .generated/publish-chat-knowledge-response.json

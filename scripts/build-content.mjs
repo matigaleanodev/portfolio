@@ -11,12 +11,15 @@ const projectsDir = path.join(contentDir, 'projects');
 const postsDir = path.join(contentDir, 'posts');
 const assetsDir = path.join(rootDir, 'src', 'assets');
 const publicDir = path.join(rootDir, 'public');
+const generatedDir = path.join(rootDir, '.generated');
+const generatedChatDir = path.join(generatedDir, 'chat');
 const projectsOutputPath = path.join(assetsDir, 'projects.json');
 const blogDir = path.join(assetsDir, 'blog');
 const postsIndexOutputPath = path.join(blogDir, 'posts.json');
 const postsOutputDir = path.join(blogDir, 'posts');
 const rssOutputPath = path.join(publicDir, 'rss.xml');
 const sitemapBlogOutputPath = path.join(publicDir, 'sitemap-blog.xml');
+const chatKnowledgeOutputPath = path.join(generatedChatDir, 'knowledge.json');
 const siteUrl = 'https://matiasgaleano.dev';
 
 marked.setOptions({
@@ -28,9 +31,11 @@ export async function runBuildContent() {
   await ensureDirectory(assetsDir);
   await ensureDirectory(contentDir);
   await ensureDirectory(publicDir);
+  await ensureDirectory(generatedChatDir);
 
   const projects = await loadProjects();
   const posts = await loadPosts();
+  const chatKnowledge = buildChatKnowledge(projects, posts.details);
 
   await fs.writeFile(projectsOutputPath, `${JSON.stringify(projects, null, 2)}\n`);
 
@@ -45,11 +50,13 @@ export async function runBuildContent() {
 
   await fs.writeFile(rssOutputPath, buildRss(posts.details));
   await fs.writeFile(sitemapBlogOutputPath, buildSitemap(posts.details));
+  await fs.writeFile(chatKnowledgeOutputPath, `${JSON.stringify(chatKnowledge, null, 2)}\n`);
 
   console.log(`Generated ${projects.length} projects.`);
   console.log(`Generated ${posts.index.length} blog index entries.`);
   console.log(`Generated ${posts.details.length} blog post artifacts.`);
   console.log('Generated rss.xml and sitemap-blog.xml.');
+  console.log('Generated chat knowledge artifact.');
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -405,6 +412,85 @@ export function buildSitemap(posts) {
 ${urls}
 </urlset>
 `;
+}
+
+export function buildChatKnowledge(projects, posts) {
+  const generatedAt = new Date().toISOString();
+
+  return {
+    generatedAt,
+    projects: projects.map((project) => ({
+      slug: project.slug,
+      title: project.title,
+      excerpt: project.excerpt,
+      stack: project.stack,
+      links: project.links,
+      highlights: buildProjectHighlights(project),
+      searchText: buildProjectSearchText(project),
+    })),
+    posts: posts.map((post) => ({
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      date: post.date,
+      tags: post.tags,
+      canonicalUrl: post.seo.canonicalUrl,
+      summary: summarizeHtml(post.contentHtml),
+      searchText: buildPostSearchText(post),
+    })),
+  };
+}
+
+function buildProjectHighlights(project) {
+  const highlights = [];
+
+  if (project.featured) {
+    highlights.push('Proyecto destacado del portfolio.');
+  }
+
+  for (const link of project.links) {
+    highlights.push(`${link.label}: ${link.url}`);
+  }
+
+  return highlights;
+}
+
+function buildProjectSearchText(project) {
+  return [
+    project.slug,
+    project.title,
+    project.excerpt,
+    ...project.stack,
+    ...project.links.flatMap((link) => [link.label, link.url]),
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+function buildPostSearchText(post) {
+  return [
+    post.slug,
+    post.title,
+    post.excerpt,
+    ...post.tags,
+    summarizeHtml(post.contentHtml),
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+function summarizeHtml(html, maxLength = 320) {
+  const text = htmlToPlainText(html).replace(/\s+/g, ' ').trim();
+
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, Math.max(0, maxLength - 3)).trimEnd()}...`;
+}
+
+function htmlToPlainText(html) {
+  return String(html).replace(/<[^>]+>/g, ' ');
 }
 
 export function xmlEscape(value) {
