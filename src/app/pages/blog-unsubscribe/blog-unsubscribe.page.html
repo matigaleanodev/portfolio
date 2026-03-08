@@ -1,0 +1,54 @@
+<main class="unsubscribe-page">
+  <section class="unsubscribe-surface">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="unsubscribe-card">
+        <p class="unsubscribe-card__kicker">Suscripción del blog</p>
+
+        @if (viewState() === 'success') {
+          <div class="unsubscribe-card__success">
+            <h1>Tu suscripción fue dada de baja.</h1>
+            <p>{{ submitSuccessMessage() }} Podés cerrar esta pestaña cuando quieras.</p>
+            <a routerLink="/blog" class="unsubscribe-card__secondary-link">Volver al blog</a>
+          </div>
+        } @else {
+          <div class="unsubscribe-card__copy">
+            <h1>Confirmá la baja de la suscripción.</h1>
+            <p>
+              @if (hasPrefilledEmail()) {
+                Revisá el email y confirmá la baja cuando quieras.
+              } @else {
+                Ingresá tu email para dejar de recibir nuevas publicaciones.
+              }
+            </p>
+          </div>
+
+          <form class="unsubscribe-form" (ngSubmit)="submit()">
+            <div class="unsubscribe-form__field">
+              <label for="unsubscribe-email">Email</label>
+              <input
+                id="unsubscribe-email"
+                type="email"
+                [formControl]="emailControl"
+                placeholder="tu@email.com"
+                autocomplete="email"
+              />
+            </div>
+
+            @if (submitError()) {
+              <p class="unsubscribe-form__feedback unsubscribe-form__feedback--error" aria-live="polite">
+                {{ submitError() }}
+              </p>
+            }
+
+            <div class="unsubscribe-form__actions">
+              <button type="submit" [disabled]="isSubmitting()">
+                {{ isSubmitting() ? 'Confirmando...' : 'Confirmar baja' }}
+              </button>
+              <a routerLink="/blog" class="unsubscribe-card__secondary-link">Cancelar</a>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+  </section>
+</main>

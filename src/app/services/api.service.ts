@@ -7,6 +7,10 @@ import {
   ChatResponseDto,
   ChatStartersResponseDto,
 } from '../models/chat.model';
+import {
+  SubscriptionEmailDto,
+  SubscriptionResponseDto,
+} from '../models/subscription.model';
 
 @Injectable({
   providedIn: 'root',
@@ -26,5 +30,15 @@ export class ApiService {
 
   sendChatMessage(dto: ChatRequestDto) {
     return this.http.post<ChatResponseDto>(`${this.baseUrl}/chat`, dto);
+  }
+
+  subscribeToBlog(dto: SubscriptionEmailDto) {
+    return this.http.post<SubscriptionResponseDto>(`${this.baseUrl}/subscriptions`, dto);
+  }
+
+  unsubscribeFromBlog(dto: SubscriptionEmailDto) {
+    return this.http.request<SubscriptionResponseDto>('DELETE', `${this.baseUrl}/subscriptions`, {
+      body: dto,
+    });
   }
 }

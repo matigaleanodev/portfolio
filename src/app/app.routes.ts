@@ -11,6 +11,13 @@ export const routes: Routes = [
       import('./pages/blog-list/blog-list.page').then((module) => module.BlogListPage),
   },
   {
+    path: 'blog/unsubscribe',
+    loadComponent: () =>
+      import('./pages/blog-unsubscribe/blog-unsubscribe.page').then(
+        (module) => module.BlogUnsubscribePage,
+      ),
+  },
+  {
     path: 'blog/:slug',
     loadComponent: () =>
       import('./pages/blog-post/blog-post.page').then((module) => module.BlogPostPage),

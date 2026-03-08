@@ -1,6 +1,6 @@
 # Flujo de deploy del portfolio
 
-Este documento define el flujo de deploy que ya puede ejecutarse dentro del repositorio `portfolio`, sin depender todavía de `portfolio-cloud`.
+Este documento define el flujo de deploy que hoy se ejecuta desde el repositorio `portfolio`, incluyendo el handoff final hacia `portfolio-cloud` y la exportacion del artifact editorial usado por el resto del ecosistema.
 
 ## Alcance actual
 
@@ -9,16 +9,17 @@ Este repositorio se encarga de:
 - generar contenido editorial estático desde `content/`
 - construir la aplicación Angular con rutas de blog prerenderizadas
 - desplegar la salida estática en Firebase Hosting
-- exportar un manifiesto de release consumible por una automatización futura
+- exportar un manifiesto de release para `portfolio-cloud`
+- exportar `.generated/chat/knowledge.json` como artifact editorial de handoff
+- invocar `process-release` despues de un deploy exitoso en Firebase
 
 Este repositorio todavía no se encarga de:
 
-- reglas de EventBridge
-- ejecución de Lambdas
 - notificaciones con SES
-- jobs serverless post-publicación
+- la orquestacion interna de `process-release`
+- la persistencia de suscriptores o el envio de mails del blog
 
-Esas piezas quedarán para `portfolio-cloud`.
+Esas piezas siguen siendo responsabilidad de `portfolio-cloud` y `portfolio-api`.
 
 ## Pipeline actual
 
@@ -26,11 +27,11 @@ El flujo actual de GitHub Actions es:
 
 1. `npm ci`
 2. `npm run build:content`
-3. `npm run lint`
-4. `npm test`
-5. `npm run build`
-6. `npm run build:release-manifest`
-7. deploy de `dist/portfolio/browser` a Firebase Hosting
+3. `npm run build`
+4. `npm run build:release-manifest`
+5. deploy de `dist/portfolio/browser` a Firebase Hosting
+6. invocacion de `portfolio-cloud-<stage>-process-release` con `.generated/release-manifest.json`
+7. subida del release manifest, del artifact de conocimiento editorial y de la respuesta de la Lambda como artifacts del workflow
 
 ## Estrategia de Firebase Hosting
 
@@ -46,11 +47,23 @@ Reglas principales:
 
 Esto permite desplegar páginas estáticas del blog sin reintroducir fetch dinámico de contenido contra el backend.
 
+## Handoff del conocimiento editorial
+
+`build:content` tambien genera `.generated/chat/knowledge.json`.
+
+Ese archivo sigue siendo un artifact versionado del build frontend, pero la integracion objetivo deja de ser una copia directa al filesystem del EC2.
+
+La direccion acordada a partir de ahora es:
+
+- `portfolio` exporta el artifact
+- `portfolio-cloud` administrara la copia canonica en R2 mediante Lambdas dedicadas
+- `portfolio-api` resolvera ese conocimiento de forma dinamica desde esa fuente cloud, con fallback o cache local cuando haga falta
+
 ## Manifiesto de release
 
 El pipeline ahora genera `.generated/release-manifest.json`.
 
-Su objetivo es dejar un artefacto de handoff estable para una automatización futura con:
+Su objetivo es dejar un artefacto de handoff estable para `portfolio-cloud` con:
 
 - SHA y ref de git
 - metadatos del target de deploy
@@ -58,14 +71,23 @@ Su objetivo es dejar un artefacto de handoff estable para una automatización fu
 - slugs de proyectos
 - paths de archivos SEO
 
-Hasta que exista `portfolio-cloud`, este manifiesto se sube solo como artifact del workflow.
+El workflow de deploy ahora invoca `process-release` directamente despues de un deploy exitoso en Firebase Hosting.
 
-## Handoff futuro hacia `portfolio-cloud`
-
-Cuando la automatización serverless exista, el contrato esperado es:
+Contrato actual:
 
 - artefacto fuente: `.generated/release-manifest.json`
 - punto de disparo: deploy exitoso sobre `main`
+- modo de invocacion: `aws lambda invoke` privado
+- funcion objetivo: `portfolio-cloud-<stage>-process-release`
 - responsabilidad del consumidor: decidir si hay posts nuevos y ejecutar automatizaciones post-publicación
 
 De esta manera, el repositorio `portfolio` sigue enfocado en build y deploy estático, mientras `portfolio-cloud` concentra la ejecución orientada a eventos.
+
+## Configuracion requerida en GitHub
+
+El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
+
+- `FIREBASE_TOKEN`
+- `AWS_ROLE_TO_ASSUME`
+- `AWS_REGION`
+- `PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME` opcional, por defecto `portfolio-cloud-dev-process-release`

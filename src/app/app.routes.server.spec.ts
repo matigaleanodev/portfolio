@@ -8,7 +8,7 @@ interface PrerenderRouteLike {
 }
 
 describe('serverRoutes', () => {
-  it('deberia prerenderizar home, blog, detalle y fallback', () => {
+  it('deberia prerenderizar home, blog, baja, detalle y fallback', () => {
     expect(
       serverRoutes.map((route) => ({
         path: route.path,
@@ -17,6 +17,7 @@ describe('serverRoutes', () => {
     ).toEqual([
       { path: '', renderMode: RenderMode.Prerender },
       { path: 'blog', renderMode: RenderMode.Prerender },
+      { path: 'blog/unsubscribe', renderMode: RenderMode.Prerender },
       { path: 'blog/:slug', renderMode: RenderMode.Prerender },
       { path: '**', renderMode: RenderMode.Prerender },
     ]);

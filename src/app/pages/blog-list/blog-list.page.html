@@ -29,48 +29,142 @@
           </div>
         </aside>
       </div>
+
+      <div class="blog-toolbar" aria-label="Exploración y suscripción del blog">
+        <div class="blog-toolbar__explore">
+          <div class="blog-toolbar__field">
+            <label class="blog-toolbar__label" for="blog-search">Buscar posts</label>
+            <input
+              id="blog-search"
+              type="search"
+              class="blog-toolbar__input"
+              [value]="searchQuery()"
+              (input)="updateSearchQuery(searchInput.value)"
+              #searchInput
+              placeholder="Buscar por tema, stack o post"
+            />
+          </div>
+
+          <div class="blog-toolbar__field blog-toolbar__field--sort">
+            <span class="blog-toolbar__label">Orden</span>
+            <div class="blog-toolbar__sort" role="group" aria-label="Ordenar posts por fecha">
+              <button
+                type="button"
+                class="blog-toolbar__sort-button"
+                [class.is-active]="sortOrder() === 'newest'"
+                (click)="updateSortOrder('newest')"
+                [attr.aria-pressed]="sortOrder() === 'newest'"
+              >
+                Más nuevos
+              </button>
+              <button
+                type="button"
+                class="blog-toolbar__sort-button"
+                [class.is-active]="sortOrder() === 'oldest'"
+                (click)="updateSortOrder('oldest')"
+                [attr.aria-pressed]="sortOrder() === 'oldest'"
+              >
+                Más viejos
+              </button>
+            </div>
+          </div>
+
+          <p class="blog-toolbar__results" aria-live="polite">{{ resultsLabel() }}</p>
+        </div>
+
+        <aside class="blog-toolbar__subscribe" aria-label="Suscripción al blog">
+          <div class="blog-toolbar__subscribe-copy">
+            <span class="blog-toolbar__subscribe-kicker">Suscripción</span>
+            <h2>Recibí nuevos posts sin perder el hilo.</h2>
+            <p>Un mail por publicación. Arquitectura, backend, cloud y producto.</p>
+          </div>
+
+          <form class="blog-toolbar__subscribe-form" (ngSubmit)="submitSubscription()">
+            <label class="blog-toolbar__label" for="blog-subscription-email">Email</label>
+            <div class="blog-toolbar__subscribe-row">
+              <input
+                id="blog-subscription-email"
+                type="email"
+                class="blog-toolbar__input blog-toolbar__input--subscribe"
+                [formControl]="subscriptionEmailControl"
+                placeholder="tu@email.com"
+                autocomplete="email"
+              />
+              <button
+                type="submit"
+                class="blog-toolbar__subscribe-button"
+                [disabled]="isSubmittingSubscription()"
+              >
+                {{ isSubmittingSubscription() ? 'Enviando...' : 'Suscribirme' }}
+              </button>
+            </div>
+
+            @if (subscriptionError()) {
+              <p class="blog-toolbar__feedback blog-toolbar__feedback--error" aria-live="polite">
+                {{ subscriptionError() }}
+              </p>
+            }
+
+            @if (subscriptionSuccessMessage()) {
+              <p class="blog-toolbar__feedback blog-toolbar__feedback--success" aria-live="polite">
+                {{ subscriptionSuccessMessage() }}
+              </p>
+            }
+          </form>
+        </aside>
+      </div>
     </div>
   </section>
 
   <section class="blog-list-surface py-14 md:py-18">
     <div class="max-w-6xl mx-auto px-6 space-y-10">
-      @if (errorMessage() && !sortedPosts().length) {
+      @if (errorMessage() && !filteredPosts().length) {
         <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
           No se pudieron cargar los posts.
           <span class="block opacity-80">{{ errorMessage() }}</span>
         </div>
       } @else {
-        <div class="blog-cards-grid">
-          @for (post of sortedPosts(); track post.slug; let i = $index) {
-            <article class="blog-card" [style.--blog-delay]="i * 120 + 'ms'">
-              <a
-                [routerLink]="['/blog', post.slug]"
-                (click)="trackPostClick(post, i + 1)"
-                class="blog-card__link"
-                [attr.aria-label]="'Leer ' + post.title"
-              >
-                <div class="blog-card__meta">
-                  <time [attr.datetime]="post.date">{{ post.date | date: 'd MMM y' }}</time>
-                  <span>{{ post.readingTimeMinutes }} min</span>
-                </div>
+        @if (!filteredPosts().length) {
+          <div class="blog-empty-state">
+            <p class="blog-empty-state__kicker">Sin resultados</p>
+            <h2>No encontré posts para esa búsqueda.</h2>
+            <p>
+              Probá con otra tecnología, concepto o tag. El índice sigue siendo local y estático.
+            </p>
+          </div>
+        } @else {
+          <div class="blog-cards-grid">
+            @for (post of filteredPosts(); track post.slug; let i = $index) {
+              <article class="blog-card" [style.--blog-delay]="i * 120 + 'ms'">
+                <a
+                  [routerLink]="['/blog', post.slug]"
+                  (click)="trackPostClick(post, i + 1)"
+                  class="blog-card__link"
+                  [attr.aria-label]="'Leer ' + post.title"
+                >
+                  <div class="blog-card__meta">
+                    <time [attr.datetime]="post.date">{{ post.date | date: 'd MMM y' }}</time>
+                    <span>{{ post.readingTimeMinutes }} min</span>
+                  </div>
 
-                <h2 class="blog-card__title">{{ post.title }}</h2>
-                <p class="blog-card__excerpt">{{ post.excerpt }}</p>
+                  <h2 class="blog-card__title">{{ post.title }}</h2>
+                  <p class="blog-card__excerpt">{{ post.excerpt }}</p>
 
-                <ul class="blog-card__tags" aria-label="Etiquetas del post">
-                  @for (tag of post.tags; track tag) {
-                    <li>{{ tag }}</li>
-                  }
-                </ul>
+                  <ul class="blog-card__tags" aria-label="Etiquetas del post">
+                    @for (tag of post.tags; track tag) {
+                      <li>{{ tag }}</li>
+                    }
+                  </ul>
 
-                <div class="blog-card__footer">
-                  <span class="blog-card__cta">Leer post</span>
-                  <span class="blog-card__pulse" aria-hidden="true"></span>
-                </div>
-              </a>
-            </article>
-          }
-        </div>
+                  <div class="blog-card__footer">
+                    <span class="blog-card__cta">Leer post</span>
+                    <span class="blog-card__pulse" aria-hidden="true"></span>
+                  </div>
+                </a>
+              </article>
+            }
+          </div>
+        }
       }
     </div>
   </section>

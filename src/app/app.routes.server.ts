@@ -16,6 +16,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
   {
+    path: 'blog/unsubscribe',
+    renderMode: RenderMode.Prerender,
+  },
+  {
     path: 'blog/:slug',
     renderMode: RenderMode.Prerender,
     async getPrerenderParams() {
