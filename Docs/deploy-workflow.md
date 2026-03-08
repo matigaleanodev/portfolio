@@ -2,6 +2,8 @@
 
 This document defines the deploy flow currently executed from the `portfolio` repository, including the final handoff to `portfolio-cloud` and the editorial artifact export used by the rest of the ecosystem.
 
+The final cross-repository ownership is documented in [Docs/ecosystem-ownership.md](./ecosystem-ownership.md).
+
 ## Current Scope
 
 The repository is responsible for:
