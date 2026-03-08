@@ -7,6 +7,7 @@ interface SeoPayload {
   description: string;
   canonicalUrl: string;
   ogImage?: string;
+  ogImageAlt?: string;
   type?: 'website' | 'article';
   publishedTime?: string;
   modifiedTime?: string;
@@ -34,7 +35,11 @@ export class SeoService {
 
     if (payload.ogImage) {
       this.updateNameTag('twitter:image', payload.ogImage);
+      this.updateNameTag('twitter:image:alt', payload.ogImageAlt ?? 'Social preview image');
       this.updatePropertyTag('og:image', payload.ogImage);
+      this.updatePropertyTag('og:image:alt', payload.ogImageAlt ?? 'Social preview image');
+      this.updatePropertyTag('og:image:width', '1200');
+      this.updatePropertyTag('og:image:height', '630');
     }
 
     this.updateCanonical(payload.canonicalUrl);
