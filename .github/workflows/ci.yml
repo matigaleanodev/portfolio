@@ -46,8 +46,19 @@ jobs:
       - name: Build release manifest
         run: npm run build:release-manifest
 
+      - name: Build chat knowledge payload
+        run: npm run build:chat-knowledge-payload
+
       - name: Upload release manifest
         uses: actions/upload-artifact@v4
         with:
           name: release-manifest
           path: .generated/release-manifest.json
+
+      - name: Upload chat knowledge artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: chat-knowledge
+          path: |
+            .generated/chat/knowledge.json
+            .generated/chat/knowledge-payload.json
