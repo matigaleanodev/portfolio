@@ -7,6 +7,11 @@ on:
 
 permissions:
   contents: read
+  id-token: write
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  PROCESS_RELEASE_FUNCTION_NAME: ${{ vars.PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME || 'portfolio-cloud-dev-process-release' }}
 
 jobs:
   deploy:
@@ -37,8 +42,40 @@ jobs:
       - name: Deploy to Firebase Hosting
         run: npx firebase-tools deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Invoke portfolio-cloud process-release
+        run: |
+          aws lambda invoke \
+            --function-name "${PROCESS_RELEASE_FUNCTION_NAME}" \
+            --invocation-type RequestResponse \
+            --cli-binary-format raw-in-base64-out \
+            --payload file://.generated/release-manifest.json \
+            .generated/process-release-response.json \
+            > .generated/process-release-metadata.json
+
+          node -e "const fs=require('node:fs'); const metadata=JSON.parse(fs.readFileSync('.generated/process-release-metadata.json','utf8')); if (metadata.FunctionError || metadata.StatusCode !== 200) { console.error('process-release invocation failed', metadata); process.exit(1); }"
+
       - name: Upload release manifest
         uses: actions/upload-artifact@v4
         with:
           name: release-manifest-${{ github.sha }}
           path: .generated/release-manifest.json
+
+      - name: Upload chat knowledge artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chat-knowledge-${{ github.sha }}
+          path: .generated/chat/knowledge.json
+
+      - name: Upload process-release response
+        uses: actions/upload-artifact@v4
+        with:
+          name: process-release-response-${{ github.sha }}
+          path: |
+            .generated/process-release-metadata.json
+            .generated/process-release-response.json
