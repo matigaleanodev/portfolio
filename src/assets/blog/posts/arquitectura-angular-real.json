@@ -16,6 +16,6 @@
     "title": "Cómo estructuro mis proyectos Angular (arquitectura real) | Matias Galeano",
     "description": "Así organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegación, storage e i18n.",
     "canonicalUrl": "https://matiasgaleano.dev/blog/arquitectura-angular-real",
-    "ogImage": "/assets/blog/arquitectura-angular-real/og.webp"
+    "ogImage": "https://media.matiasgaleano.dev/og/arquitectura-angular-real.png"
   }
 }

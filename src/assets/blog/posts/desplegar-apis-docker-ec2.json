@@ -17,6 +17,6 @@
     "title": "Cómo desplegar APIs con Docker en un EC2 (paso a paso) | Matias Galeano",
     "description": "Así despliego mis APIs NestJS en un EC2 compartido: imágenes en GHCR, Docker Compose por app, HTTPS en el reverse proxy y deploy automático con GitHub Actions.",
     "canonicalUrl": "https://matiasgaleano.dev/blog/desplegar-apis-docker-ec2",
-    "ogImage": "/assets/blog/desplegar-apis-docker-ec2/og.webp"
+    "ogImage": "https://media.matiasgaleano.dev/og/desplegar-apis-docker-ec2.png"
   }
 }

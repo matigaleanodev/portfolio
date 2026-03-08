@@ -13,6 +13,7 @@ export interface BlogPostSeo {
   description: string;
   canonicalUrl: string;
   ogImage: string;
+  ogImageAlt?: string;
 }
 
 export interface BlogPost extends BlogPostSummary {
