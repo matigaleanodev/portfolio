@@ -21,6 +21,7 @@ const rssOutputPath = path.join(publicDir, 'rss.xml');
 const sitemapBlogOutputPath = path.join(publicDir, 'sitemap-blog.xml');
 const chatKnowledgeOutputPath = path.join(generatedChatDir, 'knowledge.json');
 const siteUrl = 'https://matiasgaleano.dev';
+const mediaBaseUrl = 'https://media.matiasgaleano.dev';
 
 marked.setOptions({
   gfm: true,
@@ -143,7 +144,7 @@ async function loadPosts() {
     const readingTimeMinutes = calculateReadingTime(entry.content);
     const sanitizedHtml = sanitizeGeneratedHtml(marked.parse(entry.content));
     const canonicalUrl = stringifyOptional(entry.data.canonicalUrl) ?? `${siteUrl}/blog/${slug}`;
-    const ogImage = stringifyOptional(entry.data.ogImage) ?? entry.data.coverImage.trim();
+    const ogImage = resolveOgImage(stringifyOptional(entry.data.ogImage), slug);
 
     if (!isDraft) {
       visiblePosts.push({
@@ -356,6 +357,18 @@ function validateUnique(registry, value, message) {
 
 function stringifyOptional(value) {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function resolveOgImage(value, slug) {
+  if (value && /^https?:\/\//.test(value)) {
+    return value;
+  }
+
+  if (value && !value.startsWith('/assets/blog/')) {
+    return value;
+  }
+
+  return `${mediaBaseUrl}/og/${slug}.png`;
 }
 
 export function buildRss(posts) {

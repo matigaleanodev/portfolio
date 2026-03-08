@@ -17,6 +17,6 @@
     "title": "Cómo diseñé la arquitectura de Modo Playa | Matias Galeano",
     "description": "Modo Playa está pensado como un producto multi-tenant real: API NestJS, MongoDB, aislamiento por ownerId, separación entre catálogo público y admin, y un pipeline backend para uploads e imágenes.",
     "canonicalUrl": "https://matiasgaleano.dev/blog/arquitectura-modo-playa",
-    "ogImage": "/assets/blog/arquitectura-modo-playa/og.webp"
+    "ogImage": "https://media.matiasgaleano.dev/og/arquitectura-modo-playa.png"
   }
 }

@@ -23,7 +23,7 @@ describe('BlogPostPage', () => {
       title: 'Cómo diseñé la arquitectura de Modo Playa | Matias Galeano',
       description: 'Multi-tenant real',
       canonicalUrl: 'https://matiasgaleano.dev/blog/arquitectura-modo-playa',
-      ogImage: '/assets/blog/arquitectura-modo-playa/og.webp',
+      ogImage: 'https://media.matiasgaleano.dev/og/arquitectura-modo-playa.png',
     },
   };
 
@@ -77,7 +77,8 @@ describe('BlogPostPage', () => {
       title: 'Cómo diseñé la arquitectura de Modo Playa | Matias Galeano',
       description: 'Multi-tenant real',
       canonicalUrl: 'https://matiasgaleano.dev/blog/arquitectura-modo-playa',
-      ogImage: 'https://matiasgaleano.dev/assets/blog/arquitectura-modo-playa/og.webp',
+      ogImage: 'https://media.matiasgaleano.dev/og/arquitectura-modo-playa.png',
+      ogImageAlt: 'Portada social del post Cómo diseñé la arquitectura de Modo Playa',
       type: 'article',
       publishedTime: '2026-03-07T00:00:00.000Z',
       modifiedTime: undefined,

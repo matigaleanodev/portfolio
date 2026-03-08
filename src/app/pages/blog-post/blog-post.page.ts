@@ -54,6 +54,7 @@ export class BlogPostPage {
             ogImage: post.seo.ogImage.startsWith('http')
               ? post.seo.ogImage
               : `https://matiasgaleano.dev${post.seo.ogImage}`,
+            ogImageAlt: post.seo.ogImageAlt ?? `Portada social del post ${post.title}`,
             type: 'article',
             publishedTime: `${post.date}T00:00:00.000Z`,
             modifiedTime: post.updatedAt ? `${post.updatedAt}T00:00:00.000Z` : undefined,
