@@ -11,6 +11,7 @@ import { AnalyticsService } from '../../../services/analytics.service';
 })
 export class ProjectCardComponent {
   readonly project = input.required<Project>();
+  readonly index = input<number>(1);
 
   private readonly analytics = inject(AnalyticsService);
 
@@ -27,7 +28,7 @@ export class ProjectCardComponent {
 
   trackProjectClick(linkName: string): void {
     this.analytics.trackEvent('click_project_link', {
-      project_name: this.project().name,
+      project_name: this.project().title,
       link_name: linkName,
     });
   }

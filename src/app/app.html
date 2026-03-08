@@ -1,12 +1,19 @@
-<app-header />
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
-<main>
-  <app-hero />
-  <app-projects />
-  <app-contact />
-</main>
+<div class="app-shell">
+  <app-header />
 
-<app-footer />
+  <div
+    id="main-content"
+    class="app-view"
+    tabindex="-1"
+    [class.app-view--transition]="routeTransitionActive()"
+  >
+    <router-outlet />
+  </div>
+
+  <app-footer />
+</div>
 <app-chat />
 
 <app-toast />

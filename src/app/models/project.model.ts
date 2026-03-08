@@ -1,19 +1,17 @@
 export interface Project {
-  id: string;
-  name: string;
-  image: string;
-  description: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  coverImage: string;
+  featured: boolean;
+  order: number;
+  stack: string[];
   links: ProjectLink[];
-
-  technologies?: string[];
-  highlight?: boolean;
-  order?: number;
 }
 
 export interface ProjectLink {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
+  label: string;
   url: string;
+  icon?: string;
 }

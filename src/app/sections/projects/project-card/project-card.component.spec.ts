@@ -25,16 +25,18 @@ describe('ProjectCardComponent', () => {
   };
 
   const projectMock: Project = {
-    id: '',
-    name: 'Foodly Notes',
-    image: '/assets/foodly.png',
-    description: 'Una app para recetas.',
-    technologies: ['Angular', 'Ionic'],
-    links: [
-      { name: 'GitHub', url: 'https://github.com', icon: 'code', id: '', color: '' },
-      { name: 'Demo', url: 'https://demo.com', icon: 'play', id: '', color: '' },
-    ],
+    slug: 'foodly-notes',
+    title: 'Foodly Notes',
+    excerpt: 'Una app para recetas.',
+    date: '2026-03-07',
+    coverImage: '/assets/foodly.png',
+    featured: true,
     order: 1,
+    stack: ['Angular', 'Ionic'],
+    links: [
+      { label: 'GitHub', url: 'https://github.com', icon: 'code' },
+      { label: 'Demo', url: 'https://demo.com', icon: 'play' },
+    ],
   };
 
   beforeEach(async () => {
@@ -93,7 +95,7 @@ describe('ProjectCardComponent', () => {
   });
 
   it('no debería renderizar el bloque de tecnologías si está vacío', () => {
-    fixture.componentRef.setInput('project', { ...projectMock, technologies: [] });
+    fixture.componentRef.setInput('project', { ...projectMock, stack: [] });
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;

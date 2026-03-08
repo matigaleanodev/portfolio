@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter, RouterOutlet } from '@angular/router';
 
 import { App } from './app';
 
@@ -28,10 +29,12 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideRouter([])],
     })
       .overrideComponent(App, {
         set: {
           imports: [
+            RouterOutlet,
             HeaderStubComponent,
             FooterStubComponent,
             ProjectsStubComponent,
@@ -55,14 +58,13 @@ describe('App', () => {
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
+    const skipLink = el.querySelector('.skip-link') as HTMLAnchorElement | null;
+    const mainContent = el.querySelector('#main-content') as HTMLDivElement | null;
 
     expect(el.querySelector('app-header')).toBeTruthy();
-    expect(el.querySelector('main')).toBeTruthy();
-
-    expect(el.querySelector('app-hero')).toBeTruthy();
-    expect(el.querySelector('app-projects')).toBeTruthy();
-    expect(el.querySelector('app-contact')).toBeTruthy();
-
+    expect(el.querySelector('router-outlet')).toBeTruthy();
+    expect(skipLink?.getAttribute('href')).toBe('#main-content');
+    expect(mainContent?.getAttribute('tabindex')).toBe('-1');
     expect(el.querySelector('app-footer')).toBeTruthy();
     expect(el.querySelector('app-chat')).toBeTruthy();
     expect(el.querySelector('app-toast')).toBeTruthy();

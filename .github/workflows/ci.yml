@@ -29,13 +29,36 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build content artifacts
+        run: npm run build:content
+
       - name: Lint
         run: npm run lint
 
       - name: Test
         env:
           CI: true
-        run: npm run test -- --watch=false
+        run: npm test
 
       - name: Build
         run: npm run build
+
+      - name: Build release manifest
+        run: npm run build:release-manifest
+
+      - name: Build chat knowledge payload
+        run: npm run build:chat-knowledge-payload
+
+      - name: Upload release manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-manifest
+          path: .generated/release-manifest.json
+
+      - name: Upload chat knowledge artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: chat-knowledge
+          path: |
+            .generated/chat/knowledge.json
+            .generated/chat/knowledge-payload.json

@@ -1,26 +1,50 @@
-import { Component, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, DestroyRef, PLATFORM_ID, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HeaderComponent } from './layout/header/header.component';
 import { FooterComponent } from './layout/footer/footer.component';
-import { ProjectsComponent } from './sections/projects/projects.component';
-import { HeroComponent } from './sections/hero/hero.component';
-import { ContactComponent } from './sections/contact/contact.component';
 import { ToastComponent } from './ui/toast/toast.component';
 import { ChatComponent } from './sections/chat/chat.component';
 
 @Component({
   selector: 'app-root',
   imports: [
+    RouterOutlet,
     HeaderComponent,
     FooterComponent,
-    ProjectsComponent,
     ChatComponent,
-    HeroComponent,
-    ContactComponent,
     ToastComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
-  protected readonly title = signal('portfolio');
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly router = inject(Router);
+
+  readonly routeTransitionActive = signal(false);
+
+  constructor() {
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      if (!(event instanceof NavigationEnd)) {
+        return;
+      }
+
+      this.routeTransitionActive.set(false);
+
+      if (!isPlatformBrowser(this.platformId) || typeof requestAnimationFrame !== 'function') {
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        this.routeTransitionActive.set(true);
+
+        setTimeout(() => {
+          this.routeTransitionActive.set(false);
+        }, 620);
+      });
+    });
+  }
 }

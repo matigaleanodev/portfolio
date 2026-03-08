@@ -1,6 +1,7 @@
 {
   "hosting": {
     "public": "dist/portfolio/browser",
+    "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
@@ -10,7 +11,25 @@
     ],
     "headers": [
       {
-        "source": "/index.html",
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/assets/@(projects.json|blog/**.json)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=300"
+          }
+        ]
+      },
+      {
+        "source": "/@(rss.xml|sitemap.xml|sitemap-blog.xml)",
         "headers": [
           {
             "key": "Cache-Control",

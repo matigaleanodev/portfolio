@@ -23,6 +23,17 @@
   opacity: 0.8;
 }
 
+.contact-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .contact-input {
   border-color: rgb(31 41 55 / 0.1);
   background: rgb(255 255 255 / 0.62);

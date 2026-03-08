@@ -7,6 +7,7 @@ import { ApiService } from './api.service';
 import { environment } from '../../environments/environment';
 import { ContactDto } from '../models/contact.model';
 import { ChatRequestDto } from '../models/chat.model';
+import { SubscriptionEmailDto } from '../models/subscription.model';
 
 describe('ApiService', () => {
   let service: ApiService;
@@ -34,6 +35,7 @@ describe('ApiService', () => {
       name: 'Matías',
       email: 'matias@test.com',
       message: 'Hola',
+      company: '',
     };
 
     service.sendContact(dto).subscribe();
@@ -43,10 +45,6 @@ describe('ApiService', () => {
     expect(req.request.body).toEqual(dto);
 
     req.flush({});
-  });
-
-  it('projectsResource debería existir', () => {
-    expect(service.projectsResource).toBeTruthy();
   });
 
   it('getChatStarters debería hacer GET a /chat/starters', () => {
@@ -79,6 +77,46 @@ describe('ApiService', () => {
       answer: 'Trabajo con TypeScript',
       suggestedQuestions: ['¿Usás NestJS?'],
       source: 'faq',
+    });
+  });
+
+  it('subscribeToBlog debería hacer POST a /subscriptions con el dto', () => {
+    const dto: SubscriptionEmailDto = {
+      email: 'reader@example.com',
+    };
+
+    service.subscribeToBlog(dto).subscribe((response) => {
+      expect(response.message).toBe('Subscribed successfully');
+      expect(response.email).toBe(dto.email);
+    });
+
+    const req = httpMock.expectOne(`${environment.API_URL}/subscriptions`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(dto);
+
+    req.flush({
+      message: 'Subscribed successfully',
+      email: dto.email,
+    });
+  });
+
+  it('unsubscribeFromBlog debería hacer DELETE a /subscriptions con el dto', () => {
+    const dto: SubscriptionEmailDto = {
+      email: 'reader@example.com',
+    };
+
+    service.unsubscribeFromBlog(dto).subscribe((response) => {
+      expect(response.message).toBe('Unsubscribed successfully');
+      expect(response.email).toBe(dto.email);
+    });
+
+    const req = httpMock.expectOne(`${environment.API_URL}/subscriptions`);
+    expect(req.request.method).toBe('DELETE');
+    expect(req.request.body).toEqual(dto);
+
+    req.flush({
+      message: 'Unsubscribed successfully',
+      email: dto.email,
     });
   });
 });

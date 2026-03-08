@@ -1,6 +1,5 @@
-import { HttpClient, httpResource } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Project } from '../models/project.model';
 import { ContactDto } from '../models/contact.model';
 import { environment } from '../../environments/environment';
 import {
@@ -8,6 +7,10 @@ import {
   ChatResponseDto,
   ChatStartersResponseDto,
 } from '../models/chat.model';
+import {
+  SubscriptionEmailDto,
+  SubscriptionResponseDto,
+} from '../models/subscription.model';
 
 @Injectable({
   providedIn: 'root',
@@ -17,14 +20,8 @@ export class ApiService {
 
   private readonly baseUrl = environment.API_URL;
 
-  readonly projectsResource = httpResource<Project[]>(() => ({
-    url: `${this.baseUrl}/projects`,
-    method: 'GET',
-    defaultValue: [],
-  }));
-
   sendContact(dto: ContactDto) {
-    return this.http.post(`${this.baseUrl}/contact`, dto);
+    return this.http.post<void>(`${this.baseUrl}/contact`, dto);
   }
 
   getChatStarters() {
@@ -33,5 +30,15 @@ export class ApiService {
 
   sendChatMessage(dto: ChatRequestDto) {
     return this.http.post<ChatResponseDto>(`${this.baseUrl}/chat`, dto);
+  }
+
+  subscribeToBlog(dto: SubscriptionEmailDto) {
+    return this.http.post<SubscriptionResponseDto>(`${this.baseUrl}/subscriptions`, dto);
+  }
+
+  unsubscribeFromBlog(dto: SubscriptionEmailDto) {
+    return this.http.request<SubscriptionResponseDto>('DELETE', `${this.baseUrl}/subscriptions`, {
+      body: dto,
+    });
   }
 }
