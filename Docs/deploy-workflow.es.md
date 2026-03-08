@@ -2,6 +2,8 @@
 
 Este documento define el flujo de deploy que hoy se ejecuta desde el repositorio `portfolio`, incluyendo el handoff final hacia `portfolio-cloud` y la exportacion del artifact editorial usado por el resto del ecosistema.
 
+El ownership final entre repositorios esta documentado en [Docs/ecosystem-ownership.es.md](./ecosystem-ownership.es.md).
+
 ## Alcance actual
 
 Este repositorio se encarga de:
