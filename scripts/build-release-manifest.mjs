@@ -7,13 +7,10 @@ const outputPath = join(outputDir, 'release-manifest.json');
 const postsPath = join(rootDir, 'src', 'assets', 'blog', 'posts.json');
 const projectsPath = join(rootDir, 'src', 'assets', 'projects.json');
 
-const [postsRaw, projectsRaw] = await Promise.all([
-  readFile(postsPath, 'utf8'),
-  readFile(projectsPath, 'utf8'),
+const [posts, projects] = await Promise.all([
+  readJsonWithRetry(postsPath),
+  readJsonWithRetry(projectsPath),
 ]);
-
-const posts = JSON.parse(postsRaw);
-const projects = JSON.parse(projectsRaw);
 
 if (!Array.isArray(posts)) {
   throw new TypeError('Expected blog posts index to be an array.');
@@ -60,3 +57,19 @@ await writeFile(outputPath, JSON.stringify(manifest, null, 2));
 console.log(
   `Generated release manifest with ${manifest.content.posts.length} posts and ${manifest.content.projects.length} projects.`,
 );
+
+async function readJsonWithRetry(filePath, attempts = 3, delayMs = 40) {
+  let lastError;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      const raw = await readFile(filePath, 'utf8');
+      return JSON.parse(raw);
+    } catch (error) {
+      lastError = error;
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw lastError;
+}

@@ -1,5 +1,5 @@
-import { Component, inject, input } from '@angular/core';
-import { Project } from '../../../models/project.model';
+import { Component, computed, inject, input } from '@angular/core';
+import { Project, ProjectLink } from '../../../models/project.model';
 import { LucideAngularModule, Code, Server, BookOpen, Play, LucideIconData } from 'lucide-angular';
 import { AnalyticsService } from '../../../services/analytics.service';
 
@@ -21,6 +21,16 @@ export class ProjectCardComponent {
     bookopen: BookOpen,
     play: Play,
   };
+
+  readonly primaryLink = computed<ProjectLink | null>(
+    () => this.project().links.find((link) => link.primary) ?? this.project().links[0] ?? null,
+  );
+
+  readonly secondaryLinks = computed<ProjectLink[]>(() => {
+    const primaryLink = this.primaryLink();
+
+    return this.project().links.filter((link) => link !== primaryLink);
+  });
 
   iconFor(iconName: string): LucideIconData {
     return this.icons[iconName] ?? Code;

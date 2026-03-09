@@ -2,35 +2,45 @@
   {
     "slug": "foodly-notes",
     "title": "Foodly Notes",
-    "excerpt": "Foodly Notes es una aplicacion de recetas pensada como producto real para el uso cotidiano. Su objetivo es ayudar a descubrir recetas nuevas de forma simple, guardarlas para mas adelante y organizar todo lo necesario para cocinarlas. La experiencia esta basada en el descubrimiento: explorar recetas, marcar favoritas, encontrar recetas similares y generar automaticamente una lista de compras a partir de lo que el usuario quiere cocinar.",
+    "excerpt": "App de recetas publicada en Google Play y construida como producto fullstack real: experiencia mobile en Ionic/Angular, API NestJS propia y despliegue continuo en AWS.",
+    "productType": "App publicada",
+    "primarySignal": "Backend propio + cloud operable",
+    "proof": "Disponible en Google Play con autenticación, favoritos y listas de compras conectadas a backend real.",
+    "role": "Diseñé y construí la app mobile, la API NestJS y el flujo de CI/CD para publicar cambios sin fricción.",
+    "architecture": "Frontend Ionic/Angular desacoplado de una API NestJS + MongoDB, contenedores en AWS EC2 y deploy automatizado con GitHub Actions.",
     "date": "2026-03-07",
     "coverImage": "/assets/foodly-notes.webp",
     "stack": [
-      "Angular",
-      "Ionic",
-      "NestJS",
-      "MongoDB"
+      "Google Play",
+      "API NestJS",
+      "AWS",
+      "Docker",
+      "CI/CD"
     ],
     "links": [
       {
+        "label": "Play Store",
+        "url": "https://play.google.com/store/apps/details?id=io.matiasgaleano.foodlynotes",
+        "icon": "play",
+        "primary": true
+      },
+      {
         "label": "Repositorio Frontend",
         "url": "https://github.com/matigaleanodev/foodly-notes",
-        "icon": "code"
+        "icon": "code",
+        "primary": false
       },
       {
         "label": "Repositorio Backend",
         "url": "https://github.com/matigaleanodev/foodly-notes-api",
-        "icon": "server"
+        "icon": "server",
+        "primary": false
       },
       {
-        "label": "Documentacion",
+        "label": "Documentación",
         "url": "https://matigaleano-dev.notion.site/Foodly-Notes-2f9aa07ef7dd80f0b9a0f2af1030bdb0",
-        "icon": "bookopen"
-      },
-      {
-        "label": "Play Store",
-        "url": "https://play.google.com/store/apps/details?id=io.matiasgaleano.foodlynotes",
-        "icon": "play"
+        "icon": "bookopen",
+        "primary": false
       }
     ],
     "featured": true,
@@ -39,34 +49,89 @@
   {
     "slug": "modo-playa",
     "title": "Modo Playa",
-    "excerpt": "Modo Playa es una plataforma de gestion y catalogo de alojamientos turisticos compuesta por una API multi-tenant, un panel administrativo y un catalogo publico. Esta disenada para garantizar aislamiento de datos por propietario mediante ownerId y autenticacion JWT, manteniendo una arquitectura modular y escalable.",
+    "excerpt": "Plataforma de alojamientos pensada como caso de arquitectura backend: API multi-tenant, panel admin y catálogo público desacoplado para escalar por propietario sin duplicar sistema.",
+    "productType": "Plataforma multi-tenant",
+    "primarySignal": "Arquitectura API + modelado de dominio",
+    "proof": "Suite real con admin operativo, catálogo público y aislamiento de datos por ownerId sobre un backend compartido.",
+    "role": "Definí la estrategia multi-tenant, la API NestJS, la separación entre superficies y los flujos de administración.",
+    "architecture": "NestJS + MongoDB con JWT, media pipeline en backend y fronteras explícitas entre admin, catálogo público y capa de datos.",
     "date": "2026-03-07",
     "coverImage": "/assets/modo_playa.webp",
     "stack": [
-      "Angular",
-      "Ionic",
-      "NestJS",
+      "Multi-tenant",
+      "API NestJS",
       "MongoDB",
-      "JWT"
+      "JWT",
+      "Media pipeline"
     ],
     "links": [
       {
         "label": "Repositorio Backend",
         "url": "https://github.com/matigaleanodev/modo-playa-api",
-        "icon": "server"
+        "icon": "server",
+        "primary": true
       },
       {
-        "label": "Repositorio Catalogo",
+        "label": "Repositorio Catálogo",
         "url": "https://github.com/matigaleanodev/modo-playa-app",
-        "icon": "code"
+        "icon": "code",
+        "primary": false
       },
       {
         "label": "Repositorio Admin",
         "url": "https://github.com/matigaleanodev/modo-playa-admin",
-        "icon": "code"
+        "icon": "code",
+        "primary": false
       }
     ],
     "featured": false,
     "order": 2
+  },
+  {
+    "slug": "portfolio",
+    "title": "Portfolio",
+    "excerpt": "Plataforma técnica personal construida como sistema static-first: frontend Angular, pipeline editorial en Markdown, blog prerenderizado, chatbot con IA y automatización serverless post-publicación.",
+    "productType": "Plataforma técnica personal",
+    "primarySignal": "Static-first + automatización serverless",
+    "proof": "Blog público prerenderizado, artifacts editoriales versionados y separación real entre frontend, API y capa cloud.",
+    "role": "Diseñé la arquitectura del ecosistema, el pipeline de contenido y la integración entre Angular, NestJS y AWS para publicar y operar el sitio.",
+    "architecture": "Frontend estático en Firebase, API mínima en NestJS, handoff de artifacts hacia Lambdas y publicación canónica del knowledge del chat en la capa cloud.",
+    "date": "2026-03-09",
+    "coverImage": "/assets/portfolio-platform.svg",
+    "stack": [
+      "Static-first",
+      "SSG blog",
+      "IA chat",
+      "NestJS API",
+      "AWS serverless"
+    ],
+    "links": [
+      {
+        "label": "Blog técnico",
+        "url": "https://matiasgaleano.dev/blog",
+        "icon": "bookopen",
+        "primary": true
+      },
+      {
+        "label": "Repositorio Frontend",
+        "url": "https://github.com/matigaleanodev/portfolio",
+        "icon": "code",
+        "primary": false
+      },
+      {
+        "label": "Repositorio API",
+        "url": "https://github.com/matigaleanodev/portfolio-api",
+        "icon": "server",
+        "primary": false
+      },
+      {
+        "label": "Repositorio Cloud",
+        "url": "https://github.com/matigaleanodev/portfolio-cloud",
+        "icon": "server",
+        "primary": false
+      }
+    ],
+    "featured": false,
+    "order": 3
   }
 ]

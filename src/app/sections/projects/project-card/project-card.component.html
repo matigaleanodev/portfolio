@@ -3,23 +3,23 @@
 
   <div class="project-card__meta-band">
     <span class="project-card__index">0{{ index() }}</span>
-    <span class="project-card__label">Product Case</span>
+    <span class="project-card__label">{{ project().productType }}</span>
   </div>
 
-  <div
-    class="project-card__media"
-  >
-    <img
-      [src]="project().coverImage"
-      [alt]="project().title"
-      loading="lazy"
-      decoding="async"
-      class="w-full h-full object-cover"
-    />
-  </div>
+  <div class="project-card__top">
+    <div class="project-card__media">
+      <img
+        [src]="project().coverImage"
+        [alt]="project().title"
+        loading="lazy"
+        decoding="async"
+        class="project-card__image"
+      />
+    </div>
 
-  <div class="project-card__content">
     <header class="project-card__header">
+      <p class="project-card__signal">{{ project().primarySignal }}</p>
+
       <h3 class="project-card__title">
         {{ project().title }}
       </h3>
@@ -28,6 +28,25 @@
         {{ project().excerpt }}
       </p>
     </header>
+  </div>
+
+  <div class="project-card__content">
+    <dl class="project-card__details">
+      <div class="project-card__detail">
+        <dt>Prueba real</dt>
+        <dd>{{ project().proof }}</dd>
+      </div>
+
+      <div class="project-card__detail">
+        <dt>Aporte tecnico</dt>
+        <dd>{{ project().role }}</dd>
+      </div>
+
+      <div class="project-card__detail">
+        <dt>Arquitectura</dt>
+        <dd>{{ project().architecture }}</dd>
+      </div>
+    </dl>
 
     @if (project().stack.length) {
       <div class="project-card__stack">
@@ -38,19 +57,37 @@
       </div>
     }
 
-    <div class="project-card__links">
-      @for (link of project().links; track link.url) {
+    <div class="project-card__actions">
+      @if (primaryLink(); as link) {
         <a
           [href]="link.url"
           target="_blank"
           rel="noopener noreferrer"
           (click)="trackProjectClick(link.label)"
           [attr.aria-label]="link.label + ' de ' + project().title"
-          class="project-link inline-flex items-center gap-2 text-sm font-medium hover:text-(--color-accent) transition"
+          class="project-link project-link--primary inline-flex items-center gap-2 text-sm font-medium transition"
         >
           <lucide-icon [img]="iconFor(link.icon ?? '')" size="16" aria-hidden="true" />
           {{ link.label }}
         </a>
+      }
+
+      @if (secondaryLinks().length) {
+        <div class="project-card__links">
+          @for (link of secondaryLinks(); track link.url) {
+            <a
+              [href]="link.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              (click)="trackProjectClick(link.label)"
+              [attr.aria-label]="link.label + ' de ' + project().title"
+              class="project-link inline-flex items-center gap-2 text-sm font-medium transition"
+            >
+              <lucide-icon [img]="iconFor(link.icon ?? '')" size="16" aria-hidden="true" />
+              {{ link.label }}
+            </a>
+          }
+        </div>
       }
     </div>
   </div>
