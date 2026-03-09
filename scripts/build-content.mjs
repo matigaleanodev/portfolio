@@ -40,7 +40,7 @@ export async function runBuildContent() {
 
   await fs.writeFile(projectsOutputPath, `${JSON.stringify(projects, null, 2)}\n`);
 
-  await ensureCleanDirectory(blogDir);
+  await ensureDirectory(blogDir);
   await ensureDirectory(postsOutputDir);
   await fs.writeFile(postsIndexOutputPath, `${JSON.stringify(posts.index, null, 2)}\n`);
 
@@ -78,6 +78,20 @@ async function loadProjects() {
     validateUnique(slugRegistry, slug, `Duplicate project slug "${slug}"`);
     validateRequiredString(entry.data.title, `Missing project title in ${relative(filePath)}`);
     validateRequiredString(entry.data.excerpt, `Missing project excerpt in ${relative(filePath)}`);
+    validateRequiredString(
+      entry.data.productType,
+      `Missing project productType in ${relative(filePath)}`,
+    );
+    validateRequiredString(
+      entry.data.primarySignal,
+      `Missing project primarySignal in ${relative(filePath)}`,
+    );
+    validateRequiredString(entry.data.proof, `Missing project proof in ${relative(filePath)}`);
+    validateRequiredString(entry.data.role, `Missing project role in ${relative(filePath)}`);
+    validateRequiredString(
+      entry.data.architecture,
+      `Missing project architecture in ${relative(filePath)}`,
+    );
     const projectDate = normalizeDate(
       entry.data.date,
       `Invalid project date in ${relative(filePath)}`,
@@ -100,6 +114,11 @@ async function loadProjects() {
       slug,
       title: entry.data.title.trim(),
       excerpt: entry.data.excerpt.trim(),
+      productType: entry.data.productType.trim(),
+      primarySignal: entry.data.primarySignal.trim(),
+      proof: entry.data.proof.trim(),
+      role: entry.data.role.trim(),
+      architecture: entry.data.architecture.trim(),
       date: projectDate,
       coverImage: entry.data.coverImage.trim(),
       stack: entry.data.stack.map((value) => value.trim()),
@@ -107,6 +126,7 @@ async function loadProjects() {
         label: link.label.trim(),
         url: link.url.trim(),
         ...(link.icon ? { icon: String(link.icon).trim() } : {}),
+        ...(typeof link.primary === 'boolean' ? { primary: link.primary } : {}),
       })),
       featured: entry.data.featured,
       order: entry.data.order,
@@ -325,6 +345,8 @@ function validateProjectLinks(value, fileLabel) {
     throw new Error(`Invalid project links in ${fileLabel}`);
   }
 
+  let primaryCount = 0;
+
   for (const link of value) {
     if (typeof link !== 'object' || link == null) {
       throw new Error(`Invalid project link entry in ${fileLabel}`);
@@ -332,6 +354,18 @@ function validateProjectLinks(value, fileLabel) {
 
     validateRequiredString(link.label, `Missing project link label in ${fileLabel}`);
     validateRequiredString(link.url, `Missing project link url in ${fileLabel}`);
+
+    if (link.primary != null && typeof link.primary !== 'boolean') {
+      throw new Error(`Invalid project link primary flag in ${fileLabel}`);
+    }
+
+    if (link.primary === true) {
+      primaryCount += 1;
+    }
+  }
+
+  if (primaryCount !== 1) {
+    throw new Error(`Expected exactly one primary project link in ${fileLabel}`);
   }
 }
 
@@ -461,6 +495,12 @@ function buildProjectHighlights(project) {
     highlights.push('Proyecto destacado del portfolio.');
   }
 
+  highlights.push(project.productType);
+  highlights.push(project.primarySignal);
+  highlights.push(project.proof);
+  highlights.push(project.role);
+  highlights.push(project.architecture);
+
   for (const link of project.links) {
     highlights.push(`${link.label}: ${link.url}`);
   }
@@ -473,8 +513,17 @@ function buildProjectSearchText(project) {
     project.slug,
     project.title,
     project.excerpt,
+    project.productType,
+    project.primarySignal,
+    project.proof,
+    project.role,
+    project.architecture,
     ...project.stack,
-    ...project.links.flatMap((link) => [link.label, link.url]),
+    ...project.links.flatMap((link) => [
+      link.label,
+      link.url,
+      link.primary ? 'primary cta' : 'secondary cta',
+    ]),
   ]
     .filter(Boolean)
     .join(' ');

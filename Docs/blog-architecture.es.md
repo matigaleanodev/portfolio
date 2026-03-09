@@ -137,18 +137,25 @@ Campos obligatorios:
 title: Foodly Notes
 slug: foodly-notes
 excerpt: Notes and recipes platform with focus on clean UX.
+productType: App publicada
+primarySignal: Backend propio + cloud
+proof: Disponible en produccion con backend real.
+role: Disene y construi frontend, API y deploy.
+architecture: Frontend desacoplado, API NestJS y operacion cloud.
 date: 2025-11-15
 coverImage: /assets/projects/foodly-notes/cover.webp
 stack:
-  - Angular
-  - Firebase
+  - API NestJS
+  - AWS
 links:
-  - label: Live
+  - label: Play Store
     url: https://example.com
     icon: play
+    primary: true
   - label: GitHub
     url: https://github.com/example/repo
     icon: code
+    primary: false
 featured: true
 order: 1
 ---
@@ -159,16 +166,15 @@ Campos opcionales:
 ```yaml
 ---
 status: completed
-repository: https://github.com/example/repo
-demo: https://example.com
 ---
 ```
 
 Reglas de validacion:
 
-- `title`, `slug`, `excerpt`, `date`, `coverImage`, `stack`, `links`, `featured` y `order` son obligatorios.
+- `title`, `slug`, `excerpt`, `productType`, `primarySignal`, `proof`, `role`, `architecture`, `date`, `coverImage`, `stack`, `links`, `featured` y `order` son obligatorios.
 - `links` debe tener al menos una entrada.
 - Cada link necesita `label` y `url`.
+- Debe existir exactamente un link con `primary: true` para fijar el CTA principal de la card.
 - `icon` es opcional y puede usarse para conservar las affordances visuales de la landing.
 - `order` debe ser numerico y unico en el catalogo visible.
 - `featured` es obligatorio para que la landing renderice destacados de forma determinista.
@@ -240,12 +246,17 @@ Proposito: catalogo estatico consumido por la seccion de proyectos de la landing
     "slug": "foodly-notes",
     "title": "Foodly Notes",
     "excerpt": "Notes and recipes platform with focus on clean UX.",
+    "productType": "App publicada",
+    "primarySignal": "Backend propio + cloud",
+    "proof": "Disponible en produccion con backend real.",
+    "role": "Disene y construi frontend, API y deploy.",
+    "architecture": "Frontend desacoplado, API NestJS y operacion cloud.",
     "date": "2025-11-15",
     "coverImage": "/assets/projects/foodly-notes/cover.webp",
-    "stack": ["Angular", "Firebase"],
+    "stack": ["API NestJS", "AWS"],
     "links": [
-      { "label": "Live", "url": "https://example.com", "icon": "play" },
-      { "label": "GitHub", "url": "https://github.com/example/repo", "icon": "code" }
+      { "label": "Play Store", "url": "https://example.com", "icon": "play", "primary": true },
+      { "label": "GitHub", "url": "https://github.com/example/repo", "icon": "code", "primary": false }
     ],
     "featured": true,
     "order": 1
@@ -258,6 +269,7 @@ Reglas:
 - Este archivo contiene solo metadata estructurada.
 - Angular no parsea Markdown en runtime.
 - No se genera HTML de detalle de proyectos hasta que exista una ruta real `/projects/:slug`.
+- La landing puede jerarquizar tipo de producto, senal principal, prueba real, aporte tecnico, arquitectura y CTA principal a partir de este artifact.
 
 ### `public/rss.xml`
 

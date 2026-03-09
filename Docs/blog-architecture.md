@@ -137,18 +137,25 @@ Required fields:
 title: Foodly Notes
 slug: foodly-notes
 excerpt: Notes and recipes platform with focus on clean UX.
+productType: Published app
+primarySignal: Owned backend + cloud
+proof: Live in production with a real backend.
+role: I designed and built frontend, API, and deploy flow.
+architecture: Decoupled frontend, NestJS API, and cloud operations.
 date: 2025-11-15
 coverImage: /assets/projects/foodly-notes/cover.webp
 stack:
-  - Angular
-  - Firebase
+  - NestJS API
+  - AWS
 links:
-  - label: Live
+  - label: Play Store
     url: https://example.com
     icon: play
+    primary: true
   - label: GitHub
     url: https://github.com/example/repo
     icon: code
+    primary: false
 featured: true
 order: 1
 ---
@@ -159,16 +166,15 @@ Optional fields:
 ```yaml
 ---
 status: completed
-repository: https://github.com/example/repo
-demo: https://example.com
 ---
 ```
 
 Validation rules:
 
-- `title`, `slug`, `excerpt`, `date`, `coverImage`, `stack`, `links`, `featured`, and `order` are mandatory.
+- `title`, `slug`, `excerpt`, `productType`, `primarySignal`, `proof`, `role`, `architecture`, `date`, `coverImage`, `stack`, `links`, `featured`, and `order` are mandatory.
 - `links` must contain at least one entry.
 - Every link needs `label` and `url`.
+- Exactly one link must set `primary: true` so the landing has a deterministic primary CTA.
 - `icon` is optional and can be used by the landing UI to preserve link affordances.
 - `order` must be numeric and unique in the visible catalog.
 - `featured` is required so the landing can render deterministic highlights.
@@ -240,12 +246,17 @@ Purpose: static catalog consumed by the landing projects section.
     "slug": "foodly-notes",
     "title": "Foodly Notes",
     "excerpt": "Notes and recipes platform with focus on clean UX.",
+    "productType": "Published app",
+    "primarySignal": "Owned backend + cloud",
+    "proof": "Live in production with a real backend.",
+    "role": "I designed and built frontend, API, and deploy flow.",
+    "architecture": "Decoupled frontend, NestJS API, and cloud operations.",
     "date": "2025-11-15",
     "coverImage": "/assets/projects/foodly-notes/cover.webp",
-    "stack": ["Angular", "Firebase"],
+    "stack": ["NestJS API", "AWS"],
     "links": [
-      { "label": "Live", "url": "https://example.com", "icon": "play" },
-      { "label": "GitHub", "url": "https://github.com/example/repo", "icon": "code" }
+      { "label": "Play Store", "url": "https://example.com", "icon": "play", "primary": true },
+      { "label": "GitHub", "url": "https://github.com/example/repo", "icon": "code", "primary": false }
     ],
     "featured": true,
     "order": 1
@@ -258,6 +269,7 @@ Rules:
 - This file contains structured metadata only.
 - No Markdown parsing happens at runtime.
 - No project detail HTML is generated until a real `/projects/:slug` route exists.
+- The landing can prioritize product type, primary signal, real proof, technical role, architecture, and primary CTA directly from this artifact.
 
 ### `public/rss.xml`
 

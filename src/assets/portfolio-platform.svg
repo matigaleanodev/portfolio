@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Portfolio technical platform</title>
+  <desc id="desc">Minimal cover with frontend, content, API, and cloud modules.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#f4efe6" />
+      <stop offset="100%" stop-color="#d9e0e7" />
+    </linearGradient>
+    <linearGradient id="card" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#eef2f6" stop-opacity="0.84" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="1200" rx="72" fill="url(#bg)" />
+
+  <g font-family="'Segoe UI', Arial, sans-serif">
+    <rect x="72" y="105" width="446" height="410" rx="42" fill="url(#card)" stroke="#8a96a4" stroke-opacity="0.24" />
+    <text x="132" y="182" fill="#6b5b4b" font-size="30" font-weight="700" letter-spacing="6">FRONTEND</text>
+    <text x="132" y="286" fill="#0f172a" font-size="78" font-weight="700">Angular</text>
+    <text x="132" y="356" fill="#475569" font-size="38">Static-first UX</text>
+
+    <rect x="682" y="105" width="446" height="410" rx="42" fill="url(#card)" stroke="#8a96a4" stroke-opacity="0.24" />
+    <text x="742" y="182" fill="#6b5b4b" font-size="30" font-weight="700" letter-spacing="6">API</text>
+    <text x="742" y="286" fill="#0f172a" font-size="78" font-weight="700">NestJS</text>
+    <text x="742" y="356" fill="#475569" font-size="38">Chat + contact</text>
+
+    <rect x="72" y="685" width="446" height="410" rx="42" fill="url(#card)" stroke="#8a96a4" stroke-opacity="0.24" />
+    <text x="132" y="762" fill="#6b5b4b" font-size="30" font-weight="700" letter-spacing="6">CONTENT</text>
+    <text x="132" y="866" fill="#0f172a" font-size="68" font-weight="700">Markdown</text>
+    <text x="132" y="934" fill="#475569" font-size="35">Pipeline + prerender</text>
+
+    <rect x="682" y="685" width="446" height="410" rx="42" fill="url(#card)" stroke="#8a96a4" stroke-opacity="0.24" />
+    <text x="742" y="762" fill="#6b5b4b" font-size="30" font-weight="700" letter-spacing="6">CLOUD</text>
+    <text x="742" y="866" fill="#0f172a" font-size="78" font-weight="700">AWS</text>
+    <text x="742" y="934" fill="#475569" font-size="34">Serverless automation</text>
+  </g>
+</svg>

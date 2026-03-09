@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -43,9 +43,15 @@ describe('build-content pipeline', () => {
     );
     expect(knowledge.generatedAt).toBeTruthy();
     expect(knowledge.projects.some((project) => project.slug === 'foodly-notes')).toBe(true);
+    expect(knowledge.projects.some((project) => project.slug === 'portfolio')).toBe(true);
     expect(
       knowledge.projects.some((project) =>
         project.highlights.includes('Proyecto destacado del portfolio.'),
+      ),
+    ).toBe(true);
+    expect(
+      knowledge.projects.some((project) =>
+        project.highlights.includes('Static-first + automatización serverless'),
       ),
     ).toBe(true);
     expect(
@@ -60,5 +66,54 @@ describe('build-content pipeline', () => {
     ).toBe(true);
     expect(knowledge.posts.some((post) => post.summary.length > 0)).toBe(true);
     expect(knowledge.posts.some((post) => post.searchText.includes('angular'))).toBe(true);
+  });
+
+  it('deberia fallar si un proyecto no define exactamente un primary CTA', () => {
+    const slug = 'spec-invalid-project-primary';
+    const projectDir = join(process.cwd(), 'content', 'projects', slug);
+    const projectFile = join(projectDir, 'index.md');
+
+    mkdirSync(projectDir, { recursive: true });
+    writeFileSync(
+      projectFile,
+      `---
+title: Invalid Project
+slug: ${slug}
+excerpt: Proyecto invalido para test.
+productType: Plataforma
+primarySignal: Backend
+proof: Tiene prueba
+role: Tiene rol
+architecture: Tiene arquitectura
+date: 2026-03-09
+coverImage: /assets/project.webp
+stack:
+  - API
+links:
+  - label: Repo A
+    url: https://example.com/a
+    primary: false
+  - label: Repo B
+    url: https://example.com/b
+    primary: false
+featured: false
+order: 999
+---
+
+Proyecto temporal para validacion.
+`,
+      'utf8',
+    );
+
+    try {
+      expect(() =>
+        execFileSync('node', ['./scripts/build-content.mjs'], {
+          cwd: process.cwd(),
+          stdio: 'pipe',
+        }),
+      ).toThrow(/Expected exactly one primary project link/);
+    } finally {
+      rmSync(projectDir, { recursive: true, force: true });
+    }
   });
 });

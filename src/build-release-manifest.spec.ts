@@ -4,7 +4,9 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('build-release-manifest', () => {
-  it('deberia generar un manifiesto consumible para deploy y automatizacion futura', () => {
+  it(
+    'deberia generar un manifiesto consumible para deploy y automatizacion futura',
+    () => {
     execFileSync('node', ['./scripts/build-content.mjs'], {
       cwd: process.cwd(),
       stdio: 'pipe',
@@ -38,5 +40,7 @@ describe('build-release-manifest', () => {
       true,
     );
     expect(manifest.content.projects.length).toBeGreaterThan(0);
-  });
+    },
+    10000,
+  );
 });

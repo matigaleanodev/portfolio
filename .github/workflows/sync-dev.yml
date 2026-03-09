@@ -1,0 +1,65 @@
+name: Auto sync main to dev
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sync-dev:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync main into dev with force fallback
+        env:
+          DEV_SYNC_PAT: ${{ secrets.DEV_SYNC_PAT }}
+        run: |
+          if [ -z "$DEV_SYNC_PAT" ]; then
+            echo "Falta configurar el secret DEV_SYNC_PAT"
+            exit 1
+          fi
+
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          git remote set-url origin https://x-access-token:${DEV_SYNC_PAT}@github.com/${{ github.repository }}.git
+          git fetch origin main dev
+          git checkout dev
+
+          if git merge-base --is-ancestor HEAD origin/main; then
+            echo "Fast-forward disponible: se aplica el mismo commit de main en dev."
+            git merge --ff-only origin/main
+            git push origin dev
+            exit 0
+          fi
+
+          echo "Fast-forward no disponible: se intenta merge de sincronización."
+          set +e
+          git merge --no-ff origin/main -m "chore(sync): sincronización automática de main en dev"
+          MERGE_EXIT_CODE=$?
+          set -e
+
+          if [ "$MERGE_EXIT_CODE" -eq 0 ]; then
+            echo "Merge de sincronización completado sin conflictos."
+            git push origin dev
+            exit 0
+          fi
+
+          echo "Conflictos detectados. Se aplica sincronización forzada (dev = main)."
+          git merge --abort || true
+          MAIN_SHA=$(git rev-parse origin/main)
+          git push --force-with-lease origin "$MAIN_SHA:dev"
+          echo "Sincronización forzada completada: dev ahora apunta a $MAIN_SHA"

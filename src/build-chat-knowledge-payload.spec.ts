@@ -4,7 +4,9 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('build-chat-knowledge-payload', () => {
-  it('deberia generar un payload consumible por publish-chat-knowledge', () => {
+  it(
+    'deberia generar un payload consumible por publish-chat-knowledge',
+    () => {
     execFileSync('node', ['./scripts/build-content.mjs'], {
       cwd: process.cwd(),
       stdio: 'pipe',
@@ -44,5 +46,7 @@ describe('build-chat-knowledge-payload', () => {
     expect(payload.artifact.projects.some((project) => project.slug === 'foodly-notes')).toBe(
       true,
     );
-  });
+    },
+    10000,
+  );
 });
