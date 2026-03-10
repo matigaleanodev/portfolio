@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: sync-dev-from-main-${{ github.repository }}
+  cancel-in-progress: false
+
 jobs:
   sync-dev:
     runs-on: ubuntu-latest
@@ -48,7 +52,7 @@ jobs:
 
           echo "Fast-forward no disponible: se intenta merge de sincronización."
           set +e
-          git merge --no-ff origin/main -m "chore(sync): sincronización automática de main en dev"
+          git merge --no-ff origin/main -m "chore(branch-sync): sincronización automática main → dev"
           MERGE_EXIT_CODE=$?
           set -e
 
