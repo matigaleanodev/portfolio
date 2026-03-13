@@ -1,5 +1,20 @@
 [
   {
+    "slug": "portfolio-static-first-angular-markdown-prerender",
+    "title": "Cómo armé un portfolio static-first con Angular, Markdown y prerender",
+    "excerpt": "Cómo llevé mi portfolio a un modelo static-first real: contenido en Markdown, artifacts JSON generados en build, prerender de rutas y backend reducido solo a capacidades dinámicas.",
+    "date": "2026-03-10",
+    "tags": [
+      "angular",
+      "architecture",
+      "seo",
+      "static-site",
+      "frontend"
+    ],
+    "coverImage": "/assets/blog/portfolio-static-first-angular-markdown-prerender/cover.webp",
+    "readingTimeMinutes": 6
+  },
+  {
     "slug": "arquitectura-modo-playa",
     "title": "Cómo diseñé la arquitectura de Modo Playa",
     "excerpt": "Modo Playa está pensado como un producto multi-tenant real: API NestJS, MongoDB, aislamiento por ownerId, separación entre catálogo público y admin, y un pipeline backend para uploads e imágenes.",

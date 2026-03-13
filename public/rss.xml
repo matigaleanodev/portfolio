@@ -6,6 +6,13 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Cómo armé un portfolio static-first con Angular, Markdown y prerender</title>
+    <link>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</link>
+    <guid>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</guid>
+    <pubDate>Tue, 10 Mar 2026 00:00:00 GMT</pubDate>
+    <description>Cómo llevé mi portfolio a un modelo static-first real: contenido en Markdown, artifacts JSON generados en build, prerender de rutas y backend reducido solo a capacidades dinámicas.</description>
+  </item>
+  <item>
     <title>Cómo diseñé la arquitectura de Modo Playa</title>
     <link>https://matiasgaleano.dev/blog/arquitectura-modo-playa</link>
     <guid>https://matiasgaleano.dev/blog/arquitectura-modo-playa</guid>
