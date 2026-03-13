@@ -18,7 +18,7 @@ Cuando un proyecto Angular empieza a crecer, el problema no suele ser el primer 
 
 Por eso en mis proyectos tiendo a repetir un framework interno chico: no una librería aparte, sino un conjunto de abstracciones reutilizables que me ordenan la aplicación desde el día uno.
 
-La mejor referencia de ese enfoque hoy está en `modo-playa-admin`, con piezas complementarias que también aparecen en `foodly-notes-front`.
+La mejor referencia de ese enfoque hoy está en [`modo-playa-admin`](https://github.com/matigaleanodev/modo-playa-admin), con piezas complementarias que también aparecen en [`foodly-notes-front`](https://github.com/matigaleanodev/foodly-notes).
 
 ## 1. ApiService: un punto único para construir endpoints
 
@@ -54,7 +54,7 @@ Además centraliza la construcción de query params. Eso hace que cada servicio 
 
 La capa que más me sirve en apps admin es `ResourceService`.
 
-En `modo-playa-admin` está implementada con signals y concentra:
+En [`modo-playa-admin`](https://github.com/matigaleanodev/modo-playa-admin) está implementada con signals y concentra:
 
 - `items`
 - `page`
@@ -101,7 +101,7 @@ La ventaja no es solamente ahorrar líneas. La ventaja es que todos los formular
 
 ## 5. BaseList: una lista base de verdad
 
-En `modo-playa-admin` también tengo una `BaseList<T>`:
+En [`modo-playa-admin`](https://github.com/matigaleanodev/modo-playa-admin) también tengo una `BaseList<T>`:
 
 ```ts
 export abstract class BaseList<T extends BaseEntity> {
@@ -129,7 +129,7 @@ Las páginas concretas se quedan con lo que realmente cambia: columnas, cards, f
 
 ## 6. NavService: navegación como servicio, no como detalle de UI
 
-En `foodly-notes-front` encapsulé la navegación sobre `NavController` en un `NavService`.
+En [`foodly-notes-front`](https://github.com/matigaleanodev/foodly-notes) encapsulé la navegación sobre `NavController` en un `NavService`.
 
 Ese wrapper me da un lenguaje más semántico:
 
@@ -155,7 +155,7 @@ En otras palabras: no me interesa tener un spinner genérico por tenerlo. Me int
 
 ## 8. StorageService: persistencia simple y predecible
 
-En `foodly-notes-front`, `StorageService` envuelve `@ionic/storage-angular` y resuelve una inicialización lazy muy concreta:
+En [`foodly-notes-front`](https://github.com/matigaleanodev/foodly-notes), `StorageService` envuelve `@ionic/storage-angular` y resuelve una inicialización lazy muy concreta:
 
 - `getItem`
 - `setItem`
@@ -177,7 +177,7 @@ No es un i18n académicamente perfecto. Es una solución pragmática para una ap
 
 ## Cómo baja esto a una pantalla real
 
-La página `lodgings-list` de `modo-playa-admin` muestra bien la idea:
+La página `lodgings-list` de [`modo-playa-admin`](https://github.com/matigaleanodev/modo-playa-admin) muestra bien la idea:
 
 - extiende `BaseList<Lodging>`
 - inyecta `LodgingsResourceService`

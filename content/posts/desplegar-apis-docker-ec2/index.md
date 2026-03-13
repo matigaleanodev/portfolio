@@ -97,9 +97,9 @@ Cada API vive en un directorio propio dentro del host:
 
 Ese layout aparece reflejado en los workflows de deploy de los tres proyectos:
 
-- `foodly-notes-api` despliega en `/home/ec2-user/infra/apps/foodly`
-- `modo-playa-api` despliega en `/home/ec2-user/infra/apps/modo-playa`
-- `portfolio-api` despliega en `/home/ec2-user/infra/apps/portfolio`
+- [`foodly-notes-api`](https://github.com/matigaleanodev/foodly-notes-api) despliega en `/home/ec2-user/infra/apps/foodly`
+- [`modo-playa-api`](https://github.com/matigaleanodev/modo-playa-api) despliega en `/home/ec2-user/infra/apps/modo-playa`
+- [`portfolio-api`](https://github.com/matigaleanodev/portfolio-api) despliega en `/home/ec2-user/infra/apps/portfolio`
 
 La idea es simple: cada app tiene su compose, su `.env`, su imagen y su ciclo de release. El acoplamiento compartido queda reducido a la misma VM y a la capa de entrada HTTP/HTTPS.
 
@@ -163,9 +163,9 @@ Los tres backends que mantengo hoy siguen la misma idea:
 
 El patrón se repite en:
 
-- `foodly-notes-api/.github/workflows/deploy.yml`
-- `modo-playa-api/.github/workflows/deploy.yml`
-- `portfolio-api/.github/workflows/deploy.yml`
+- [`foodly-notes-api/.github/workflows/deploy.yml`](https://github.com/matigaleanodev/foodly-notes-api/blob/main/.github/workflows/deploy.yml)
+- [`modo-playa-api/.github/workflows/deploy.yml`](https://github.com/matigaleanodev/modo-playa-api/blob/main/.github/workflows/deploy.yml)
+- [`portfolio-api/.github/workflows/deploy.yml`](https://github.com/matigaleanodev/portfolio-api/blob/main/.github/workflows/deploy.yml)
 
 El punto importante no es solo automatizar el deploy. Es estandarizarlo entre proyectos para que operar un backend nuevo no implique ponerse a inventar otra receta.
 

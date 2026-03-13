@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -70,9 +70,17 @@ describe('build-content pipeline', () => {
 
   it('deberia fallar si un proyecto no define exactamente un primary CTA', () => {
     const slug = 'spec-invalid-project-primary';
-    const projectDir = join(process.cwd(), 'content', 'projects', slug);
+    const tempBaseDir = join(process.cwd(), '.tmp');
+    mkdirSync(tempBaseDir, { recursive: true });
+    const tempRoot = mkdtempSync(join(tempBaseDir, 'portfolio-build-content-'));
+    const scriptsDir = join(tempRoot, 'scripts');
+    const contentDir = join(tempRoot, 'content');
+    const projectDir = join(contentDir, 'projects', slug);
     const projectFile = join(projectDir, 'index.md');
 
+    mkdirSync(scriptsDir, { recursive: true });
+    cpSync(join(process.cwd(), 'scripts', 'build-content.mjs'), join(scriptsDir, 'build-content.mjs'));
+    cpSync(join(process.cwd(), 'content'), contentDir, { recursive: true });
     mkdirSync(projectDir, { recursive: true });
     writeFileSync(
       projectFile,
@@ -108,12 +116,12 @@ Proyecto temporal para validacion.
     try {
       expect(() =>
         execFileSync('node', ['./scripts/build-content.mjs'], {
-          cwd: process.cwd(),
+          cwd: tempRoot,
           stdio: 'pipe',
         }),
       ).toThrow(/Expected exactly one primary project link/);
     } finally {
-      rmSync(projectDir, { recursive: true, force: true });
+      rmSync(tempRoot, { recursive: true, force: true });
     }
   });
 });

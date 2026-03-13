@@ -22,9 +22,9 @@ Modo Playa no lo pensé como una demo aislada. Lo pensé como un producto que ne
 
 Esa separación empujó la arquitectura desde el principio. El resultado fue un ecosistema con tres aplicaciones:
 
-- `modo-playa-app`
-- `modo-playa-admin`
-- `modo-playa-api`
+- [`modo-playa-app`](https://github.com/matigaleanodev/modo-playa-app)
+- [`modo-playa-admin`](https://github.com/matigaleanodev/modo-playa-admin)
+- [`modo-playa-api`](https://github.com/matigaleanodev/modo-playa-api)
 
 La pieza central es la API, construida con NestJS y MongoDB, con un criterio fuerte de aislamiento por propietario.
 
