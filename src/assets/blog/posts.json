@@ -1,5 +1,20 @@
 [
   {
+    "slug": "como-diseno-contratos-cross-repo-sin-volverme-loco",
+    "title": "Cómo diseño contratos cross-repo sin volverme loco",
+    "excerpt": "Así diseño contratos cross-repo entre frontend, backend y automatización: ownership claro, artifacts explícitos, handoffs versionados y menos acoplamiento implícito.",
+    "date": "2026-03-13",
+    "tags": [
+      "architecture",
+      "engineering",
+      "monorepo",
+      "documentation",
+      "devops"
+    ],
+    "coverImage": "/assets/blog/como-diseno-contratos-cross-repo-sin-volverme-loco/cover.webp",
+    "readingTimeMinutes": 8
+  },
+  {
     "slug": "portfolio-static-first-angular-markdown-prerender",
     "title": "Cómo armé un portfolio static-first con Angular, Markdown y prerender",
     "excerpt": "Cómo llevé mi portfolio a un modelo static-first real: contenido en Markdown, artifacts JSON generados en build, prerender de rutas y backend reducido solo a capacidades dinámicas.",

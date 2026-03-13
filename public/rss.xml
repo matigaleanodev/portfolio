@@ -6,6 +6,13 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Cómo diseño contratos cross-repo sin volverme loco</title>
+    <link>https://matiasgaleano.dev/blog/como-diseno-contratos-cross-repo-sin-volverme-loco</link>
+    <guid>https://matiasgaleano.dev/blog/como-diseno-contratos-cross-repo-sin-volverme-loco</guid>
+    <pubDate>Fri, 13 Mar 2026 00:00:00 GMT</pubDate>
+    <description>Así diseño contratos cross-repo entre frontend, backend y automatización: ownership claro, artifacts explícitos, handoffs versionados y menos acoplamiento implícito.</description>
+  </item>
+  <item>
     <title>Cómo armé un portfolio static-first con Angular, Markdown y prerender</title>
     <link>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</link>
     <guid>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</guid>
