@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { RenderMode } from '@angular/ssr';
 
@@ -5,6 +7,10 @@ import { serverRoutes } from './app.routes.server';
 
 interface PrerenderRouteLike {
   getPrerenderParams?: () => Promise<{ slug: string }[]>;
+}
+
+interface BlogIndexEntry {
+  slug: string;
 }
 
 describe('serverRoutes', () => {
@@ -32,13 +38,11 @@ describe('serverRoutes', () => {
     expect(prerenderRoute?.getPrerenderParams).toBeTypeOf('function');
 
     const params = await prerenderRoute!.getPrerenderParams!();
+    const rawIndex = await readFile(join(process.cwd(), 'src', 'assets', 'blog', 'posts.json'), 'utf8');
+    const expectedParams = (JSON.parse(rawIndex) as BlogIndexEntry[]).map((post) => ({
+      slug: post.slug,
+    }));
 
-    expect(params).toEqual([
-      { slug: 'como-diseno-contratos-cross-repo-sin-volverme-loco' },
-      { slug: 'portfolio-static-first-angular-markdown-prerender' },
-      { slug: 'arquitectura-modo-playa' },
-      { slug: 'arquitectura-angular-real' },
-      { slug: 'desplegar-apis-docker-ec2' },
-    ]);
+    expect(params).toEqual(expectedParams);
   });
 });
