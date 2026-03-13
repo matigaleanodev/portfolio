@@ -34,6 +34,8 @@ describe('serverRoutes', () => {
     const params = await prerenderRoute!.getPrerenderParams!();
 
     expect(params).toEqual([
+      { slug: 'como-diseno-contratos-cross-repo-sin-volverme-loco' },
+      { slug: 'portfolio-static-first-angular-markdown-prerender' },
       { slug: 'arquitectura-modo-playa' },
       { slug: 'arquitectura-angular-real' },
       { slug: 'desplegar-apis-docker-ec2' },
