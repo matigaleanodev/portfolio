@@ -6,6 +6,13 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Cómo dejé de debuggear a ciegas en EC2</title>
+    <link>https://matiasgaleano.dev/blog/como-deje-de-debuggear-a-ciegas-en-ec2</link>
+    <guid>https://matiasgaleano.dev/blog/como-deje-de-debuggear-a-ciegas-en-ec2</guid>
+    <pubDate>Wed, 18 Mar 2026 00:00:00 GMT</pubDate>
+    <description>Así armé mi stack real de observabilidad en producción con Grafana, Loki y Promtail sobre Docker en EC2: logs centralizados, menos tiempo perdido y costo bajo a cambio de más operación manual.</description>
+  </item>
+  <item>
     <title>Cómo diseño contratos cross-repo sin volverme loco</title>
     <link>https://matiasgaleano.dev/blog/como-diseno-contratos-cross-repo-sin-volverme-loco</link>
     <guid>https://matiasgaleano.dev/blog/como-diseno-contratos-cross-repo-sin-volverme-loco</guid>
