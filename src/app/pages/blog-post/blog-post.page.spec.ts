@@ -2,12 +2,22 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import mermaid from 'mermaid';
 
 import { BlogPost } from '../../models/blog.model';
 import { AnalyticsService } from '../../services/analytics.service';
 import { BlogContentService } from '../../services/blog-content.service';
 import { SeoService } from '../../services/seo.service';
 import { BlogPostPage } from './blog-post.page';
+
+vi.mock('mermaid', () => ({
+  default: {
+    initialize: vi.fn(),
+    render: vi.fn(async () => ({
+      svg: '<svg data-testid="mermaid-diagram"></svg>',
+    })),
+  },
+}));
 
 describe('BlogPostPage', () => {
   const postMock: BlogPost = {
@@ -88,5 +98,32 @@ describe('BlogPostPage', () => {
       post_title: 'Cómo diseñé la arquitectura de Modo Playa',
       reading_time_minutes: 4,
     });
+  });
+
+  it('deberia renderizar bloques mermaid dentro del contenido del post', async () => {
+    getPostBySlugMock.mockReturnValue(
+      of({
+        ...postMock,
+        slug: 'observability',
+        contentHtml:
+          '<pre><code class="language-mermaid">flowchart LR\nA[API] --> B[Loki]</code></pre>',
+      }),
+    );
+
+    const fixture = TestBed.createComponent(BlogPostPage);
+    fixture.detectChanges();
+    const renderMermaidBlocks = Reflect.get(
+      fixture.componentInstance as object,
+      'renderMermaidBlocks',
+    ) as ((slug: string) => Promise<void>) | undefined;
+
+    expect(renderMermaidBlocks).toBeTypeOf('function');
+    await renderMermaidBlocks?.call(fixture.componentInstance, 'observability');
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.mermaid-diagram svg')).not.toBeNull();
+    expect(host.querySelector('pre code.language-mermaid')).toBeNull();
+    expect(mermaid.render).toHaveBeenCalled();
   });
 });
