@@ -1,6 +1,6 @@
 ---
-title: Cómo dejé de debuggear a ciegas en EC2
-slug: como-deje-de-debuggear-a-ciegas-en-ec2
+title: Cuando docker logs dejó de ser suficiente en producción
+slug: cuando-docker-logs-dejo-de-ser-suficiente-en-produccion
 excerpt: "Así armé mi stack real de observabilidad en producción con Grafana, Loki y Promtail sobre Docker en EC2: logs centralizados, menos tiempo perdido y costo bajo a cambio de más operación manual."
 date: 2026-03-18
 tags:
@@ -11,9 +11,9 @@ tags:
   - grafana
   - loki
   - promtail
-coverImage: /assets/blog/como-deje-de-debuggear-a-ciegas-en-ec2/cover.webp
-canonicalUrl: https://matiasgaleano.dev/blog/como-deje-de-debuggear-a-ciegas-en-ec2
-ogImage: /assets/blog/como-deje-de-debuggear-a-ciegas-en-ec2/og.webp
+coverImage: /assets/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion/cover.webp
+canonicalUrl: https://matiasgaleano.dev/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion
+ogImage: /assets/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion/og.webp
 draft: false
 ---
 
@@ -21,7 +21,7 @@ Tener varias APIs corriendo en un mismo EC2 es cómodo hasta que algo falla en p
 
 Durante un tiempo trabajé así. Servía para salir del paso, pero no para tener visibilidad real. Cuando convivís con varios servicios, errores intermitentes, reinicios, requests que entran por Traefik y despliegues frecuentes, el problema deja de ser "ver logs". El problema pasa a ser **encontrar rápido el log correcto**, en el rango correcto, del servicio correcto.
 
-Ahí fue cuando decidí armar un stack de observabilidad propio para mi infraestructura real, no una demo aislada. La base hoy está versionada en [`observability-stack`](https://github.com/matigaleanodev/observability-stack) y corre con Docker Compose sobre EC2 usando **Grafana + Loki + Promtail**.
+Ahí fue cuando decidí armar un stack de observabilidad propio para mi infraestructura real, no una demo aislada. Hoy corre con Docker Compose sobre EC2 usando **Grafana + Loki + Promtail**.
 
 ## El problema no era generar logs, era poder usarlos
 
