@@ -112,7 +112,13 @@ describe('BlogPostPage', () => {
 
     const fixture = TestBed.createComponent(BlogPostPage);
     fixture.detectChanges();
-    await (fixture.componentInstance as any).renderMermaidBlocks('observability');
+    const renderMermaidBlocks = Reflect.get(
+      fixture.componentInstance as object,
+      'renderMermaidBlocks',
+    ) as ((slug: string) => Promise<void>) | undefined;
+
+    expect(renderMermaidBlocks).toBeTypeOf('function');
+    await renderMermaidBlocks?.call(fixture.componentInstance, 'observability');
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
