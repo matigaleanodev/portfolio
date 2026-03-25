@@ -1,5 +1,37 @@
 [
   {
+    "slug": "imagenes-backend-only-api-multi-tenant",
+    "title": "Por qué desacoplé el manejo de imágenes en el backend",
+    "excerpt": "En Modo Playa resolví media como un problema de backend y de dominio: uploads con estado, normalización con Sharp, R2 como storage y reglas claras para no romper el multi-tenant.",
+    "date": "2026-03-25",
+    "tags": [
+      "nestjs",
+      "backend",
+      "architecture",
+      "multitenant",
+      "cloudflare-r2",
+      "sharp"
+    ],
+    "coverImage": "/assets/blog/imagenes-backend-only-api-multi-tenant/cover.webp",
+    "readingTimeMinutes": 8
+  },
+  {
+    "slug": "errores-estables-dos-apis-reales",
+    "title": "Cómo resolví el contrato de errores en ASP.NET Core y NestJS",
+    "excerpt": "En Proyecto Atlas API y Modo Playa API resolví el mismo problema con stacks distintos: devolver errores útiles para backend, frontend y usuario sin depender de parsear mensajes libres.",
+    "date": "2026-03-20",
+    "tags": [
+      "architecture",
+      "backend",
+      "api",
+      "nestjs",
+      "aspnet-core",
+      "engineering"
+    ],
+    "coverImage": "/assets/blog/errores-estables-dos-apis-reales/cover.webp",
+    "readingTimeMinutes": 10
+  },
+  {
     "slug": "cuando-docker-logs-dejo-de-ser-suficiente-en-produccion",
     "title": "Cuando docker logs dejó de ser suficiente en producción",
     "excerpt": "Así armé mi stack real de observabilidad en producción con Grafana, Loki y Promtail sobre Docker en EC2: logs centralizados, menos tiempo perdido y costo bajo a cambio de más operación manual.",
