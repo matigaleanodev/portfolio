@@ -6,6 +6,20 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Por qué desacoplé el manejo de imágenes en el backend</title>
+    <link>https://matiasgaleano.dev/blog/imagenes-backend-only-api-multi-tenant</link>
+    <guid>https://matiasgaleano.dev/blog/imagenes-backend-only-api-multi-tenant</guid>
+    <pubDate>Wed, 25 Mar 2026 00:00:00 GMT</pubDate>
+    <description>En Modo Playa resolví media como un problema de backend y de dominio: uploads con estado, normalización con Sharp, R2 como storage y reglas claras para no romper el multi-tenant.</description>
+  </item>
+  <item>
+    <title>Cómo resolví el contrato de errores en ASP.NET Core y NestJS</title>
+    <link>https://matiasgaleano.dev/blog/errores-estables-dos-apis-reales</link>
+    <guid>https://matiasgaleano.dev/blog/errores-estables-dos-apis-reales</guid>
+    <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
+    <description>En Proyecto Atlas API y Modo Playa API resolví el mismo problema con stacks distintos: devolver errores útiles para backend, frontend y usuario sin depender de parsear mensajes libres.</description>
+  </item>
+  <item>
     <title>Cuando docker logs dejó de ser suficiente en producción</title>
     <link>https://matiasgaleano.dev/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion</link>
     <guid>https://matiasgaleano.dev/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion</guid>
