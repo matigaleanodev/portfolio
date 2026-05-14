@@ -1,5 +1,19 @@
 [
   {
+    "slug": "mas-arquitectura-no-siempre-es-mejor",
+    "title": "Mas arquitectura no siempre es mejor",
+    "excerpt": "Agregar capas, servicios o infraestructura no vuelve madura a una solución. La decisión correcta aparece cuando la arquitectura responde a un problema real, con costo, escala y operación concretos.",
+    "date": "2026-04-09",
+    "tags": [
+      "architecture",
+      "engineering",
+      "backend",
+      "devops"
+    ],
+    "coverImage": "/assets/blog/mas-arquitectura-no-siempre-es-mejor/cover.webp",
+    "readingTimeMinutes": 9
+  },
+  {
     "slug": "imagenes-backend-only-api-multi-tenant",
     "title": "Por qué desacoplé el manejo de imágenes en el backend",
     "excerpt": "En Modo Playa resolví media como un problema de backend y de dominio: uploads con estado, normalización con Sharp, R2 como storage y reglas claras para no romper el multi-tenant.",
