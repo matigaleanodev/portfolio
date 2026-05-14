@@ -2,7 +2,7 @@
 title: Cómo resolví el contrato de errores en ASP.NET Core y NestJS
 slug: errores-estables-dos-apis-reales
 excerpt: "En Proyecto Atlas API y Modo Playa API resolví el mismo problema con stacks distintos: devolver errores útiles para backend, frontend y usuario sin depender de parsear mensajes libres."
-date: 2026-03-20
+date: 2026-02-27
 tags:
   - architecture
   - backend

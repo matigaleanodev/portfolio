@@ -2,7 +2,7 @@
 title: Cómo estructuro mis proyectos Angular (arquitectura real)
 slug: arquitectura-angular-real
 excerpt: "Así organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegación, storage e i18n."
-date: 2026-03-05
+date: 2026-05-06
 tags:
   - angular
   - architecture

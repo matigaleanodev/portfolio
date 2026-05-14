@@ -2,7 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://matiasgaleano.dev/blog</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-06</lastmod>
+  </url>
+  <url>
+    <loc>https://matiasgaleano.dev/blog/arquitectura-angular-real</loc>
+    <lastmod>2026-05-06</lastmod>
   </url>
   <url>
     <loc>https://matiasgaleano.dev/blog/jerarquia-visual-importa-mas-de-lo-que-parece</loc>
@@ -14,34 +18,30 @@
   </url>
   <url>
     <loc>https://matiasgaleano.dev/blog/imagenes-backend-only-api-multi-tenant</loc>
-    <lastmod>2026-03-25</lastmod>
-  </url>
-  <url>
-    <loc>https://matiasgaleano.dev/blog/errores-estables-dos-apis-reales</loc>
-    <lastmod>2026-03-20</lastmod>
-  </url>
-  <url>
-    <loc>https://matiasgaleano.dev/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion</loc>
-    <lastmod>2026-03-18</lastmod>
+    <lastmod>2026-03-19</lastmod>
   </url>
   <url>
     <loc>https://matiasgaleano.dev/blog/como-diseno-contratos-cross-repo-sin-volverme-loco</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-06</lastmod>
   </url>
   <url>
-    <loc>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</loc>
-    <lastmod>2026-03-10</lastmod>
+    <loc>https://matiasgaleano.dev/blog/errores-estables-dos-apis-reales</loc>
+    <lastmod>2026-02-27</lastmod>
   </url>
   <url>
     <loc>https://matiasgaleano.dev/blog/arquitectura-modo-playa</loc>
-    <lastmod>2026-03-07</lastmod>
+    <lastmod>2026-02-18</lastmod>
   </url>
   <url>
-    <loc>https://matiasgaleano.dev/blog/arquitectura-angular-real</loc>
-    <lastmod>2026-03-05</lastmod>
+    <loc>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</loc>
+    <lastmod>2026-02-06</lastmod>
+  </url>
+  <url>
+    <loc>https://matiasgaleano.dev/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion</loc>
+    <lastmod>2026-01-29</lastmod>
   </url>
   <url>
     <loc>https://matiasgaleano.dev/blog/desplegar-apis-docker-ec2</loc>
-    <lastmod>2026-03-02</lastmod>
+    <lastmod>2026-01-15</lastmod>
   </url>
 </urlset>

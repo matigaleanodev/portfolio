@@ -2,7 +2,7 @@
 title: Por qué desacoplé el manejo de imágenes en el backend
 slug: imagenes-backend-only-api-multi-tenant
 excerpt: "En Modo Playa resolví media como un problema de backend y de dominio: uploads con estado, normalización con Sharp, R2 como storage y reglas claras para no romper el multi-tenant."
-date: 2026-03-25
+date: 2026-03-19
 tags:
   - nestjs
   - backend
