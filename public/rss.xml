@@ -6,6 +6,13 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Cómo organizo componentes en Angular standalone sin rigidizar el frontend</title>
+    <link>https://matiasgaleano.dev/blog/como-organizo-componentes-angular-standalone-sin-rigidizar-frontend</link>
+    <guid>https://matiasgaleano.dev/blog/como-organizo-componentes-angular-standalone-sin-rigidizar-frontend</guid>
+    <pubDate>Thu, 14 May 2026 00:00:00 GMT</pubDate>
+    <description>Un frontend mantenible no sale de inventar carpetas perfectas. Sale de componentizar chico, mover lógica donde corresponde y usar Angular standalone para marcar límites más claros sin volver la UI ceremoniosa.</description>
+  </item>
+  <item>
     <title>Cómo estructuro mis proyectos Angular (arquitectura real)</title>
     <link>https://matiasgaleano.dev/blog/arquitectura-angular-real</link>
     <guid>https://matiasgaleano.dev/blog/arquitectura-angular-real</guid>

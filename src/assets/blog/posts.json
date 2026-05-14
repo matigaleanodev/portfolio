@@ -1,5 +1,19 @@
 [
   {
+    "slug": "como-organizo-componentes-angular-standalone-sin-rigidizar-frontend",
+    "title": "Cómo organizo componentes en Angular standalone sin rigidizar el frontend",
+    "excerpt": "Un frontend mantenible no sale de inventar carpetas perfectas. Sale de componentizar chico, mover lógica donde corresponde y usar Angular standalone para marcar límites más claros sin volver la UI ceremoniosa.",
+    "date": "2026-05-14",
+    "tags": [
+      "angular",
+      "frontend",
+      "architecture",
+      "engineering"
+    ],
+    "coverImage": "/assets/blog/como-organizo-componentes-angular-standalone-sin-rigidizar-frontend/cover.webp",
+    "readingTimeMinutes": 8
+  },
+  {
     "slug": "arquitectura-angular-real",
     "title": "Cómo estructuro mis proyectos Angular (arquitectura real)",
     "excerpt": "Así organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegación, storage e i18n.",
