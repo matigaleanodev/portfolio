@@ -2,7 +2,7 @@
 title: Cómo diseño contratos cross-repo sin volverme loco
 slug: como-diseno-contratos-cross-repo-sin-volverme-loco
 excerpt: 'Así diseño contratos cross-repo entre frontend, backend y automatización: ownership claro, artifacts explícitos, handoffs versionados y menos acoplamiento implícito.'
-date: 2026-03-13
+date: 2026-03-06
 tags:
   - architecture
   - engineering

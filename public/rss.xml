@@ -13,6 +13,13 @@
     <description>Un frontend mantenible no sale de inventar carpetas perfectas. Sale de componentizar chico, mover lógica donde corresponde y usar Angular standalone para marcar límites más claros sin volver la UI ceremoniosa.</description>
   </item>
   <item>
+    <title>Cómo estructuro mis proyectos Angular (arquitectura real)</title>
+    <link>https://matiasgaleano.dev/blog/arquitectura-angular-real</link>
+    <guid>https://matiasgaleano.dev/blog/arquitectura-angular-real</guid>
+    <pubDate>Wed, 06 May 2026 00:00:00 GMT</pubDate>
+    <description>Así organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegación, storage e i18n.</description>
+  </item>
+  <item>
     <title>Por qué la jerarquía visual importa más de lo que parece</title>
     <link>https://matiasgaleano.dev/blog/jerarquia-visual-importa-mas-de-lo-que-parece</link>
     <guid>https://matiasgaleano.dev/blog/jerarquia-visual-importa-mas-de-lo-que-parece</guid>
@@ -30,56 +37,49 @@
     <title>Por qué desacoplé el manejo de imágenes en el backend</title>
     <link>https://matiasgaleano.dev/blog/imagenes-backend-only-api-multi-tenant</link>
     <guid>https://matiasgaleano.dev/blog/imagenes-backend-only-api-multi-tenant</guid>
-    <pubDate>Wed, 25 Mar 2026 00:00:00 GMT</pubDate>
+    <pubDate>Thu, 19 Mar 2026 00:00:00 GMT</pubDate>
     <description>En Modo Playa resolví media como un problema de backend y de dominio: uploads con estado, normalización con Sharp, R2 como storage y reglas claras para no romper el multi-tenant.</description>
-  </item>
-  <item>
-    <title>Cómo resolví el contrato de errores en ASP.NET Core y NestJS</title>
-    <link>https://matiasgaleano.dev/blog/errores-estables-dos-apis-reales</link>
-    <guid>https://matiasgaleano.dev/blog/errores-estables-dos-apis-reales</guid>
-    <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
-    <description>En Proyecto Atlas API y Modo Playa API resolví el mismo problema con stacks distintos: devolver errores útiles para backend, frontend y usuario sin depender de parsear mensajes libres.</description>
-  </item>
-  <item>
-    <title>Cuando docker logs dejó de ser suficiente en producción</title>
-    <link>https://matiasgaleano.dev/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion</link>
-    <guid>https://matiasgaleano.dev/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion</guid>
-    <pubDate>Wed, 18 Mar 2026 00:00:00 GMT</pubDate>
-    <description>Así armé mi stack real de observabilidad en producción con Grafana, Loki y Promtail sobre Docker en EC2: logs centralizados, menos tiempo perdido y costo bajo a cambio de más operación manual.</description>
   </item>
   <item>
     <title>Cómo diseño contratos cross-repo sin volverme loco</title>
     <link>https://matiasgaleano.dev/blog/como-diseno-contratos-cross-repo-sin-volverme-loco</link>
     <guid>https://matiasgaleano.dev/blog/como-diseno-contratos-cross-repo-sin-volverme-loco</guid>
-    <pubDate>Fri, 13 Mar 2026 00:00:00 GMT</pubDate>
+    <pubDate>Fri, 06 Mar 2026 00:00:00 GMT</pubDate>
     <description>Así diseño contratos cross-repo entre frontend, backend y automatización: ownership claro, artifacts explícitos, handoffs versionados y menos acoplamiento implícito.</description>
   </item>
   <item>
-    <title>Cómo armé un portfolio static-first con Angular, Markdown y prerender</title>
-    <link>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</link>
-    <guid>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</guid>
-    <pubDate>Tue, 10 Mar 2026 00:00:00 GMT</pubDate>
-    <description>Cómo llevé mi portfolio a un modelo static-first real: contenido en Markdown, artifacts JSON generados en build, prerender de rutas y backend reducido solo a capacidades dinámicas.</description>
+    <title>Cómo resolví el contrato de errores en ASP.NET Core y NestJS</title>
+    <link>https://matiasgaleano.dev/blog/errores-estables-dos-apis-reales</link>
+    <guid>https://matiasgaleano.dev/blog/errores-estables-dos-apis-reales</guid>
+    <pubDate>Fri, 27 Feb 2026 00:00:00 GMT</pubDate>
+    <description>En Proyecto Atlas API y Modo Playa API resolví el mismo problema con stacks distintos: devolver errores útiles para backend, frontend y usuario sin depender de parsear mensajes libres.</description>
   </item>
   <item>
     <title>Cómo diseñé la arquitectura de Modo Playa</title>
     <link>https://matiasgaleano.dev/blog/arquitectura-modo-playa</link>
     <guid>https://matiasgaleano.dev/blog/arquitectura-modo-playa</guid>
-    <pubDate>Sat, 07 Mar 2026 00:00:00 GMT</pubDate>
+    <pubDate>Wed, 18 Feb 2026 00:00:00 GMT</pubDate>
     <description>Modo Playa está pensado como un producto multi-tenant real: API NestJS, MongoDB, aislamiento por ownerId, separación entre catálogo público y admin, y un pipeline backend para uploads e imágenes.</description>
   </item>
   <item>
-    <title>Cómo estructuro mis proyectos Angular (arquitectura real)</title>
-    <link>https://matiasgaleano.dev/blog/arquitectura-angular-real</link>
-    <guid>https://matiasgaleano.dev/blog/arquitectura-angular-real</guid>
-    <pubDate>Thu, 05 Mar 2026 00:00:00 GMT</pubDate>
-    <description>Así organizo mis proyectos Angular reales: una capa base para API, CRUD y recursos, componentes abstractos para listas y formularios, y servicios transversales para navegación, storage e i18n.</description>
+    <title>Cómo armé un portfolio static-first con Angular, Markdown y prerender</title>
+    <link>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</link>
+    <guid>https://matiasgaleano.dev/blog/portfolio-static-first-angular-markdown-prerender</guid>
+    <pubDate>Fri, 06 Feb 2026 00:00:00 GMT</pubDate>
+    <description>Cómo llevé mi portfolio a un modelo static-first real: contenido en Markdown, artifacts JSON generados en build, prerender de rutas y backend reducido solo a capacidades dinámicas.</description>
+  </item>
+  <item>
+    <title>Cuando docker logs dejó de ser suficiente en producción</title>
+    <link>https://matiasgaleano.dev/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion</link>
+    <guid>https://matiasgaleano.dev/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion</guid>
+    <pubDate>Thu, 29 Jan 2026 00:00:00 GMT</pubDate>
+    <description>Así armé mi stack real de observabilidad en producción con Grafana, Loki y Promtail sobre Docker en EC2: logs centralizados, menos tiempo perdido y costo bajo a cambio de más operación manual.</description>
   </item>
   <item>
     <title>Cómo desplegar APIs con Docker en un EC2 (paso a paso)</title>
     <link>https://matiasgaleano.dev/blog/desplegar-apis-docker-ec2</link>
     <guid>https://matiasgaleano.dev/blog/desplegar-apis-docker-ec2</guid>
-    <pubDate>Mon, 02 Mar 2026 00:00:00 GMT</pubDate>
+    <pubDate>Thu, 15 Jan 2026 00:00:00 GMT</pubDate>
     <description>Así despliego mis APIs NestJS en un EC2 compartido: imágenes en GHCR, Docker Compose por app, HTTPS en el reverse proxy y deploy automático con GitHub Actions.</description>
   </item>
 </channel>

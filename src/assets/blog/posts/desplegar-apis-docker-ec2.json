@@ -2,7 +2,7 @@
   "slug": "desplegar-apis-docker-ec2",
   "title": "Cómo desplegar APIs con Docker en un EC2 (paso a paso)",
   "excerpt": "Así despliego mis APIs NestJS en un EC2 compartido: imágenes en GHCR, Docker Compose por app, HTTPS en el reverse proxy y deploy automático con GitHub Actions.",
-  "date": "2026-03-02",
+  "date": "2026-01-15",
   "tags": [
     "docker",
     "aws",

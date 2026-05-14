@@ -2,7 +2,7 @@
 title: Cómo diseñé la arquitectura de Modo Playa
 slug: arquitectura-modo-playa
 excerpt: "Modo Playa está pensado como un producto multi-tenant real: API NestJS, MongoDB, aislamiento por ownerId, separación entre catálogo público y admin, y un pipeline backend para uploads e imágenes."
-date: 2026-03-07
+date: 2026-02-18
 tags:
   - nestjs
   - mongodb
@@ -15,9 +15,9 @@ ogImage: /assets/blog/arquitectura-modo-playa/og.webp
 draft: false
 ---
 
-Modo Playa no lo pensé como una demo aislada. Lo pensé como un producto que necesitaba dos superficies distintas:
+Modo Playa no lo pensé como una demo aislada. Lo pensé como un producto real que hoy ya tiene presencia pública, incluso con app publicada en [Google Play](https://play.google.com/store/apps/details?id=io.modoplay.app), y que necesitaba dos superficies distintas:
 
-- un catálogo público para buscar alojamientos
+- un catálogo público mobile-first para buscar alojamientos
 - un panel administrativo para que cada propietario gestione sus datos
 
 Esa separación empujó la arquitectura desde el principio. El resultado fue un ecosistema con tres aplicaciones:
