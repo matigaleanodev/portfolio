@@ -1,5 +1,19 @@
 [
   {
+    "slug": "como-organizo-componentes-angular-standalone-sin-rigidizar-frontend",
+    "title": "Cómo organizo componentes en Angular standalone sin rigidizar el frontend",
+    "excerpt": "Un frontend mantenible no sale de inventar carpetas perfectas. Sale de componentizar chico, mover lógica donde corresponde y usar Angular standalone para marcar límites más claros sin volver la UI ceremoniosa.",
+    "date": "2026-05-14",
+    "tags": [
+      "angular",
+      "frontend",
+      "architecture",
+      "engineering"
+    ],
+    "coverImage": "/assets/blog/como-organizo-componentes-angular-standalone-sin-rigidizar-frontend/cover.webp",
+    "readingTimeMinutes": 8
+  },
+  {
     "slug": "jerarquia-visual-importa-mas-de-lo-que-parece",
     "title": "Por qué la jerarquía visual importa más de lo que parece",
     "excerpt": "Muchas interfaces no se sienten pesadas por falta de estética, sino porque todo compite al mismo tiempo. La jerarquía visual ordena la atención, baja la carga mental y vuelve más entendibles tablas, formularios y paneles reales.",
