@@ -6,6 +6,13 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Mas arquitectura no siempre es mejor</title>
+    <link>https://matiasgaleano.dev/blog/mas-arquitectura-no-siempre-es-mejor</link>
+    <guid>https://matiasgaleano.dev/blog/mas-arquitectura-no-siempre-es-mejor</guid>
+    <pubDate>Thu, 09 Apr 2026 00:00:00 GMT</pubDate>
+    <description>Agregar capas, servicios o infraestructura no vuelve madura a una solución. La decisión correcta aparece cuando la arquitectura responde a un problema real, con costo, escala y operación concretos.</description>
+  </item>
+  <item>
     <title>Por qué desacoplé el manejo de imágenes en el backend</title>
     <link>https://matiasgaleano.dev/blog/imagenes-backend-only-api-multi-tenant</link>
     <guid>https://matiasgaleano.dev/blog/imagenes-backend-only-api-multi-tenant</guid>
