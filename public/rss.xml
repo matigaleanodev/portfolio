@@ -6,6 +6,13 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Por qué la jerarquía visual importa más de lo que parece</title>
+    <link>https://matiasgaleano.dev/blog/jerarquia-visual-importa-mas-de-lo-que-parece</link>
+    <guid>https://matiasgaleano.dev/blog/jerarquia-visual-importa-mas-de-lo-que-parece</guid>
+    <pubDate>Sat, 25 Apr 2026 00:00:00 GMT</pubDate>
+    <description>Muchas interfaces no se sienten pesadas por falta de estética, sino porque todo compite al mismo tiempo. La jerarquía visual ordena la atención, baja la carga mental y vuelve más entendibles tablas, formularios y paneles reales.</description>
+  </item>
+  <item>
     <title>Mas arquitectura no siempre es mejor</title>
     <link>https://matiasgaleano.dev/blog/mas-arquitectura-no-siempre-es-mejor</link>
     <guid>https://matiasgaleano.dev/blog/mas-arquitectura-no-siempre-es-mejor</guid>

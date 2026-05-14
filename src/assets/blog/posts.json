@@ -1,5 +1,19 @@
 [
   {
+    "slug": "jerarquia-visual-importa-mas-de-lo-que-parece",
+    "title": "Por qué la jerarquía visual importa más de lo que parece",
+    "excerpt": "Muchas interfaces no se sienten pesadas por falta de estética, sino porque todo compite al mismo tiempo. La jerarquía visual ordena la atención, baja la carga mental y vuelve más entendibles tablas, formularios y paneles reales.",
+    "date": "2026-04-25",
+    "tags": [
+      "frontend",
+      "engineering",
+      "product",
+      "ui"
+    ],
+    "coverImage": "/assets/blog/jerarquia-visual-importa-mas-de-lo-que-parece/cover.webp",
+    "readingTimeMinutes": 10
+  },
+  {
     "slug": "mas-arquitectura-no-siempre-es-mejor",
     "title": "Mas arquitectura no siempre es mejor",
     "excerpt": "Agregar capas, servicios o infraestructura no vuelve madura a una solución. La decisión correcta aparece cuando la arquitectura responde a un problema real, con costo, escala y operación concretos.",
