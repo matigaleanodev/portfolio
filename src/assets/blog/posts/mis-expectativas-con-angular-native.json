@@ -1,0 +1,63 @@
+{
+  "slug": "mis-expectativas-con-angular-native",
+  "title": "Mis expectativas con Angular Native",
+  "excerpt": "Angular Native me interesa por la posibilidad de construir interfaces nativas desde Angular. Estas son mis expectativas, las dudas que todavía tengo y las pruebas que haría antes de elegirlo para una app real.",
+  "date": "2026-10-09",
+  "tags": [
+    "angular",
+    "angular-native",
+    "mobile",
+    "engineering"
+  ],
+  "coverImage": "/assets/blog/mis-expectativas-con-angular-native/cover.webp",
+  "readingTimeMinutes": 6,
+  "contentHtml": "<p>Angular Native me llamó la atención bastante rápido. Trabajo con Angular y la posibilidad de llevar parte de esa forma de desarrollar a una interfaz nativa me resulta atractiva.</p>\n<p>También me genera preguntas. Una cosa es reconocer templates, signals e inyección de dependencias. Otra es construir una app que se comporte bien cuando aparece el teclado, se pierde un permiso o el sistema decide suspenderla.</p>\n<p>Por eso hoy me interesa hablar de expectativas. Todavía no lo estoy presentando como una herramienta que ya probé en producción ni como una decisión tomada para mis proyectos.</p>\n<p>Lo que quiero entender es cuánto de la experiencia que valoro en Angular se conserva y qué tengo que aprender para usarla bien en mobile.</p>\n<h2 id=\"section-que-propuesta-estoy-mirando\">Qué propuesta estoy mirando</h2><p>Al escribir este post, el 9 de octubre de 2026, <a href=\"https://ng-native.com/\" rel=\"noopener noreferrer\" target=\"_blank\">Angular Native</a> se presenta como un proyecto independiente en alpha. No es un producto oficial del equipo de Angular ni de Google.</p>\n<p>Su propuesta es renderizar componentes Angular como vistas nativas de iOS y Android, apoyándose en Expo y en Fabric, el renderer de React Native. Su <a href=\"https://github.com/ng-native/ng-native/blob/main/CHANGELOG.md\" rel=\"noopener noreferrer\" target=\"_blank\">changelog</a> registra la primera versión pública el 29 de septiembre de 2026.</p>\n<p>Eso explica buena parte de mi interés: poder trabajar desde Angular y explorar una UI que se renderiza con vistas nativas.</p>\n<p>Pero también define el contexto. Es una propuesta joven y hay varias capas técnicas involucradas. Antes de elegirla para algo importante, necesito entender cómo se desarrollan, se depuran y se actualizan juntas.</p>\n<h2 id=\"section-espero-aprovechar-lo-que-ya-se-de-angular\">Espero aprovechar lo que ya sé de Angular</h2><p>La primera expectativa es bastante práctica: que conocer Angular reduzca la fricción al construir la app.</p>\n<p>Me interesa poder mantener componentes con responsabilidades claras, servicios para coordinación y un manejo de estado que no me obligue a cambiar de modelo mental para cada pantalla.</p>\n<p>También espero poder reconocer las dependencias de una feature y probar su lógica sin tener que ejecutar todo el flujo en un dispositivo para cada cambio pequeño.</p>\n<p>Eso tiene valor porque el conocimiento de un framework incluye mucho más que escribir su sintaxis. Incluye saber cómo organizar una feature, dónde buscar un problema y qué decisiones suelen complicar el mantenimiento.</p>\n<p>Al mismo tiempo, no esperaría trasladar cualquier componente web sin revisarlo. Una pantalla diseñada para mouse, navegador y espacio de escritorio necesita otro trabajo cuando pasa a un teléfono.</p>\n<p>Compartir conocimientos puede ahorrar esfuerzo. La experiencia mobile sigue necesitando decisiones propias.</p>\n<h2 id=\"section-quiero-entender-que-cambia-frente-a-ionic-y-capacitor\">Quiero entender qué cambia frente a Ionic y Capacitor</h2><p>Mi referencia para desarrollar mobile con Angular incluye Ionic y Capacitor. <a href=\"https://capacitorjs.com/docs\" rel=\"noopener noreferrer\" target=\"_blank\">Capacitor</a> permite llevar una app web a plataformas nativas y acceder a capacidades del dispositivo mediante plugins.</p>\n<p>Angular Native propone otro camino para la interfaz: vistas nativas en lugar de renderizarla dentro de una WebView. Esa diferencia me interesa, pero no alcanza por sí sola para elegir una herramienta.</p>\n<p>Querría comparar una pantalla concreta: un listado, un formulario, navegación entre vistas y alguna interacción con el dispositivo.</p>\n<p>Me fijaría en cosas bastante cotidianas: cómo se mueve el contenido al abrir el teclado, cómo funciona volver atrás, qué pasa con el foco y cuánto trabajo requiere respetar el comportamiento de cada plataforma.</p>\n<p>También miraría cuánto código y cuántas excepciones necesita cada alternativa para entregar la misma experiencia. Una demo linda puede mostrar el potencial; mantener una pantalla real permite evaluar el costo.</p>\n<h2 id=\"section-la-prueba-que-me-gustaria-hacer-es-chica-pero-exigente\">La prueba que me gustaría hacer es chica, pero exigente</h2><p>Una app local para registrar caminatas me parece un buen ejercicio para explorarlo. Como planteé en <a href=\"/blog/mi-app-necesita-un-backend-desde-el-primer-dia\" rel=\"noopener noreferrer\" target=\"_blank\">¿Mi app necesita un backend desde el primer día?</a>, empezaría por una experiencia acotada en el dispositivo.</p>\n<p>La dividiría en pasos:</p>\n<ol>\n<li>Navegar entre una pantalla de actividad y un historial.</li>\n<li>Guardar y recuperar una actividad local.</li>\n<li>Pedir ubicación y manejar el rechazo del permiso.</li>\n<li>Registrar un recorrido en un teléfono Android real.</li>\n<li>Evaluar qué pasa al bloquear la pantalla o interrumpir la app.</li>\n</ol>\n<p>Ese último punto sería parte de la investigación. No doy por hecho que disponer de una API de ubicación resuelva seguimiento en segundo plano, permisos y restricciones de batería.</p>\n<p>Antes de sumar fotos, notificaciones o detalles visuales, querría saber si puedo sostener el comportamiento central. Si el recorrido se pierde cuando guardo el teléfono en el bolsillo, todavía queda trabajo esencial por resolver.</p>\n<h2 id=\"section-espero-poder-depurar-lo-que-se-rompe\">Espero poder depurar lo que se rompe</h2><p>Una de las cosas que más me importa en una herramienta nueva es cómo se comporta cuando algo falla.</p>\n<p>Quiero entender si un error viene de mi componente, del acceso a una capacidad del dispositivo, del build nativo o de una incompatibilidad entre dependencias.</p>\n<p>También me interesa el recorrido desde el entorno de desarrollo hasta una aplicación instalada. Que funcione en una demo o en un emulador es una parte de la evaluación. Quiero poder generar un build, instalarlo y repetir el flujo en condiciones de uso reales.</p>\n<p>La velocidad de iteración importa. La posibilidad de explicar un fallo y reproducirlo importa todavía más cuando hay que mantener el producto.</p>\n<h2 id=\"section-la-accesibilidad-entra-en-la-evaluacion-desde-el-principio\">La accesibilidad entra en la evaluación desde el principio</h2><p>Que una interfaz use vistas nativas no me alcanza para asumir que ya está bien resuelta.</p>\n<p>Probaría lectura con tecnologías de asistencia, etiquetas de botones, orden de foco y tamaños de texto. También revisaría que una acción importante sea fácil de tocar y que un estado no dependa únicamente del color.</p>\n<p>Son detalles que una captura no permite evaluar. Prefiero incluirlos en una pantalla chica desde el principio, porque después condicionan cómo organizo componentes e interacciones.</p>\n<h2 id=\"section-tambien-quiero-ver-como-evoluciona\">También quiero ver cómo evoluciona</h2><p>Al estar en alpha, esperaría cambios. Lo que me interesa observar es cómo se comunican, qué tan claros son los ejemplos y cuánto cuesta actualizar una app cuando cambia alguna de las capas involucradas.</p>\n<p>Miraría documentación, problemas abiertos y continuidad de mantenimiento. También querría saber qué camino queda cuando necesito una capacidad del dispositivo que todavía no está cubierta.</p>\n<p>Para experimentar puedo aceptar bastante movimiento. Para elegir una base de producto necesito entender qué costo de mantenimiento estoy asumiendo.</p>\n<h2 id=\"section-que-tendria-que-pasar-para-que-lo-elija\">Qué tendría que pasar para que lo elija</h2><p>Mi expectativa es poder construir una app mobile aprovechando Angular y conseguir una experiencia que se sienta bien en el dispositivo, con una base que pueda entender y mantener.</p>\n<p>Para avanzar, querría completar esa prueba chica: navegación, persistencia, permisos, un recorrido real y un build instalable. Después vendría evaluar con más evidencia qué funciona bien y qué límites aparecen.</p>\n<p>Hoy Angular Native me da una razón concreta para explorar. La decisión de usarlo en un producto va a depender de lo que encuentre cuando esa idea salga de la documentación y llegue al teléfono.</p>\n",
+  "headings": [
+    {
+      "id": "section-que-propuesta-estoy-mirando",
+      "title": "Qué propuesta estoy mirando",
+      "level": 2
+    },
+    {
+      "id": "section-espero-aprovechar-lo-que-ya-se-de-angular",
+      "title": "Espero aprovechar lo que ya sé de Angular",
+      "level": 2
+    },
+    {
+      "id": "section-quiero-entender-que-cambia-frente-a-ionic-y-capacitor",
+      "title": "Quiero entender qué cambia frente a Ionic y Capacitor",
+      "level": 2
+    },
+    {
+      "id": "section-la-prueba-que-me-gustaria-hacer-es-chica-pero-exigente",
+      "title": "La prueba que me gustaría hacer es chica, pero exigente",
+      "level": 2
+    },
+    {
+      "id": "section-espero-poder-depurar-lo-que-se-rompe",
+      "title": "Espero poder depurar lo que se rompe",
+      "level": 2
+    },
+    {
+      "id": "section-la-accesibilidad-entra-en-la-evaluacion-desde-el-principio",
+      "title": "La accesibilidad entra en la evaluación desde el principio",
+      "level": 2
+    },
+    {
+      "id": "section-tambien-quiero-ver-como-evoluciona",
+      "title": "También quiero ver cómo evoluciona",
+      "level": 2
+    },
+    {
+      "id": "section-que-tendria-que-pasar-para-que-lo-elija",
+      "title": "Qué tendría que pasar para que lo elija",
+      "level": 2
+    }
+  ],
+  "seo": {
+    "title": "Mis expectativas con Angular Native | Matias Galeano",
+    "description": "Angular Native me interesa por la posibilidad de construir interfaces nativas desde Angular. Estas son mis expectativas, las dudas que todavía tengo y las pruebas que haría antes de elegirlo para una app real.",
+    "canonicalUrl": "https://matiasgaleano.dev/blog/mis-expectativas-con-angular-native",
+    "ogImage": "https://media.matiasgaleano.dev/og/mis-expectativas-con-angular-native.png"
+  }
+}

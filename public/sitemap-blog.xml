@@ -2,7 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://matiasgaleano.dev/blog</loc>
-    <lastmod>2026-05-14</lastmod>
+    <lastmod>2026-10-09</lastmod>
+  </url>
+  <url>
+    <loc>https://matiasgaleano.dev/blog/mis-expectativas-con-angular-native</loc>
+    <lastmod>2026-10-09</lastmod>
+  </url>
+  <url>
+    <loc>https://matiasgaleano.dev/blog/mi-app-necesita-un-backend-desde-el-primer-dia</loc>
+    <lastmod>2026-08-20</lastmod>
+  </url>
+  <url>
+    <loc>https://matiasgaleano.dev/blog/como-decido-entre-signals-y-rxjs-en-angular</loc>
+    <lastmod>2026-07-16</lastmod>
   </url>
   <url>
     <loc>https://matiasgaleano.dev/blog/como-organizo-componentes-angular-standalone-sin-rigidizar-frontend</loc>

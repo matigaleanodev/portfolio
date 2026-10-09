@@ -1,5 +1,48 @@
 [
   {
+    "slug": "mis-expectativas-con-angular-native",
+    "title": "Mis expectativas con Angular Native",
+    "excerpt": "Angular Native me interesa por la posibilidad de construir interfaces nativas desde Angular. Estas son mis expectativas, las dudas que todavía tengo y las pruebas que haría antes de elegirlo para una app real.",
+    "date": "2026-10-09",
+    "tags": [
+      "angular",
+      "angular-native",
+      "mobile",
+      "engineering"
+    ],
+    "coverImage": "/assets/blog/mis-expectativas-con-angular-native/cover.webp",
+    "readingTimeMinutes": 6
+  },
+  {
+    "slug": "mi-app-necesita-un-backend-desde-el-primer-dia",
+    "title": "¿Mi app necesita un backend desde el primer día?",
+    "excerpt": "Una primera versión mobile puede resolver mucho con datos locales. El criterio está en entender qué necesita el usuario, qué pasa si pierde el dispositivo y cuándo cuentas, backup o sincronización justifican un backend.",
+    "date": "2026-08-20",
+    "tags": [
+      "mobile",
+      "architecture",
+      "product",
+      "backend",
+      "engineering"
+    ],
+    "coverImage": "/assets/blog/mi-app-necesita-un-backend-desde-el-primer-dia/cover.webp",
+    "readingTimeMinutes": 6
+  },
+  {
+    "slug": "como-decido-entre-signals-y-rxjs-en-angular",
+    "title": "Cómo decido entre Signals y RxJS en Angular",
+    "excerpt": "Estado de pantalla, valores derivados y búsquedas HTTP tienen necesidades distintas. Así decido dónde usar signals, dónde mantener RxJS y cómo conectar ambos sin duplicar responsabilidades.",
+    "date": "2026-07-16",
+    "tags": [
+      "angular",
+      "frontend",
+      "rxjs",
+      "engineering"
+    ],
+    "coverImage": "/assets/blog/como-decido-entre-signals-y-rxjs-en-angular/cover.webp",
+    "readingTimeMinutes": 6
+  },
+  {
     "slug": "como-organizo-componentes-angular-standalone-sin-rigidizar-frontend",
     "title": "Cómo organizo componentes en Angular standalone sin rigidizar el frontend",
     "excerpt": "Un frontend mantenible no sale de inventar carpetas perfectas. Sale de componentizar chico, mover lógica donde corresponde y usar Angular standalone para marcar límites más claros sin volver la UI ceremoniosa.",
