@@ -6,6 +6,27 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Mis expectativas con Angular Native</title>
+    <link>https://matiasgaleano.dev/blog/mis-expectativas-con-angular-native</link>
+    <guid>https://matiasgaleano.dev/blog/mis-expectativas-con-angular-native</guid>
+    <pubDate>Fri, 09 Oct 2026 00:00:00 GMT</pubDate>
+    <description>Angular Native me interesa por la posibilidad de construir interfaces nativas desde Angular. Estas son mis expectativas, las dudas que todavía tengo y las pruebas que haría antes de elegirlo para una app real.</description>
+  </item>
+  <item>
+    <title>¿Mi app necesita un backend desde el primer día?</title>
+    <link>https://matiasgaleano.dev/blog/mi-app-necesita-un-backend-desde-el-primer-dia</link>
+    <guid>https://matiasgaleano.dev/blog/mi-app-necesita-un-backend-desde-el-primer-dia</guid>
+    <pubDate>Thu, 20 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Una primera versión mobile puede resolver mucho con datos locales. El criterio está en entender qué necesita el usuario, qué pasa si pierde el dispositivo y cuándo cuentas, backup o sincronización justifican un backend.</description>
+  </item>
+  <item>
+    <title>Cómo decido entre Signals y RxJS en Angular</title>
+    <link>https://matiasgaleano.dev/blog/como-decido-entre-signals-y-rxjs-en-angular</link>
+    <guid>https://matiasgaleano.dev/blog/como-decido-entre-signals-y-rxjs-en-angular</guid>
+    <pubDate>Thu, 16 Jul 2026 00:00:00 GMT</pubDate>
+    <description>Estado de pantalla, valores derivados y búsquedas HTTP tienen necesidades distintas. Así decido dónde usar signals, dónde mantener RxJS y cómo conectar ambos sin duplicar responsabilidades.</description>
+  </item>
+  <item>
     <title>Cómo organizo componentes en Angular standalone sin rigidizar el frontend</title>
     <link>https://matiasgaleano.dev/blog/como-organizo-componentes-angular-standalone-sin-rigidizar-frontend</link>
     <guid>https://matiasgaleano.dev/blog/como-organizo-componentes-angular-standalone-sin-rigidizar-frontend</guid>
