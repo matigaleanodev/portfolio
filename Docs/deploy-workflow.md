@@ -105,3 +105,7 @@ The deploy workflow now expects these GitHub secrets or variables in `portfolio`
 - `AWS_REGION`
 - `PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME` optional, defaults to `portfolio-cloud-dev-process-release`
 - `PORTFOLIO_CLOUD_PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME` optional, defaults to `portfolio-cloud-dev-publish-chat-knowledge`
+
+## Versioned Releases
+
+A `release/vX.Y.Z` branch carries the matching package version and paired release notes in `Docs/releases/`. Merge its PR to `main` using squash. After the merge, `release.yml` validates the branch/version match, creates an annotated `vX.Y.Z` tag on the merged commit, and publishes the GitHub release from the Spanish notes. An existing draft release is published automatically. Existing tags are accepted only when they already point to that same commit. Firebase deployment and `dev` synchronization run independently on the `main` push.

@@ -4,6 +4,34 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('build-content pipeline', () => {
+  it('debería preservar estructura técnica con IDs estables y sanitización', () => {
+    const markdown =
+      '## Repetido\n\n## Repetido\n\n### Detalle\n\n1. Paso\n   - Anidado\n\n| Campo | Valor |\n| --- | --- |\n| id | 1 |\n\n```typescript\nconst value = "hola";\n```\n\n<script>alert(1)</script>\n\n[Inseguro](javascript:alert(1))';
+    const result = JSON.parse(
+      execFileSync(
+        'node',
+        [
+          '--input-type=module',
+          '-e',
+          `import { renderMarkdown } from './scripts/build-content.mjs'; console.log(JSON.stringify(renderMarkdown(${JSON.stringify(markdown)})));`,
+        ],
+        { encoding: 'utf8' },
+      ),
+    ) as { contentHtml: string; headings: { id: string; level: number }[] };
+    expect(result.headings.map((heading) => heading.id)).toEqual([
+      'section-repetido',
+      'section-repetido-2',
+      'section-detalle',
+    ]);
+    expect(result.headings.map((heading) => heading.level)).toEqual([2, 2, 3]);
+    expect(result.contentHtml).toContain('<ol>');
+    expect(result.contentHtml).toContain('<ul>');
+    expect(result.contentHtml).toContain('class="table-scroll"');
+    expect(result.contentHtml).toContain('<table>');
+    expect(result.contentHtml).toContain('hljs-keyword');
+    expect(result.contentHtml).not.toContain('<script');
+    expect(result.contentHtml).not.toContain('javascript:');
+  });
   it('deberia generar artifacts consistentes para blog y seo', () => {
     execFileSync('node', ['./scripts/build-content.mjs'], {
       cwd: process.cwd(),
@@ -79,7 +107,10 @@ describe('build-content pipeline', () => {
     const projectFile = join(projectDir, 'index.md');
 
     mkdirSync(scriptsDir, { recursive: true });
-    cpSync(join(process.cwd(), 'scripts', 'build-content.mjs'), join(scriptsDir, 'build-content.mjs'));
+    cpSync(
+      join(process.cwd(), 'scripts', 'build-content.mjs'),
+      join(scriptsDir, 'build-content.mjs'),
+    );
     cpSync(join(process.cwd(), 'content'), contentDir, { recursive: true });
     mkdirSync(projectDir, { recursive: true });
     writeFileSync(

@@ -83,3 +83,7 @@ Useful commands:
 ## Version
 
 Current application version: **1.1.0**
+
+## Design and accessibility review
+
+See [the verification report](./Docs/design-accessibility-review.md) for comparable captures, measurements, test coverage and remaining manual checks.

@@ -1,7 +1,7 @@
-<section class="py-14 md:py-20 bg-(--color-bg)">
+<section id="contact" tabindex="-1" class="py-14 md:py-20 bg-(--color-bg)">
   <div class="max-w-3xl mx-auto px-6 space-y-8 md:space-y-10">
     <header class="space-y-2">
-      <h2 id="contact-title" class="text-3xl font-medium">Contacto</h2>
+      <h2 id="contact-title" class="section-title">Contacto</h2>
 
       <p id="contact-description" class="text-base opacity-70">
         Si te interesa mi perfil o querés charlar sobre algún proyecto, podés escribirme
@@ -53,7 +53,7 @@
         />
 
         @if (form.get('name')?.touched && form.get('name')?.invalid) {
-          <p id="contact-name-error" class="text-sm text-rose-600/90 error-animate">
+          <p id="contact-name-error" class="text-sm text-rose-800 error-animate">
             @if (form.get('name')?.errors?.['required']) {
               El nombre es obligatorio
             }
@@ -92,12 +92,12 @@
         />
 
         @if (form.get('email')?.touched && form.get('email')?.invalid) {
-          <p id="contact-email-error" class="text-sm text-rose-600/90 error-animate">
+          <p id="contact-email-error" class="text-sm text-rose-800 error-animate">
             @if (form.get('email')?.errors?.['required']) {
               El email es obligatorio
             }
             @if (form.get('email')?.errors?.['email']) {
-              Ingrese un email válido
+              Ingresá un email válido
             }
           </p>
         }
@@ -132,7 +132,7 @@
         ></textarea>
 
         @if (form.get('message')?.touched && form.get('message')?.invalid) {
-          <p id="contact-message-error" class="text-sm text-rose-600/90 error-animate">
+          <p id="contact-message-error" class="text-sm text-rose-800 error-animate">
             @if (form.get('message')?.errors?.['required']) {
               El mensaje es obligatorio
             }
@@ -165,7 +165,7 @@
         }
 
         @if (submitError()) {
-          <p class="text-sm text-rose-600/90 error-animate" role="alert">{{ submitError() }}</p>
+          <p class="text-sm text-rose-800 error-animate" role="alert">{{ submitError() }}</p>
         } @else if (submitSucceeded()) {
           <p class="text-sm text-emerald-700/90">Mensaje enviado. Te respondo a la brevedad.</p>
         }

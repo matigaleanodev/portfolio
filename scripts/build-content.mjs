@@ -2,7 +2,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
-import { marked } from 'marked';
+import { marked, Renderer } from 'marked';
+import hljs from 'highlight.js';
 import sanitizeHtml from 'sanitize-html';
 
 const rootDir = process.cwd();
@@ -162,7 +163,7 @@ async function loadPosts() {
         : null;
 
     const readingTimeMinutes = calculateReadingTime(entry.content);
-    const sanitizedHtml = sanitizeGeneratedHtml(marked.parse(entry.content));
+    const { contentHtml, headings } = renderMarkdown(entry.content);
     const canonicalUrl = stringifyOptional(entry.data.canonicalUrl) ?? `${siteUrl}/blog/${slug}`;
     const ogImage = resolveOgImage(stringifyOptional(entry.data.ogImage), slug);
 
@@ -176,7 +177,8 @@ async function loadPosts() {
         tags: entry.data.tags.map((value) => value.trim()),
         coverImage: entry.data.coverImage.trim(),
         readingTimeMinutes,
-        contentHtml: sanitizedHtml,
+        contentHtml,
+        headings,
         seo: {
           title: `${entry.data.title.trim()} | Matias Galeano`,
           description: entry.data.excerpt.trim(),
@@ -190,7 +192,7 @@ async function loadPosts() {
   visiblePosts.sort((left, right) => right.date.localeCompare(left.date));
 
   return {
-    index: visiblePosts.map(({ contentHtml, seo, ...indexEntry }) => indexEntry),
+    index: visiblePosts.map(({ contentHtml, seo, headings, ...indexEntry }) => indexEntry),
     details: visiblePosts,
   };
 }
@@ -243,6 +245,33 @@ export function calculateReadingTime(content) {
   return Math.max(1, Math.ceil(words / 200));
 }
 
+export function renderMarkdown(markdown) {
+  const headings = [];
+  const ids = new Map();
+  const renderer = new Renderer();
+  renderer.heading = function ({ tokens, depth }) {
+    const label = tokens.map((token) => token.text ?? token.raw).join('');
+    const baseId = `section-${slugify(label) || 'heading'}`;
+    const count = (ids.get(baseId) ?? 0) + 1;
+    ids.set(baseId, count);
+    const id = count === 1 ? baseId : `${baseId}-${count}`;
+    if (depth === 2 || depth === 3) headings.push({ id, title: label, level: depth });
+    return `<h${depth} id="${id}">${this.parser.parseInline(tokens)}</h${depth}>`;
+  };
+  renderer.code = ({ text, lang }) => {
+    const requestedLanguage = (lang ?? '').split(/\s/)[0].toLowerCase();
+    const language = hljs.getLanguage(requestedLanguage) ? requestedLanguage : 'plaintext';
+    if (requestedLanguage === 'mermaid')
+      return `<pre><code class="language-mermaid">${xmlEscape(text)}</code></pre>`;
+    const highlighted = hljs.highlight(text, { language, ignoreIllegals: true }).value;
+    return `<pre tabindex="0" aria-label="Código ${language}"><code class="language-${language}">${highlighted}</code></pre>`;
+  };
+  const renderTable = renderer.table.bind(renderer);
+  renderer.table = (token) =>
+    `<div class="table-scroll" role="region" aria-label="Tabla del artículo" tabindex="0">${renderTable(token)}</div>`;
+  return { contentHtml: sanitizeGeneratedHtml(marked.parse(markdown, { renderer })), headings };
+}
+
 export function sanitizeGeneratedHtml(html) {
   return sanitizeHtml(html, {
     allowedTags: [
@@ -265,12 +294,35 @@ export function sanitizeGeneratedHtml(html) {
       'hr',
       'br',
       'img',
+      'span',
+      'div',
+      'figure',
+      'figcaption',
+      'table',
+      'thead',
+      'tbody',
+      'tr',
+      'th',
+      'td',
     ],
     allowedAttributes: {
       a: ['href', 'target', 'rel'],
       img: ['src', 'alt', 'title'],
       code: ['class'],
+      span: ['class'],
+      div: ['class', 'role', 'aria-label', 'tabindex'],
+      pre: ['tabindex', 'aria-label'],
+      h1: ['id'],
+      h2: ['id'],
+      h3: ['id'],
+      h4: ['id'],
+      h5: ['id'],
+      h6: ['id'],
+      th: ['scope', 'colspan', 'rowspan'],
+      td: ['colspan', 'rowspan'],
+      ol: ['start'],
     },
+    allowedClasses: { span: ['hljs-*'], div: ['table-scroll'], code: ['language-*'] },
     allowedSchemes: ['http', 'https', 'mailto'],
     transformTags: {
       a: sanitizeHtml.simpleTransform('a', {
@@ -530,13 +582,7 @@ function buildProjectSearchText(project) {
 }
 
 function buildPostSearchText(post) {
-  return [
-    post.slug,
-    post.title,
-    post.excerpt,
-    ...post.tags,
-    summarizeHtml(post.contentHtml),
-  ]
+  return [post.slug, post.title, post.excerpt, ...post.tags, summarizeHtml(post.contentHtml)]
     .filter(Boolean)
     .join(' ');
 }

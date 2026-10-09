@@ -83,3 +83,7 @@ Comandos útiles:
 ## Version
 
 Versión actual de la aplicación: **1.1.0**
+
+## Revisión de diseño y accesibilidad
+
+El [informe de verificación](./Docs/design-accessibility-review.es.md) incluye capturas comparables, medidas, pruebas y verificaciones manuales pendientes.

@@ -17,6 +17,7 @@ export interface BlogPostSeo {
 }
 
 export interface BlogPost extends BlogPostSummary {
+  headings?: { id: string; title: string; level: number }[];
   updatedAt?: string;
   contentHtml: string;
   seo: BlogPostSeo;

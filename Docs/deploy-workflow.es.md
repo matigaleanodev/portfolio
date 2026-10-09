@@ -105,3 +105,7 @@ El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
 - `AWS_REGION`
 - `PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME` opcional, por defecto `portfolio-cloud-dev-process-release`
 - `PORTFOLIO_CLOUD_PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME` opcional, por defecto `portfolio-cloud-dev-publish-chat-knowledge`
+
+## Releases versionadas
+
+Una rama `release/vX.Y.Z` contiene la versión correspondiente del paquete y las notas en ambos idiomas en `Docs/releases/`. Su PR a `main` se integra mediante squash. Después del merge, `release.yml` valida la correspondencia entre rama y versión, crea un tag anotado `vX.Y.Z` sobre el commit integrado y publica la release de GitHub con las notas en español. Si existe un borrador, se publica automáticamente. Solo se aceptan tags existentes cuando ya apuntan a ese mismo commit. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.

@@ -16,3 +16,31 @@
   height: 1px;
   background: linear-gradient(90deg, rgb(229 231 235 / 0.5), rgb(229 231 235 / 0));
 }
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.hero-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: var(--space-3) var(--space-6);
+  border: 1px solid #8c93a1;
+  border-radius: var(--radius-field);
+  color: var(--color-bg);
+  text-decoration: none;
+  font-weight: 600;
+}
+.hero-action--primary {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.hero-action:focus-visible {
+  outline-color: #e5e7eb;
+}
+.hero-action:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

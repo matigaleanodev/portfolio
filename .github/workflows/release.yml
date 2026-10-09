@@ -1,0 +1,53 @@
+name: Publish release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-release-${{ github.event.pull_request.head.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.event.pull_request.head.ref, 'release/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout merged release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+
+      - name: Validate release version and create annotated tag
+        env:
+          RELEASE_BRANCH: ${{ github.event.pull_request.head.ref }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION}"
+          test "$RELEASE_BRANCH" = "release/$TAG"
+          test -f "Docs/releases/$TAG.es.md"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git rev-parse --verify "refs/tags/$TAG" >/dev/null 2>&1; then
+            test "$(git rev-list -n 1 "$TAG")" = "$MERGE_SHA"
+          else
+            git tag -a "$TAG" "$MERGE_SHA" -F "Docs/releases/$TAG.es.md"
+            git push origin "refs/tags/$TAG"
+          fi
+          echo "RELEASE_TAG=$TAG" >> "$GITHUB_ENV"
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --title "Portfolio $RELEASE_TAG" --notes-file "Docs/releases/$RELEASE_TAG.es.md" --draft=false --latest
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --title "Portfolio $RELEASE_TAG" --notes-file "Docs/releases/$RELEASE_TAG.es.md" --latest
+          fi

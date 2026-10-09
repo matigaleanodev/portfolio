@@ -1,3 +1,5 @@
+import '../../locale';
+
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import {
   Component,
@@ -17,12 +19,14 @@ import { BlogPost } from '../../models/blog.model';
 import { AnalyticsService } from '../../services/analytics.service';
 import { BlogContentService } from '../../services/blog-content.service';
 import { SeoService } from '../../services/seo.service';
+import { FragmentLinkDirective } from '../../ui/fragment-link.directive';
+import { EditorialContentDirective } from '../../ui/editorial-content.directive';
 
 type MermaidModule = typeof import('mermaid').default;
 
 @Component({
   selector: 'app-blog-post-page',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, FragmentLinkDirective, EditorialContentDirective],
   templateUrl: './blog-post.page.html',
   styleUrl: './blog-post.page.css',
   encapsulation: ViewEncapsulation.None,
@@ -31,7 +35,7 @@ export class BlogPostPage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly route = inject(ActivatedRoute);
-  private readonly hostRef = inject(ElementRef<HTMLElement>);
+  private readonly hostRef: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly blogContent = inject(BlogContentService);
   private readonly analytics = inject(AnalyticsService);
   private readonly seo = inject(SeoService);
@@ -39,6 +43,19 @@ export class BlogPostPage {
 
   readonly post = signal<BlogPost | null>(null);
   readonly errorMessage = signal('');
+  readonly copyFeedback = signal('');
+  readonly tableOfContents = computed(() => {
+    const current = this.post();
+    const headings = current?.headings ?? [];
+    if (!current || current.readingTimeMinutes < 8 || headings.length < 4) return [];
+    const sections: ((typeof headings)[number] & { children: typeof headings })[] = [];
+    for (const heading of headings) {
+      const parent = sections.at(-1);
+      if (heading.level === 3 && parent) parent.children.push(heading);
+      else sections.push({ ...heading, children: [] });
+    }
+    return sections;
+  });
 
   readonly seoTitle = computed(() => this.post()?.seo.title ?? 'Blog | Matias Galeano');
 
@@ -56,6 +73,7 @@ export class BlogPostPage {
 
           this.errorMessage.set('');
           this.post.set(null);
+          this.copyFeedback.set('');
 
           return this.blogContent.getPostBySlug(slug);
         }),
@@ -99,9 +117,55 @@ export class BlogPostPage {
       }
 
       this.scheduleDomTask(() => {
+        this.prepareCodeBlocks();
         void this.renderMermaidBlocks(currentPost.slug);
       });
     });
+  }
+
+  private prepareCodeBlocks(): void {
+    this.hostRef.nativeElement
+      .querySelectorAll<HTMLElement>('.blog-post__content pre')
+      .forEach((pre) => {
+        const code = pre.querySelector('code');
+        if (
+          !code ||
+          code.classList.contains('language-mermaid') ||
+          pre.parentElement?.classList.contains('code-block')
+        )
+          return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block';
+        const toolbar = document.createElement('div');
+        toolbar.className = 'code-toolbar';
+        const language = document.createElement('span');
+        language.textContent = code.className.match(/language-([\w-]+)/)?.[1] ?? 'texto';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'code-copy';
+        button.textContent = 'Copiar';
+        button.setAttribute('aria-label', `Copiar código ${language.textContent}`);
+        button.addEventListener('click', () => {
+          void this.copyCode(code.textContent ?? '');
+        });
+        toolbar.append(language, button);
+        pre.before(wrapper);
+        wrapper.append(toolbar, pre);
+        pre.tabIndex = 0;
+        pre.setAttribute('aria-label', `Código ${language.textContent}`);
+      });
+  }
+
+  private async copyCode(text: string): Promise<void> {
+    this.copyFeedback.set('');
+    try {
+      await navigator.clipboard.writeText(text);
+      this.copyFeedback.set('Código copiado.');
+    } catch {
+      this.copyFeedback.set(
+        'No se pudo copiar. Podés seleccionar el código y copiarlo manualmente.',
+      );
+    }
   }
 
   private async renderMermaidBlocks(slug: string) {

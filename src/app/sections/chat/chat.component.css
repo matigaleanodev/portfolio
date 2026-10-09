@@ -24,24 +24,16 @@
   --chat-surface-overlay: rgb(31 41 55 / 0.18);
   --chat-surface-shimmer: rgb(31 41 55 / 0.05);
   --chat-typing-dot: rgb(31 41 55 / 0.45);
-  --chat-shadow-fab:
-    0 16px 34px -18px rgb(31 41 55 / 0.75),
-    inset 0 1px 0 rgb(255 255 255 / 0.24);
+  --chat-shadow-fab: 0 16px 34px -18px rgb(31 41 55 / 0.75), inset 0 1px 0 rgb(255 255 255 / 0.24);
   --chat-shadow-fab-hover:
-    0 20px 38px -18px rgb(31 41 55 / 0.8),
-    inset 0 1px 0 rgb(255 255 255 / 0.24);
-  --chat-shadow-bubble:
-    inset 0 1px 0 rgb(255 255 255 / 0.3),
-    0 10px 24px -22px rgb(31 41 55 / 0.7);
+    0 20px 38px -18px rgb(31 41 55 / 0.8), inset 0 1px 0 rgb(255 255 255 / 0.24);
+  --chat-shadow-bubble: inset 0 1px 0 rgb(255 255 255 / 0.3), 0 10px 24px -22px rgb(31 41 55 / 0.7);
   --chat-shadow-widget-desktop:
-    0 24px 48px -24px rgb(31 41 55 / 0.6),
-    0 8px 20px -16px rgb(31 41 55 / 0.35);
+    0 24px 48px -24px rgb(31 41 55 / 0.6), 0 8px 20px -16px rgb(31 41 55 / 0.35);
   --chat-shadow-submit:
-    inset 0 1px 0 rgb(255 255 255 / 0.18),
-    0 14px 26px -20px rgb(31 41 55 / 0.7);
+    inset 0 1px 0 rgb(255 255 255 / 0.18), 0 14px 26px -20px rgb(31 41 55 / 0.7);
   --chat-shadow-input-focus:
-    inset 0 1px 0 rgb(255 255 255 / 0.55),
-    0 0 0 4px var(--chat-accent-ring);
+    inset 0 1px 0 rgb(255 255 255 / 0.55), 0 0 0 4px var(--chat-accent-ring);
   --chat-transition-fast: 150ms ease;
   --chat-transition-base: 170ms ease;
   --chat-transition-slow: 180ms ease;
@@ -415,5 +407,45 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+.chat-overlay {
+  display: none;
+}
+.chat-widget {
+  max-height: calc(100dvh - 1rem);
+}
+.chat-icon-btn,
+.chat-chip,
+.chat-submit {
+  min-height: 2.75rem;
+}
+.chat-icon-btn {
+  min-width: 2.75rem;
+}
+.chat-widget :focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.chat-input::placeholder {
+  color: var(--color-text-muted);
+}
+.chat-bubble__text {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767px) {
+  .chat-widget {
+    inset: 0;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .chat-bubble--assistant {
+    max-width: 100%;
+    width: 100%;
+  }
+  .chat-widget__body {
+    overflow-y: auto;
   }
 }
