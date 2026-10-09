@@ -1,3 +1,5 @@
+import '../../locale';
+
 import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -37,7 +39,7 @@ export class BlogListPage {
   });
 
   readonly filteredPosts = computed(() => {
-    const query = this.searchQuery().trim().toLowerCase();
+    const query = this.normalizeSearch(this.searchQuery());
     const sortedPosts = [...this.posts()].sort((left, right) => {
       const comparison = left.date.localeCompare(right.date);
       return this.sortOrder() === 'oldest' ? comparison : -comparison;
@@ -48,7 +50,9 @@ export class BlogListPage {
     }
 
     return sortedPosts.filter((post) => {
-      const searchableContent = [post.title, post.excerpt, ...post.tags].join(' ').toLowerCase();
+      const searchableContent = this.normalizeSearch(
+        [post.title, post.excerpt, ...post.tags].join(' '),
+      );
       return searchableContent.includes(query);
     });
   });
@@ -124,7 +128,7 @@ export class BlogListPage {
     this.subscriptionError.set('');
     this.subscriptionSuccessMessage.set('');
     this.analytics.trackEvent('blog_subscription_submit', {
-      location: 'blog_hero_toolbar',
+      location: 'blog_index_subscription',
     });
 
     this.api
@@ -137,7 +141,7 @@ export class BlogListPage {
           );
           this.subscriptionEmailControl.reset('');
           this.analytics.trackEvent('blog_subscription_success', {
-            location: 'blog_hero_toolbar',
+            location: 'blog_index_subscription',
           });
         },
         error: (error: unknown) => {
@@ -149,7 +153,7 @@ export class BlogListPage {
           const message = this.getSubscriptionErrorMessage(error);
           this.subscriptionError.set(message);
           this.analytics.trackEvent('blog_subscription_error', {
-            location: 'blog_hero_toolbar',
+            location: 'blog_index_subscription',
             status,
           });
         },
@@ -162,6 +166,14 @@ export class BlogListPage {
       post_title: post.title,
       position,
     });
+  }
+
+  private normalizeSearch(value: string): string {
+    return value
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
   }
 
   private getSubscriptionErrorMessage(error: unknown): string {

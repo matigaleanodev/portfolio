@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, RouterOutlet } from '@angular/router';
 
 import { App } from './app';
+import { FragmentLinkDirective } from './ui/fragment-link.directive';
 
 @Component({ selector: 'app-header', standalone: true, template: '' })
 class HeaderStubComponent {}
@@ -35,6 +36,7 @@ describe('App', () => {
         set: {
           imports: [
             RouterOutlet,
+            FragmentLinkDirective,
             HeaderStubComponent,
             FooterStubComponent,
             ProjectsStubComponent,
@@ -63,7 +65,7 @@ describe('App', () => {
 
     expect(el.querySelector('app-header')).toBeTruthy();
     expect(el.querySelector('router-outlet')).toBeTruthy();
-    expect(skipLink?.getAttribute('href')).toBe('#main-content');
+    expect(skipLink?.getAttribute('href')).toBe('/#main-content');
     expect(mainContent?.getAttribute('tabindex')).toBe('-1');
     expect(el.querySelector('app-footer')).toBeTruthy();
     expect(el.querySelector('app-chat')).toBeTruthy();

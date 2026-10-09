@@ -8,7 +8,7 @@ proof: "Blog público prerenderizado, artifacts editoriales versionados y separa
 role: "Diseñé la arquitectura del ecosistema, el pipeline de contenido y la integración entre Angular, NestJS y AWS para publicar y operar el sitio."
 architecture: "Frontend estático en Firebase, API mínima en NestJS, handoff de artifacts hacia Lambdas y publicación canónica del knowledge del chat en la capa cloud."
 date: 2026-03-09
-coverImage: /assets/portfolio-platform.svg
+coverImage: /assets/portfolio-platform.webp
 stack:
   - Static-first
   - SSG blog

@@ -35,3 +35,18 @@
   border-color: rgb(91 95 143 / 0.35);
   background: rgb(229 231 235 / 0.07);
 }
+
+.footer-icon-link {
+  width: 3rem;
+  height: 3rem;
+}
+.footer-top-btn {
+  min-height: 3rem;
+}
+.footer-shell :focus-visible {
+  outline-color: #e5e7eb;
+}
+.footer-shell a:hover,
+.footer-shell button:hover {
+  color: #fff;
+}

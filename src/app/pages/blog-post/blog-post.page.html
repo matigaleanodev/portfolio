@@ -1,6 +1,6 @@
 <main class="blog-post-page">
   @if (post(); as currentPost) {
-    <section class="blog-post-hero bg-(--color-text) text-(--color-bg) py-16 md:py-20">
+    <section class="blog-post-hero bg-(--color-text) text-(--color-bg) py-8 md:py-12">
       <div class="max-w-4xl mx-auto px-6 blog-post-hero__shell hero-shell">
         <div class="hero-accent inline-flex items-center" aria-hidden="true">
           <span class="hero-accent__line" aria-hidden="true"></span>
@@ -15,11 +15,11 @@
 
         <div class="blog-post__meta">
           <time [attr.datetime]="currentPost.date">
-            {{ currentPost.date | date: 'd MMM y' }}
+            {{ currentPost.date | date: 'd MMM y' : '' : 'es-AR' }}
           </time>
           <span>{{ currentPost.readingTimeMinutes }} min de lectura</span>
           @if (currentPost.updatedAt) {
-            <span>Actualizado {{ currentPost.updatedAt | date: 'd MMM y' }}</span>
+            <span>Actualizado {{ currentPost.updatedAt | date: 'd MMM y' : '' : 'es-AR' }}</span>
           }
         </div>
 
@@ -36,7 +36,41 @@
     <section class="blog-post-body py-12 md:py-14">
       <div class="max-w-4xl mx-auto px-6">
         <article class="blog-post">
-          <div class="blog-post__content prose-terminal" [innerHTML]="currentPost.contentHtml"></div>
+          @if (tableOfContents().length) {
+            <nav class="blog-post-toc" aria-label="Índice del artículo">
+              <details>
+                <summary>En este artículo</summary>
+                <ul>
+                  @for (heading of tableOfContents(); track heading.id) {
+                    <li>
+                      <a [appFragmentLink]="heading.id">{{ heading.title }}</a>
+                      @if (heading.children.length) {
+                        <ul>
+                          @for (child of heading.children; track child.id) {
+                            <li>
+                              <a [appFragmentLink]="child.id">{{ child.title }}</a>
+                            </li>
+                          }
+                        </ul>
+                      }
+                    </li>
+                  }
+                </ul>
+              </details>
+            </nav>
+          }
+          <div
+            class="blog-post__content prose-terminal"
+            [appEditorialContent]="currentPost"
+          ></div>
+          <p
+            class="blog-post__copy-feedback"
+            [class.blog-post__copy-feedback--visible]="!!copyFeedback()"
+            role="status"
+            aria-atomic="true"
+          >
+            {{ copyFeedback() }}
+          </p>
         </article>
       </div>
     </section>

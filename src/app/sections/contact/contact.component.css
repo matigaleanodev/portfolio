@@ -76,3 +76,15 @@
     border-radius: 1.1rem;
   }
 }
+
+.contact-input:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+  border-color: var(--color-accent);
+}
+.contact-input::placeholder {
+  color: var(--color-text-muted);
+}
+.contact-submit {
+  min-height: 3rem;
+}

@@ -2,6 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Component, DestroyRef, PLATFORM_ID, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FragmentLinkDirective } from './ui/fragment-link.directive';
 import { HeaderComponent } from './layout/header/header.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { ToastComponent } from './ui/toast/toast.component';
@@ -11,6 +12,7 @@ import { ChatComponent } from './sections/chat/chat.component';
   selector: 'app-root',
   imports: [
     RouterOutlet,
+    FragmentLinkDirective,
     HeaderComponent,
     FooterComponent,
     ChatComponent,

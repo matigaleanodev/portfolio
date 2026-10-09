@@ -14,6 +14,26 @@ import { BlogListPage } from './blog-list.page';
 describe('BlogListPage', () => {
   let fixture: ComponentFixture<BlogListPage>;
 
+  it('debería validar al enviar el formulario nativo sin navegar', () => {
+    fixture = TestBed.createComponent(BlogListPage);
+    fixture.detectChanges();
+    const event = new Event('submit', { bubbles: true, cancelable: true });
+    fixture.nativeElement.querySelector('.blog-toolbar__subscribe-form').dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+    expect(fixture.componentInstance.subscriptionError()).toBe(
+      'Ingresá un email válido para suscribirte.',
+    );
+    expect(subscribeToBlogMock).not.toHaveBeenCalled();
+  });
+
+  it('debería ignorar acentos, mayúsculas y espacios al buscar', () => {
+    fixture = TestBed.createComponent(BlogListPage);
+    fixture.componentInstance.updateSearchQuery('  COMO DISENE  ');
+    expect(fixture.componentInstance.filteredPosts().map((post) => post.slug)).toEqual([
+      'arquitectura-modo-playa',
+    ]);
+  });
+
   const postsMock: BlogPostSummary[] = [
     {
       slug: 'arquitectura-modo-playa',
@@ -181,10 +201,10 @@ describe('BlogListPage', () => {
     expect(component.subscriptionError()).toBe('');
     expect(component.subscriptionEmailControl.value).toBe('');
     expect(trackEventMock).toHaveBeenCalledWith('blog_subscription_submit', {
-      location: 'blog_hero_toolbar',
+      location: 'blog_index_subscription',
     });
     expect(trackEventMock).toHaveBeenCalledWith('blog_subscription_success', {
-      location: 'blog_hero_toolbar',
+      location: 'blog_index_subscription',
     });
   });
 
@@ -219,7 +239,7 @@ describe('BlogListPage', () => {
     expect(component.subscriptionError()).toBe('Rate limit reached');
     expect(component.subscriptionSuccessMessage()).toBe('');
     expect(trackEventMock).toHaveBeenCalledWith('blog_subscription_error', {
-      location: 'blog_hero_toolbar',
+      location: 'blog_index_subscription',
       status: 429,
     });
   });

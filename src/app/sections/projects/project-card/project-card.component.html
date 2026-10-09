@@ -18,8 +18,6 @@
     </div>
 
     <header class="project-card__header">
-      <p class="project-card__signal">{{ project().primarySignal }}</p>
-
       <h3 class="project-card__title">
         {{ project().title }}
       </h3>
@@ -27,35 +25,35 @@
       <p class="project-card__excerpt">
         {{ project().excerpt }}
       </p>
+      <p class="project-card__signal">{{ project().primarySignal }}</p>
     </header>
   </div>
 
   <div class="project-card__content">
     <dl class="project-card__details">
       <div class="project-card__detail">
-        <dt>Prueba real</dt>
+        <dt>Publicación y estado</dt>
         <dd>{{ project().proof }}</dd>
       </div>
 
       <div class="project-card__detail">
-        <dt>Aporte tecnico</dt>
+        <dt>Mi aporte</dt>
         <dd>{{ project().role }}</dd>
-      </div>
-
-      <div class="project-card__detail">
-        <dt>Arquitectura</dt>
-        <dd>{{ project().architecture }}</dd>
       </div>
     </dl>
 
-    @if (project().stack.length) {
-      <div class="project-card__stack">
-        <span class="sr-only">{{ project().stack.join(' · ') }}</span>
-        @for (tech of project().stack; track tech) {
-          <span class="project-tech-chip">{{ tech }}</span>
-        }
-      </div>
-    }
+    <details class="project-card__architecture">
+      <summary>Arquitectura y tecnologías</summary>
+      <p>{{ project().architecture }}</p>
+      @if (project().stack.length) {
+        <div class="project-card__stack">
+          <span class="sr-only">{{ project().stack.join(' · ') }}</span>
+          @for (tech of project().stack; track tech) {
+            <span class="project-tech-chip">{{ tech }}</span>
+          }
+        </div>
+      }
+    </details>
 
     <div class="project-card__actions">
       @if (primaryLink(); as link) {

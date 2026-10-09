@@ -1,5 +1,5 @@
 <main class="blog-page">
-  <section class="blog-hero-surface bg-(--color-text) text-(--color-bg) py-16 md:py-20">
+  <section class="blog-hero-surface bg-(--color-text) text-(--color-bg) py-8 md:py-12">
     <div class="max-w-6xl mx-auto px-6 blog-hero-shell hero-shell">
       <div class="hero-accent inline-flex items-center" aria-hidden="true">
         <span class="hero-accent__line" aria-hidden="true"></span>
@@ -9,7 +9,7 @@
 
       <div class="blog-hero-grid">
         <div class="blog-hero__copy">
-          <h1 class="text-4xl md:text-6xl font-bold leading-[0.98] tracking-[-0.03em]">
+          <h1 class="blog-hero-title">
             Arquitectura, producto e infraestructura con lenguaje de ingeniería.
           </h1>
           <p class="text-base md:text-lg opacity-78 leading-relaxed max-w-3xl">
@@ -17,20 +17,9 @@
             decisiones de arquitectura.
           </p>
         </div>
-
-        <aside class="blog-hero__aside" aria-label="Resumen editorial">
-          <div>
-            <span class="blog-hero__aside-label">Enfoque</span>
-            <p>Experiencia real, sin posts de laboratorio.</p>
-          </div>
-          <div>
-            <span class="blog-hero__aside-label">Stack</span>
-            <p>Angular, NestJS, AWS, producto y sistemas.</p>
-          </div>
-        </aside>
       </div>
 
-      <div class="blog-toolbar" aria-label="Exploración y suscripción del blog">
+      <div class="blog-toolbar" aria-label="Exploración del blog">
         <div class="blog-toolbar__explore">
           <div class="blog-toolbar__field">
             <label class="blog-toolbar__label" for="blog-search">Buscar posts</label>
@@ -45,78 +34,39 @@
             />
           </div>
 
-          <div class="blog-toolbar__field blog-toolbar__field--sort">
-            <span class="blog-toolbar__label">Orden</span>
-            <div class="blog-toolbar__sort" role="group" aria-label="Ordenar posts por fecha">
-              <button
-                type="button"
-                class="blog-toolbar__sort-button"
-                [class.is-active]="sortOrder() === 'newest'"
-                (click)="updateSortOrder('newest')"
-                [attr.aria-pressed]="sortOrder() === 'newest'"
-              >
-                Más nuevos
-              </button>
-              <button
-                type="button"
-                class="blog-toolbar__sort-button"
-                [class.is-active]="sortOrder() === 'oldest'"
-                (click)="updateSortOrder('oldest')"
-                [attr.aria-pressed]="sortOrder() === 'oldest'"
-              >
-                Más viejos
-              </button>
+          <fieldset class="blog-toolbar__field blog-toolbar__field--sort">
+            <legend class="blog-toolbar__label">Orden</legend>
+            <div class="blog-toolbar__sort">
+              <label class="blog-toolbar__sort-option">
+                <input
+                  type="radio"
+                  name="blog-order"
+                  value="newest"
+                  [checked]="sortOrder() === 'newest'"
+                  (change)="updateSortOrder('newest')"
+                />
+                <span>Más nuevos</span>
+              </label>
+              <label class="blog-toolbar__sort-option">
+                <input
+                  type="radio"
+                  name="blog-order"
+                  value="oldest"
+                  [checked]="sortOrder() === 'oldest'"
+                  (change)="updateSortOrder('oldest')"
+                />
+                <span>Más viejos</span>
+              </label>
             </div>
-          </div>
+          </fieldset>
 
-          <p class="blog-toolbar__results" aria-live="polite">{{ resultsLabel() }}</p>
+          <p class="blog-toolbar__results" role="status" aria-atomic="true">{{ resultsLabel() }}</p>
         </div>
-
-        <aside class="blog-toolbar__subscribe" aria-label="Suscripción al blog">
-          <div class="blog-toolbar__subscribe-copy">
-            <span class="blog-toolbar__subscribe-kicker">Suscripción</span>
-            <h2>Recibí nuevos posts sin perder el hilo.</h2>
-            <p>Un mail por publicación. Arquitectura, backend, cloud y producto.</p>
-          </div>
-
-          <form class="blog-toolbar__subscribe-form" (ngSubmit)="submitSubscription()">
-            <label class="blog-toolbar__label" for="blog-subscription-email">Email</label>
-            <div class="blog-toolbar__subscribe-row">
-              <input
-                id="blog-subscription-email"
-                type="email"
-                class="blog-toolbar__input blog-toolbar__input--subscribe"
-                [formControl]="subscriptionEmailControl"
-                placeholder="tu@email.com"
-                autocomplete="email"
-              />
-              <button
-                type="submit"
-                class="blog-toolbar__subscribe-button"
-                [disabled]="isSubmittingSubscription()"
-              >
-                {{ isSubmittingSubscription() ? 'Enviando...' : 'Suscribirme' }}
-              </button>
-            </div>
-
-            @if (subscriptionError()) {
-              <p class="blog-toolbar__feedback blog-toolbar__feedback--error" aria-live="polite">
-                {{ subscriptionError() }}
-              </p>
-            }
-
-            @if (subscriptionSuccessMessage()) {
-              <p class="blog-toolbar__feedback blog-toolbar__feedback--success" aria-live="polite">
-                {{ subscriptionSuccessMessage() }}
-              </p>
-            }
-          </form>
-        </aside>
       </div>
     </div>
   </section>
 
-  <section class="blog-list-surface py-14 md:py-18">
+  <section class="blog-list-surface py-8 md:py-12">
     <div class="max-w-6xl mx-auto px-6 space-y-10">
       @if (errorMessage() && !filteredPosts().length) {
         <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
@@ -128,9 +78,7 @@
           <div class="blog-empty-state">
             <p class="blog-empty-state__kicker">Sin resultados</p>
             <h2>No encontré posts para esa búsqueda.</h2>
-            <p>
-              Probá con otra tecnología, concepto o tag. El índice sigue siendo local y estático.
-            </p>
+            <p>Probá con otra tecnología, concepto o etiqueta.</p>
           </div>
         } @else {
           <div class="blog-cards-grid">
@@ -143,7 +91,9 @@
                   [attr.aria-label]="'Leer ' + post.title"
                 >
                   <div class="blog-card__meta">
-                    <time [attr.datetime]="post.date">{{ post.date | date: 'd MMM y' }}</time>
+                    <time [attr.datetime]="post.date">{{
+                      post.date | date: 'd MMM y' : '' : 'es-AR'
+                    }}</time>
                     <span>{{ post.readingTimeMinutes }} min</span>
                   </div>
 
@@ -166,6 +116,61 @@
           </div>
         }
       }
+    </div>
+  </section>
+  <section class="blog-subscription-surface bg-(--color-text) text-(--color-bg) py-8 md:py-12">
+    <div class="max-w-6xl mx-auto px-6">
+      <aside class="blog-toolbar__subscribe" aria-label="Suscripción al blog">
+        <div class="blog-toolbar__subscribe-copy">
+          <span class="blog-toolbar__subscribe-kicker">Suscripción</span>
+          <h2>Recibí nuevos posts sin perder el hilo.</h2>
+          <p>Un mail por publicación. Arquitectura, backend, cloud y producto.</p>
+        </div>
+
+        <form
+          class="blog-toolbar__subscribe-form"
+          novalidate
+          (submit)="$event.preventDefault(); submitSubscription()"
+        >
+          <label class="blog-toolbar__label" for="blog-subscription-email">Email</label>
+          <div class="blog-toolbar__subscribe-row">
+            <input
+              id="blog-subscription-email"
+              type="email"
+              class="blog-toolbar__input blog-toolbar__input--subscribe"
+              [formControl]="subscriptionEmailControl"
+              placeholder="tu@email.com"
+              autocomplete="email"
+              required
+              [attr.aria-invalid]="!!subscriptionError()"
+              [attr.aria-describedby]="subscriptionError() ? 'blog-subscription-error' : null"
+            />
+            <button
+              type="submit"
+              class="blog-toolbar__subscribe-button"
+              [disabled]="isSubmittingSubscription()"
+            >
+              {{ isSubmittingSubscription() ? 'Enviando...' : 'Suscribirme' }}
+            </button>
+          </div>
+
+          @if (subscriptionError()) {
+            <p
+              id="blog-subscription-error"
+              class="blog-toolbar__feedback blog-toolbar__feedback--error"
+              aria-live="polite"
+            >
+              {{ subscriptionError() }}
+            </p>
+          }
+
+          @if (subscriptionSuccessMessage()) {
+            <p class="blog-toolbar__feedback blog-toolbar__feedback--success" aria-live="polite">
+              {{ subscriptionSuccessMessage() }}
+            </p>
+          }
+        </form>
+      </aside>
     </div>
   </section>
 </main>

@@ -4,6 +4,8 @@ import {
   DestroyRef,
   ElementRef,
   HostListener,
+  Injector,
+  afterNextRender,
   computed,
   effect,
   inject,
@@ -34,6 +36,7 @@ interface ChatMessage {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatComponent {
+  private readonly injector = inject(Injector);
   private readonly api = inject(ApiService);
   private readonly analytics = inject(AnalyticsService);
   private readonly destroyRef = inject(DestroyRef);
@@ -116,7 +119,9 @@ export class ChatComponent {
       reason,
       message_count: this.messages().length,
       open_duration_ms:
-        this.lastOpenTimestamp !== null ? Math.max(0, Date.now() - this.lastOpenTimestamp) : undefined,
+        this.lastOpenTimestamp !== null
+          ? Math.max(0, Date.now() - this.lastOpenTimestamp)
+          : undefined,
     });
     this.lastOpenTimestamp = null;
     this.scheduleDomTask(() => this.focusFabButton());
@@ -186,7 +191,9 @@ export class ChatComponent {
         },
         error: (error: unknown) => {
           this.starters.set(this.getFallbackStarters());
-          this.startersError.set('No pude cargar las sugerencias ahora. Podés reintentar o escribir directo.');
+          this.startersError.set(
+            'No pude cargar las sugerencias ahora. Podés reintentar o escribir directo.',
+          );
           this.analytics.trackEvent('chat_starters_error', {
             status: this.getErrorStatus(error),
           });
@@ -301,14 +308,7 @@ export class ChatComponent {
   }
 
   private scheduleDomTask(task: () => void) {
-    queueMicrotask(() => {
-      if (typeof requestAnimationFrame === 'function') {
-        requestAnimationFrame(() => task());
-        return;
-      }
-
-      task();
-    });
+    afterNextRender(task, { injector: this.injector });
   }
 
   private restoreMessagesFromStorage() {
