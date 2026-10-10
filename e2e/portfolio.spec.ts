@@ -10,7 +10,11 @@ test('diagrama real y separación de texto sin overflow', async ({ page }) => {
   for (const route of ['/', '/blog', '/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion']) {
     await page.goto(route);
     await expect(page.locator('h1')).toBeVisible();
-    if (route.includes('docker-logs')) await expect(page.locator('.mermaid-diagram svg')).toBeVisible();
+    if (route.includes('docker-logs')) {
+      const preview = page.getByRole('img', { name: 'De los logs de Docker a Grafana' });
+      await expect(preview).toBeVisible();
+      await expect(preview.locator('..')).toHaveAttribute('href', '/diagrams/docker-observability.html');
+    }
     await page.addStyleTag({ content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-bottom: 2em !important; }' });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
@@ -34,6 +38,26 @@ test('contenido y destinos editoriales disponibles sin JavaScript', async ({
   await page.locator('.project-card__architecture summary').first().click();
   await expect(page.locator('.project-card__architecture p').first()).toBeVisible();
   await context.close();
+});
+
+test('el chat funciona cuando el navegador bloquea el almacenamiento', async ({ page }) => {
+  await page.addInitScript(() => {
+    for (const method of ['getItem', 'setItem'] as const) {
+      Storage.prototype[method] = () => { throw new DOMException('Storage bloqueado', 'SecurityError'); };
+    }
+  });
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/');
+  await page.locator('.chat-fab').click();
+  await expect(page.locator('.chat-widget')).toBeVisible();
+  await page.route('**/api/chat', (route) => route.fulfill({
+    json: { answer: 'Respuesta sin almacenamiento', suggestedQuestions: [], source: 'ai' },
+  }));
+  await page.locator('#chat-input').fill('¿Qué hace Modo Playa?');
+  await page.locator('#chat-input').press('Enter');
+  await expect(page.getByText('Respuesta sin almacenamiento', { exact: true })).toBeVisible();
+  expect(errors).toEqual([]);
 });
 
 const routes = [

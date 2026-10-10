@@ -98,6 +98,10 @@ El registro pendiente queda persistido con estado `PENDING`, se sube el archivo 
 
 No es sofisticación por gusto. Es una forma de evitar que el create del lodging dependa de archivos “supuestamente subidos” que nadie terminó de confirmar bien.
 
+[![De un draft upload a la imagen del alojamiento](/diagrams/backend-image-uploads.75e6e881d256.png)](/diagrams/backend-image-uploads.html)
+
+[Explorar el flujo de imágenes desde el backend](/diagrams/backend-image-uploads.html).
+
 ## Sharp quedó en el centro del pipeline, no como un paso accesorio
 
 Una vez que la imagen entra al flujo, la normalización la hace el backend con Sharp.

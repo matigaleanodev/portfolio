@@ -6,6 +6,8 @@ The final cross-repository ownership is documented in [Docs/ecosystem-ownership.
 
 ## Current Scope
 
+The workflow also runs daily at 09:17 Argentina and manually on `main`, with serialized execution and future posts excluded at build time. Daily runs skip Angular/Firebase if the live publication state matches the commit and eligible posts; cloud recovery steps still run. Pushes/manual runs force deployment. See [scheduled publication](./scheduled-publication.md) for editorial rules, activation, and recovery.
+
 The repository is responsible for:
 
 - generating static editorial content from `content/`
@@ -103,9 +105,19 @@ The deploy workflow now expects these GitHub secrets or variables in `portfolio`
 - `FIREBASE_TOKEN`
 - `AWS_ROLE_TO_ASSUME`
 - `AWS_REGION`
-- `PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME` optional, defaults to `portfolio-cloud-dev-process-release`
-- `PORTFOLIO_CLOUD_PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME` optional, defaults to `portfolio-cloud-dev-publish-chat-knowledge`
+- `PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME` optional, defaults to `portfolio-cloud-prod-process-release`
+- `PORTFOLIO_CLOUD_PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME` optional, defaults to `portfolio-cloud-prod-publish-chat-knowledge`
 
 ## Versioned Releases
 
 A `release/vX.Y.Z` branch carries the matching package version and paired release notes in `Docs/releases/`. Merge its PR to `main` using squash. After the merge, `release.yml` validates the branch/version match, creates an annotated `vX.Y.Z` tag on the merged commit, and publishes the GitHub release from the Spanish notes. An existing draft release is published automatically. Existing tags are accepted only when they already point to that same commit. Firebase deployment and `dev` synchronization run independently on the `main` push.
+
+## Pre-deployment contract and browser checks
+
+The chat knowledge generator resolves project links against the public site origin. The payload builder rejects relative, non-HTTP(S), or credential-bearing links before the Firebase deployment step, preventing publication of an artifact rejected by the Cloud/API consumers.
+
+Pull request CI builds the site, installs Chromium and runs Playwright against the compiled static output (`PORTFOLIO_E2E_BUILD=true`). The existing local `npm run test:e2e` still starts the development server; use the build flag after `npm run build` to reproduce CI in WSL. The static test server uses Python 3 available in the Ubuntu runner. Failed tests upload retained traces.
+
+## Production target verified on 2026-10-09
+
+The public site uses only the `prod` stage. `dev` is reserved for testing. AWS and the three repositories use `us-east-1`; the browser console may open another region and must not be used as evidence of the deployment region. The existing frontend GitHub variables already target `portfolio-cloud-prod-process-release` and `portfolio-cloud-prod-publish-chat-knowledge`; workflow fallbacks now also target `prod`.

@@ -4,7 +4,7 @@ slug: foodly-notes
 excerpt: "App de recetas publicada en Google Play y construida como producto fullstack real: experiencia mobile en Ionic/Angular, API NestJS propia y despliegue continuo en AWS."
 productType: App publicada
 primarySignal: Backend propio + cloud operable
-proof: "Disponible en Google Play con autenticación, favoritos y listas de compras conectadas a backend real."
+proof: "Disponible en Google Play con recetas y traducciones desde una API propia; favoritos y progreso de compras persistidos en el dispositivo."
 role: "Diseñé y construí la app mobile, la API NestJS y el flujo de CI/CD para publicar cambios sin fricción."
 architecture: "Frontend Ionic/Angular desacoplado de una API NestJS + MongoDB, contenedores en AWS EC2 y deploy automatizado con GitHub Actions."
 date: 2026-03-07
@@ -31,6 +31,10 @@ links:
   - label: Documentación
     url: https://matigaleano-dev.notion.site/Foodly-Notes-2f9aa07ef7dd80f0b9a0f2af1030bdb0
     icon: bookopen
+    primary: false
+  - label: Explorar arquitectura
+    url: /diagrams/foodly-notes-ecosystem.html
+    icon: server
     primary: false
 featured: true
 order: 1

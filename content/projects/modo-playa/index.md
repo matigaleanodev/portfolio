@@ -32,6 +32,10 @@ links:
     url: https://github.com/matigaleanodev/modo-playa-admin
     icon: code
     primary: false
+  - label: Explorar arquitectura
+    url: /diagrams/modo-playa-ecosystem.html
+    icon: server
+    primary: false
 featured: false
 order: 2
 ---

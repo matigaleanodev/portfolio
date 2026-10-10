@@ -34,6 +34,7 @@ Este repositorio es dueño de la experiencia visual, el contenido editorial est�
 - Rutas de posts prerenderizadas
 - Contenido editorial estático generado desde Markdown
 - Flujos frontend de contacto, chat, suscripción y baja
+- Chat con hasta seis turnos previos (1500 caracteres por turno y JSON máximo de 15 KiB), sin bienvenida ni mensajes fallback en el historial enviado. Conserva el almacenamiento local existente; analytics envía longitud de sugerencias, no su texto. Publicar después de la API compatible con `history`.
 - Handoff de `release-manifest` y knowledge del chat hacia `portfolio-cloud`
 
 ---
@@ -52,6 +53,7 @@ Detalle operativo:
 - [Flujo de deploy](./Docs/deploy-workflow.es.md)
 - [Ownership y fronteras](./Docs/ecosystem-ownership.es.md)
 - [Arquitectura del blog](./Docs/blog-architecture.es.md)
+- [Publicación programada](./Docs/scheduled-publication.es.md)
 
 ---
 
@@ -82,8 +84,10 @@ Comandos útiles:
 
 ## Version
 
-Versión actual de la aplicación: **1.1.0**
+Versión actual de la aplicación: **1.3.0**
 
 ## Revisión de diseño y accesibilidad
 
 El [informe de verificación](./Docs/design-accessibility-review.es.md) incluye capturas comparables, medidas, pruebas y verificaciones manuales pendientes.
+
+La guía de [diagramas editoriales](./Docs/architecture-diagrams.es.md) explica las fuentes Archify, su validación y la publicación por fecha.

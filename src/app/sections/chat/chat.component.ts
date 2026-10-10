@@ -18,6 +18,7 @@ import { Bot, LucideAngularModule, X } from 'lucide-angular';
 import { ApiService } from '../../services/api.service';
 import { ChatSource } from '../../models/chat.model';
 import { AnalyticsService } from '../../services/analytics.service';
+import { buildChatRequest } from './chat-history';
 
 type ChatRole = 'user' | 'assistant';
 
@@ -147,7 +148,7 @@ export class ChatComponent {
     if (this.sending()) return;
 
     this.analytics.trackEvent('chat_click_suggestion', {
-      question,
+      length: question.length,
       has_conversation: this.hasConversation(),
     });
     this.activeSuggestion.set(question);
@@ -202,6 +203,13 @@ export class ChatComponent {
   }
 
   private sendMessage(message: string) {
+    const request = buildChatRequest(
+      message,
+      this.sessionId,
+      this.messages()
+        .filter((turn) => turn.role === 'user' || turn.source === 'faq' || turn.source === 'ai')
+        .map((turn) => ({ role: turn.role, content: turn.text })),
+    );
     this.analytics.trackEvent('chat_send_message', {
       length: message.length,
       via: this.draft().trim() ? 'manual' : 'suggestion',
@@ -212,7 +220,7 @@ export class ChatComponent {
     this.sending.set(true);
 
     this.api
-      .sendChatMessage({ message, sessionId: this.sessionId })
+      .sendChatMessage(request)
       .pipe(finalize(() => this.sending.set(false)))
       .subscribe({
         next: (response) => {
@@ -391,15 +399,18 @@ export class ChatComponent {
     }
 
     const storageKey = 'portfolio-chat-session-id';
-    const stored = window.localStorage.getItem(storageKey);
-    if (stored) return stored;
-
     const generated =
       typeof crypto !== 'undefined' && 'randomUUID' in crypto
         ? crypto.randomUUID()
         : `portfolio-web-${Date.now()}`;
 
-    window.localStorage.setItem(storageKey, generated);
+    try {
+      const stored = window.localStorage.getItem(storageKey);
+      if (stored) return stored;
+      window.localStorage.setItem(storageKey, generated);
+    } catch {
+      // El chat conserva una sesión en memoria cuando el navegador bloquea Storage.
+    }
     return generated;
   }
 }

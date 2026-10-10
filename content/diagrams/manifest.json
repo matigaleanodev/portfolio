@@ -1,0 +1,420 @@
+[
+  {
+    "slug": "angular-resource-layers",
+    "title": "Un listado Angular: UI, recurso y HTTP",
+    "type": "architecture",
+    "source": "angular-resource-layers.architecture.json",
+    "artifact": "rendered/angular-resource-layers.html",
+    "specificationSha256": "aa37dea08c9f3bcf37a0b57b18a128c74d8afec229f6320f198d4f403927771c",
+    "artifactSha256": "2901fa4505fb3f965e50aac72251dc8d5ac9780547775748305f9951f1eba166",
+    "preview": "angular-resource-layers.2901fa4505fb.png",
+    "previewSha256": "b6274142f4e46e540edffc7475059ce7b3c2b147aea572f3d34bd19c95ec5727",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/portfolio.git",
+      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
+    }
+  },
+  {
+    "slug": "async-report-processing",
+    "title": "Informes asíncronos: aceptación, cola y ejecución",
+    "type": "architecture",
+    "source": "async-report-processing.architecture.json",
+    "artifact": "rendered/async-report-processing.html",
+    "specificationSha256": "761cc925246a49d74dbe0ec36bb2f8169d5f1dff96e337d75b8867dbf091007d",
+    "artifactSha256": "ba40f4b0ffb6974ff53ab02d82a26688ed98aa415f1d5d8952905bf54b4b809f",
+    "preview": "async-report-processing.ba40f4b0ffb6.png",
+    "previewSha256": "ccacdf85aa8584ab06ea936d6c42c73e394c7bed7f756a53dc0defb60d2f79db",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested"
+  },
+  {
+    "slug": "async-screen-refresh",
+    "title": "Consultar el proceso sin inventar su resultado",
+    "type": "lifecycle",
+    "source": "async-screen-refresh.lifecycle.json",
+    "artifact": "rendered/async-screen-refresh.html",
+    "specificationSha256": "d2571fefe5b132ada51c9ae62eba7a6f3adf207186fce1de9fc6e9ec1efaefcd",
+    "artifactSha256": "c8b8df06eea98b6d0bc52c08e42c8f1fb0dc600e567b42ff645e3385432369d4",
+    "preview": "async-screen-refresh.c8b8df06eea9.png",
+    "previewSha256": "7bc864ca2edc47bea09cd599bf3058c3cb27274cd357b2df6ee71bd5436c50b5",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested"
+  },
+  {
+    "slug": "aws-execution-investigation",
+    "title": "Del stack a la evidencia de una ejecución",
+    "type": "workflow",
+    "source": "aws-execution-investigation.workflow.json",
+    "artifact": "rendered/aws-execution-investigation.html",
+    "specificationSha256": "4b1751952ae6ff1752c4586f743619eea7b20103916d6bfe9f1afa991838209a",
+    "artifactSha256": "b3c856e046137081a66291803531c0934da705b7d59fef0392036ca9a62960cd",
+    "preview": "aws-execution-investigation.b3c856e04613.png",
+    "previewSha256": "d99da76464a25c06f3e140c9c56688ae43c59a85cab0a4e2979f82cc8450ad11",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested"
+  },
+  {
+    "slug": "backend-image-uploads",
+    "title": "De un draft upload a la imagen del alojamiento",
+    "type": "workflow",
+    "source": "backend-image-uploads.workflow.json",
+    "artifact": "rendered/backend-image-uploads.html",
+    "specificationSha256": "33c6866aaa55a0b35797f24b6ceaaea83ad90ee0daf6861640a5116f6aa8b621",
+    "artifactSha256": "75e6e881d2561982f8704d9172e76f268682fe971c1e73e3e1599053b549a736",
+    "preview": "backend-image-uploads.75e6e881d256.png",
+    "previewSha256": "e3b0f077d103c991f4a48bb5a98190511fabb2f4d9b767bb76a90636e82cc8ca",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/portfolio.git",
+      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
+    }
+  },
+  {
+    "slug": "cross-layer-diagnosis",
+    "title": "Investigar desde el síntoma hasta la evidencia",
+    "type": "workflow",
+    "source": "cross-layer-diagnosis.workflow.json",
+    "artifact": "rendered/cross-layer-diagnosis.html",
+    "specificationSha256": "959b355223eca4919709de5bdbd867f8de39a2a81b386e5c76f6aaf2ecca8680",
+    "artifactSha256": "43e7f76a58180385a7d16be502d8c1effa82a68261cd926e2bbdf6002d62da87",
+    "preview": "cross-layer-diagnosis.43e7f76a5818.png",
+    "previewSha256": "f215b836588bfcfa121db4d5921f23653c602690c1ba6f58f89d0540a8ef82e2",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested"
+  },
+  {
+    "slug": "docker-ec2-deployment",
+    "title": "Del commit al contenedor en EC2",
+    "type": "workflow",
+    "source": "docker-ec2-deployment.workflow.json",
+    "artifact": "rendered/docker-ec2-deployment.html",
+    "specificationSha256": "c642815039d5f69d2c791cf28879678776e09a26d45fca5004d906eebba88137",
+    "artifactSha256": "3da6e01cd6373b51301e557c5fba584a28a0a5108c465c41fa0bda61f6eae865",
+    "preview": "docker-ec2-deployment.3da6e01cd637.png",
+    "previewSha256": "1e64ff1fb57df98c66148de1ea1bd1207f0aaf3fb8d87ee0bb10549cdd6e9d42",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/portfolio.git",
+      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
+    }
+  },
+  {
+    "slug": "docker-observability",
+    "title": "De los logs de Docker a Grafana",
+    "type": "architecture",
+    "source": "docker-observability.architecture.json",
+    "artifact": "rendered/docker-observability.html",
+    "specificationSha256": "28a0be3cdbb0d9df462f9cea768d828a955d13bbce4fbc8fabfe111a28fa36e7",
+    "artifactSha256": "4d9954e02e73528fd5f4f09d74c7ef76ae49f9e4c8873284f14eddd52af8601e",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/portfolio.git",
+      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
+    },
+    "preview": "docker-observability.4d9954e02e73.png",
+    "previewSha256": "c7ad3a093af4f55871d761b3ea881cd3fd95f64b133ba3a54616ed57240c56b9"
+  },
+  {
+    "slug": "feature-delivery",
+    "title": "Del refinamiento a la review",
+    "type": "workflow",
+    "source": "feature-delivery.workflow.json",
+    "artifact": "rendered/feature-delivery.html",
+    "specificationSha256": "52fa6a38bdce8ca5f576f6128240c0c3b0f1f4e418e4001819135b5e1b39bf97",
+    "artifactSha256": "5a1b84fd702d67e32b0302fffa0ebad39c26137278bca3d85eafb117f26ae561",
+    "preview": "feature-delivery.5a1b84fd702d.png",
+    "previewSha256": "1b974bcdd20499a8230e68a1e95db2cf01945127510248ba42075e6502f2e0f2",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested"
+  },
+  {
+    "slug": "foodly-notes-ecosystem",
+    "title": "Foodly Notes: recetas, traducciones y estado local",
+    "type": "architecture",
+    "source": "foodly-notes-ecosystem.architecture.json",
+    "artifact": "rendered/foodly-notes-ecosystem.html",
+    "specificationSha256": "414f1c4accf6ba96207d244fafc1e0c08996d41f187a22f6f44b2aba8a141ab5",
+    "artifactSha256": "1be4ee3150404a628bc7f7e6e16140817c79b281db35770f59af1034ac86ef41",
+    "preview": "foodly-notes-ecosystem.1be4ee315040.png",
+    "previewSha256": "6f76b829c039815408d7116a9759808050620c3fc652a61f20a666ba8a120dca",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/foodly-notes-api.git",
+      "revision": "e006764540b638f86c2998618809b4f6037fd6e6"
+    }
+  },
+  {
+    "slug": "form-editing-states",
+    "title": "Un formulario: edición, guardado y recuperación",
+    "type": "lifecycle",
+    "source": "form-editing-states.lifecycle.json",
+    "artifact": "rendered/form-editing-states.html",
+    "specificationSha256": "2d21ae79178afcec83fa7161edfcd6f09b0fc827f919e296a41187613c5644ad",
+    "artifactSha256": "3cedb8d665834821d8895491f6392af2a6d925f5f0dc468ea3476dd6208fbdc6",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "preview": "form-editing-states.3cedb8d66583.png",
+    "previewSha256": "1cb540393d3a943a5cb60ae106c848cc9dcb835cf1afc4acb6b89ba109f2500d"
+  },
+  {
+    "slug": "modo-playa-ecosystem",
+    "title": "Modo Playa: catálogo, administración y servicios",
+    "type": "architecture",
+    "source": "modo-playa-ecosystem.architecture.json",
+    "artifact": "rendered/modo-playa-ecosystem.html",
+    "specificationSha256": "5a048ca8022d199e7fa074f5f9cc6b0763c6e17661a70aec0b720872df80ac32",
+    "artifactSha256": "61f1cf96e400dd9cac26a8ca714c9deb8765f4480ddd95f65a9668951794e482",
+    "preview": "modo-playa-ecosystem.61f1cf96e400.png",
+    "previewSha256": "a4ab95efa865aa43ad6cb9f67685fb258a133f216aa601cf604ee1d72215a983",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/modo-playa-api.git",
+      "revision": "c25b9cc6f3fd9ce82d541f78be186b3a7832800b"
+    }
+  },
+  {
+    "slug": "modo-playa-platform",
+    "title": "Modo Playa: superficies y aislamiento por owner",
+    "type": "architecture",
+    "source": "modo-playa-platform.architecture.json",
+    "artifact": "rendered/modo-playa-platform.html",
+    "specificationSha256": "941e8e267fd68583b1a213ebd2fc2363aed3243703ffef3bf0a8448c4d07799f",
+    "artifactSha256": "766d7d01788d98bd0327301e8a7bdcb6ff0f358fd56a218a6f762c7de1c59be8",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/portfolio.git",
+      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
+    },
+    "preview": "modo-playa-platform.766d7d01788d.png",
+    "previewSha256": "8bf9b928c9f52335e9989abeb863abc2d8561d401f2992337d8856ebbb1153ea"
+  },
+  {
+    "slug": "portfolio-ecosystem",
+    "title": "Cómo funciona este portfolio",
+    "type": "architecture",
+    "source": "portfolio-ecosystem.architecture.json",
+    "artifact": "rendered/portfolio-ecosystem.html",
+    "specificationSha256": "16ad6bc702a0663d9a3d554df7e329b2f62208d667293d5a939b75e19d1a9224",
+    "artifactSha256": "47e54d61c12eb5733f5fb833b05f27d01d7de26cb0aaf3f9dca6ed154f5d2e5a",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/portfolio.git",
+      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
+    },
+    "preview": "portfolio-ecosystem.47e54d61c12e.png",
+    "previewSha256": "dfe93efc063a06b4d4afc08d8fa4f5ffc9205d02d502ff5fc2d12b35e50d5fe2"
+  },
+  {
+    "slug": "process-execution-states",
+    "title": "Estados persistidos de una ejecución",
+    "type": "lifecycle",
+    "source": "process-execution-states.lifecycle.json",
+    "artifact": "rendered/process-execution-states.html",
+    "specificationSha256": "0307912c003772f22e78eb373fd6c1163e44d8c07ff95c23dc1231171ae46e55",
+    "artifactSha256": "7433572ce2962462fec64321a58fea9746c59a15c940af5de59f2d8bf7a4acc6",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "preview": "process-execution-states.7433572ce296.png",
+    "previewSha256": "184efdea7cb8f9e5809b66f04e5aad92f2a000f74e9b829ccf6209af8c8f6da9"
+  },
+  {
+    "slug": "signals-rxjs-search",
+    "title": "Búsqueda Angular: del criterio al estado visible",
+    "type": "workflow",
+    "source": "signals-rxjs-search.workflow.json",
+    "artifact": "rendered/signals-rxjs-search.html",
+    "specificationSha256": "4026b6aa8fdc5a7f611ec6640a52cc0accb5c3c7b7a592b52af85558ec7564fa",
+    "artifactSha256": "aecdae9fe3b589ff8921eb3a2234fe6babf5da127be5e37b002f4889001ab336",
+    "preview": "signals-rxjs-search.aecdae9fe3b5.png",
+    "previewSha256": "620879d860da9e375e4340b560e8ff86e767ec003d39b2a019c1dd738d6837ef",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/portfolio.git",
+      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
+    }
+  },
+  {
+    "slug": "stable-api-errors",
+    "title": "Dos frameworks, un contrato de error estable",
+    "type": "architecture",
+    "source": "stable-api-errors.architecture.json",
+    "artifact": "rendered/stable-api-errors.html",
+    "specificationSha256": "226b074d41d0ac72b4b48ca593538644848302c6f843cb12eef4120953257f32",
+    "artifactSha256": "bca943b60eba39978d918e2f904eeba960bbb673e178028e4002a4a3426c3dd9",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested",
+    "repository": {
+      "url": "https://github.com/matigaleanodev/portfolio.git",
+      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
+    },
+    "preview": "stable-api-errors.bca943b60eba.png",
+    "previewSha256": "473c18b9f67e291eef7f2f1129e9d07e1c509db646ef26f59d0152529e0d71fa"
+  },
+  {
+    "slug": "urgent-release",
+    "title": "De un reporte a una corrección comprobada",
+    "type": "workflow",
+    "source": "urgent-release.workflow.json",
+    "artifact": "rendered/urgent-release.html",
+    "specificationSha256": "f0c20a1332ee10714f66180eafbd2123237399ed7d455613fc85295a78f8900f",
+    "artifactSha256": "2e453860c351c8bf330cce1c8d1b233889a64dd3e836a40d6a8ff028b66e875d",
+    "preview": "urgent-release.2e453860c351.png",
+    "previewSha256": "55f0bcbdab201f80f1bd9d1513eb83b527e4d6243a7df6ca6bd2a6028fe9ac31",
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    },
+    "browserEvidence": "pass",
+    "visualReview": "not-requested"
+  }
+]

@@ -1,9 +1,83 @@
 import { execFileSync } from 'node:child_process';
-import { cpSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { cpSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('build-content pipeline', () => {
+  it('publica por fecha argentina en todos los artifacts y elimina detalles viejos', () => {
+    const tempBaseDir = join(process.cwd(), '.tmp');
+    mkdirSync(tempBaseDir, { recursive: true });
+    const tempRoot = mkdtempSync(join(tempBaseDir, 'portfolio-publication-'));
+    mkdirSync(join(tempRoot, 'scripts'));
+    for (const script of ['build-content.mjs', 'build-release-manifest.mjs', 'publish-diagrams.mjs']) {
+      cpSync(join(process.cwd(), 'scripts', script), join(tempRoot, 'scripts', script));
+    }
+    const diagramsDir = join(tempRoot, 'content', 'diagrams');
+    mkdirSync(join(diagramsDir, 'rendered'), { recursive: true });
+    writeFileSync(join(diagramsDir, 'LICENSE.txt'), 'Licencia de prueba');
+    const diagramManifest: object[] = [];
+    for (const [slug, date, draft] of [
+      ['spec-published', '2026-10-09', false],
+      ['spec-scheduled', '2026-10-10', false],
+      ['spec-draft', '2026-10-09', true],
+    ] as const) {
+      const folder = join(tempRoot, 'content', 'posts', slug);
+      mkdirSync(folder, { recursive: true });
+      writeFileSync(join(folder, 'index.md'), `---\ntitle: ${slug}\nslug: ${slug}\nexcerpt: Resumen\ndate: '${date}'\ntags: [angular]\ncoverImage: /assets/cover.webp\ndraft: ${draft}\n---\nContenido ${slug}\n\n[Diagrama](/diagrams/${slug}.html)\n`);
+      const artifact = `<html lang="es"><title>${slug}</title></html>`;
+      const artifactSha256 = createHash('sha256').update(artifact).digest('hex');
+      const preview = `${slug}.${artifactSha256.slice(0, 12)}.png`;
+      writeFileSync(join(diagramsDir, `${slug}.architecture.json`), '{}');
+      writeFileSync(join(diagramsDir, 'rendered', `${slug}.html`), artifact);
+      writeFileSync(join(diagramsDir, 'rendered', preview), 'preview');
+      diagramManifest.push({ slug, title: slug, type: 'architecture',
+        source: `${slug}.architecture.json`, artifactSha256,
+        specificationSha256: createHash('sha256').update('{}').digest('hex'), preview,
+        previewSha256: createHash('sha256').update('preview').digest('hex'),
+      });
+    }
+    writeFileSync(join(diagramsDir, 'manifest.json'), JSON.stringify(diagramManifest));
+    const buildAt = (instant: string) => {
+      execFileSync('node', ['--input-type=module', '-e',
+        `import { runBuildContent } from './scripts/build-content.mjs'; await runBuildContent(new Date('${instant}'));`,
+      ], { cwd: tempRoot, stdio: 'pipe' });
+      execFileSync('node', ['./scripts/build-release-manifest.mjs'], { cwd: tempRoot, stdio: 'pipe' });
+    };
+    const artifacts = ['src/assets/blog/posts.json', 'public/rss.xml', 'public/sitemap-blog.xml',
+      '.generated/chat/knowledge.json', '.generated/release-manifest.json'];
+    try {
+      buildAt('2026-10-10T02:59:59Z');
+      for (const artifact of artifacts) {
+        const raw = readFileSync(join(tempRoot, artifact), 'utf8');
+        expect(raw).toContain('spec-published');
+        expect(raw).not.toContain('spec-scheduled');
+        expect(raw).not.toContain('spec-draft');
+      }
+      const detailPath = join(tempRoot, 'src/assets/blog/posts/spec-scheduled.json');
+      const diagramPath = join(tempRoot, 'public/diagrams/spec-scheduled.html');
+      const diagramIndex = join(tempRoot, 'public/diagrams/index.json');
+      expect(existsSync(detailPath)).toBe(false);
+      expect(existsSync(diagramPath)).toBe(false);
+      expect(readFileSync(diagramIndex, 'utf8')).not.toContain('spec-scheduled');
+      expect(readFileSync(diagramIndex, 'utf8')).not.toContain('spec-draft');
+      buildAt('2026-10-10T03:00:00Z');
+      for (const artifact of artifacts) {
+        expect(readFileSync(join(tempRoot, artifact), 'utf8')).toContain('spec-scheduled');
+      }
+      expect(existsSync(detailPath)).toBe(true);
+      expect(existsSync(diagramPath)).toBe(true);
+      expect(readFileSync(diagramIndex, 'utf8')).toContain('spec-scheduled');
+      buildAt('2026-10-10T02:59:59Z');
+      expect(existsSync(detailPath)).toBe(false);
+      expect(existsSync(diagramPath)).toBe(false);
+      expect(readFileSync(diagramIndex, 'utf8')).not.toContain('spec-scheduled');
+      writeFileSync(join(diagramsDir, 'spec-published.architecture.json'), 'modified');
+      expect(() => buildAt('2026-10-10T02:59:59Z')).toThrow(/without Archify validation/);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
   it('debería preservar estructura técnica con IDs estables y sanitización', () => {
     const markdown =
       '## Repetido\n\n## Repetido\n\n### Detalle\n\n1. Paso\n   - Anidado\n\n| Campo | Valor |\n| --- | --- |\n| id | 1 |\n\n```typescript\nconst value = "hola";\n```\n\n<script>alert(1)</script>\n\n[Inseguro](javascript:alert(1))';
@@ -54,7 +128,7 @@ describe('build-content pipeline', () => {
     );
     const knowledge = JSON.parse(knowledgeRaw) as {
       generatedAt: string;
-      projects: { slug: string; highlights: string[]; searchText: string }[];
+      projects: { slug: string; highlights: string[]; searchText: string; links: { url: string }[] }[];
       posts: { slug: string; canonicalUrl: string; summary: string; searchText: string }[];
     };
 
@@ -70,6 +144,15 @@ describe('build-content pipeline', () => {
       '<loc>https://matiasgaleano.dev/blog/arquitectura-angular-real</loc>',
     );
     expect(knowledge.generatedAt).toBeTruthy();
+    const diagramLinks = knowledge.projects.flatMap((project) => project.links)
+      .filter((link) => link.url.includes('/diagrams/'));
+    expect(diagramLinks).toHaveLength(3);
+    for (const link of knowledge.projects.flatMap((project) => project.links)) {
+      const url = new URL(link.url);
+      expect(['https:', 'http:']).toContain(url.protocol);
+      expect(url.username + url.password).toBe('');
+    }
+    expect(diagramLinks.every((link) => link.url.startsWith('https://matiasgaleano.dev/diagrams/'))).toBe(true);
     expect(knowledge.projects.some((project) => project.slug === 'foodly-notes')).toBe(true);
     expect(knowledge.projects.some((project) => project.slug === 'portfolio')).toBe(true);
     expect(
@@ -111,6 +194,7 @@ describe('build-content pipeline', () => {
       join(process.cwd(), 'scripts', 'build-content.mjs'),
       join(scriptsDir, 'build-content.mjs'),
     );
+    cpSync(join(process.cwd(), 'scripts', 'publish-diagrams.mjs'), join(scriptsDir, 'publish-diagrams.mjs'));
     cpSync(join(process.cwd(), 'content'), contentDir, { recursive: true });
     mkdirSync(projectDir, { recursive: true });
     writeFileSync(

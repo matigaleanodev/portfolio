@@ -101,6 +101,10 @@ Lo que trato de evitar es convertir varias veces el mismo estado o construir una
 
 Tampoco hay obligación de convertir un observable que ya se consume bien con `AsyncPipe`. La interoperabilidad sirve cuando simplifica una frontera concreta.
 
+[![Búsqueda Angular: del criterio al estado visible](/diagrams/signals-rxjs-search.aecdae9fe3b5.png)](/diagrams/signals-rxjs-search.html)
+
+[Explorar el recorrido de una búsqueda con Signals y RxJS](/diagrams/signals-rxjs-search.html).
+
 ## El criterio que me queda
 
 Para una pantalla normal, empezaría por estado local con signals y valores derivados con `computed`. Si hay búsqueda, cancelación o coordinación entre eventos, evaluaría RxJS en esa parte del flujo.
