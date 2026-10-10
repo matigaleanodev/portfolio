@@ -43,6 +43,23 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser tests
+        env:
+          CI: true
+          PORTFOLIO_E2E_BUILD: true
+        run: npm run test:e2e
+
+      - name: Upload browser traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-traces
+          path: .generated/playwright-results
+          if-no-files-found: ignore
+
       - name: Build release manifest
         run: npm run build:release-manifest
 

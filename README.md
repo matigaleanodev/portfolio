@@ -34,6 +34,7 @@ This repository owns the visual experience, static editorial content, prerendere
 - Prerendered blog post routes
 - Static editorial content generated from Markdown
 - Contact, chat, subscribe, and unsubscribe frontend flows
+- Chat sends up to six previous turns (1500 characters per turn, total JSON bounded to 15 KiB), excluding greeting and fallback messages. Existing browser storage remains; analytics sends suggestion length, not text. Publish after the API supporting `history`.
 - Release manifest and chat knowledge handoff to `portfolio-cloud`
 
 ---
@@ -52,6 +53,7 @@ Operational details:
 - [Deploy workflow](./Docs/deploy-workflow.md)
 - [Ownership and boundaries](./Docs/ecosystem-ownership.md)
 - [Blog architecture](./Docs/blog-architecture.md)
+- [Scheduled publication](./Docs/scheduled-publication.md)
 
 ---
 
@@ -87,3 +89,5 @@ Current application version: **1.1.0**
 ## Design and accessibility review
 
 See [the verification report](./Docs/design-accessibility-review.md) for comparable captures, measurements, test coverage and remaining manual checks.
+
+See [editorial diagrams](./Docs/architecture-diagrams.md) for Archify sources, validation and scheduled publication.
