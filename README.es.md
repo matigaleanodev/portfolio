@@ -84,7 +84,7 @@ Comandos útiles:
 
 ## Version
 
-Versión actual de la aplicación: **1.1.0**
+Versión actual de la aplicación: **1.3.0**
 
 ## Revisión de diseño y accesibilidad
 

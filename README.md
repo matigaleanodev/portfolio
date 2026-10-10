@@ -84,7 +84,7 @@ Useful commands:
 
 ## Version
 
-Current application version: **1.1.0**
+Current application version: **1.3.0**
 
 ## Design and accessibility review
 
