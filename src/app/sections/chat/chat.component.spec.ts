@@ -121,13 +121,13 @@ describe('ChatComponent', () => {
       node.textContent?.trim(),
     );
     expect(bubbles.some((text) => text?.includes('¿Qué tecnologías usás?'))).toBe(true);
-    expect(bubbles.some((text) => text?.includes('Trabajo con TypeScript, Angular y NestJS.'))).toBe(
-      true,
-    );
+    expect(
+      bubbles.some((text) => text?.includes('Trabajo con TypeScript, Angular y NestJS.')),
+    ).toBe(true);
     expect(el.textContent).toContain('FAQ');
     expect(trackEventMock).toHaveBeenCalledWith(
       'chat_click_suggestion',
-      expect.objectContaining({ question: '¿Qué tecnologías usás?' }),
+      expect.objectContaining({ length: '¿Qué tecnologías usás?'.length }),
     );
     expect(trackEventMock).toHaveBeenCalledWith(
       'chat_receive_response',
@@ -157,6 +157,19 @@ describe('ChatComponent', () => {
       'chat_send_message',
       expect.objectContaining({ via: 'manual' }),
     );
+  });
+
+  it('envía el diálogo previo en orden, sin bienvenida ni la pregunta actual', () => {
+    component['useSuggestion']('¿Dónde trabajás?');
+    expect(sendChatMessageMock.mock.calls[0][0].history).toEqual([]);
+    component['useSuggestion']('¿Y qué hacés ahí?');
+    expect(sendChatMessageMock.mock.calls[1][0].history).toEqual([
+      { role: 'user', content: '¿Dónde trabajás?' },
+      { role: 'assistant', content: 'Trabajo con TypeScript, Angular y NestJS.' },
+    ]);
+    expect(
+      trackEventMock.mock.calls.every(([, params]) => !params || !('question' in params)),
+    ).toBe(true);
   });
 
   it('no debería enviar con Enter si el draft está vacío', () => {
@@ -263,6 +276,10 @@ describe('ChatComponent', () => {
 
     expect(el.textContent).toContain('Mensaje persistido');
     expect(component['messages']()[0]?.text).toBe('Mensaje persistido');
+    component['useSuggestion']('¿Y qué más?');
+    expect(sendChatMessageMock.mock.calls[0][0].history).toEqual([
+      { role: 'assistant', content: 'Mensaje persistido' },
+    ]);
   });
 
   it('debería cerrar con Escape y devolver foco al FAB', async () => {

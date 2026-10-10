@@ -40,6 +40,26 @@ test('contenido y destinos editoriales disponibles sin JavaScript', async ({
   await context.close();
 });
 
+test('el chat funciona cuando el navegador bloquea el almacenamiento', async ({ page }) => {
+  await page.addInitScript(() => {
+    for (const method of ['getItem', 'setItem'] as const) {
+      Storage.prototype[method] = () => { throw new DOMException('Storage bloqueado', 'SecurityError'); };
+    }
+  });
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/');
+  await page.locator('.chat-fab').click();
+  await expect(page.locator('.chat-widget')).toBeVisible();
+  await page.route('**/api/chat', (route) => route.fulfill({
+    json: { answer: 'Respuesta sin almacenamiento', suggestedQuestions: [], source: 'ai' },
+  }));
+  await page.locator('#chat-input').fill('¿Qué hace Modo Playa?');
+  await page.locator('#chat-input').press('Enter');
+  await expect(page.getByText('Respuesta sin almacenamiento', { exact: true })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 const routes = [
   '/',
   '/blog',

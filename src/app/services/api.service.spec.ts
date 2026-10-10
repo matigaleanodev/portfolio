@@ -62,6 +62,10 @@ describe('ApiService', () => {
     const dto: ChatRequestDto = {
       message: '¿Qué tecnologías usás?',
       sessionId: 'test-session',
+      history: [
+        { role: 'user', content: '¿Dónde trabajás?' },
+        { role: 'assistant', content: 'En Comafi a través de Boreal IT.' },
+      ],
     };
 
     service.sendChatMessage(dto).subscribe((response) => {
