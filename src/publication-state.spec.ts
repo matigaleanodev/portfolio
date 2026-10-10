@@ -85,7 +85,9 @@ describe('publicación condicional', () => {
       runScenario(`
       const fs = await import('node:fs/promises');
       const path = await import('node:path');
-      const root = await fs.mkdtemp(path.join(process.cwd(), '.angular', 'publication-state-'));
+      const tempDir = path.join(process.cwd(), '.tmp');
+      await fs.mkdir(tempDir, { recursive: true });
+      const root = await fs.mkdtemp(path.join(tempDir, 'publication-state-'));
       try {
         await fs.mkdir(path.join(root, 'dist', 'portfolio', 'browser'), { recursive: true });
         await writePublicationState(expected, root);
