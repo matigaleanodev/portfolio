@@ -98,6 +98,10 @@ Eso hace dos cosas:
 
 La app pública consume solo la parte pública. El panel admin consume la parte privada. Esa frontera mejora seguridad, mantenimiento y legibilidad.
 
+[![Modo Playa: superficies y aislamiento por owner](/diagrams/modo-playa-platform.766d7d01788d.png)](/diagrams/modo-playa-platform.html)
+
+[Explorar la arquitectura de Modo Playa](/diagrams/modo-playa-platform.html).
+
 ## Manejo de imágenes en backend
 
 La gestión de imágenes fue otra decisión intencional. No quise dejar la consistencia de media repartida entre frontend y storage.

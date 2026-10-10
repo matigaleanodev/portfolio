@@ -24,6 +24,15 @@ if (!isNonEmptyString(releaseManifest?.generatedAt) || !isNonEmptyString(release
   throw new TypeError('Expected release manifest with generatedAt and siteUrl.');
 }
 
+for (const project of knowledge.projects ?? []) {
+  for (const link of project.links ?? []) {
+    const url = new URL(link.url);
+    if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) {
+      throw new TypeError(`Expected public HTTP(S) knowledge link in project ${project.slug}.`);
+    }
+  }
+}
+
 const payload = {
   artifact: knowledge,
   release: {

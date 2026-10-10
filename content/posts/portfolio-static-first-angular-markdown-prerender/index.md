@@ -102,6 +102,10 @@ Lo que me interesaba no era solo "tener blog". Me interesaba que el modelo compl
 - SEO generado desde la misma fuente
 - frontend desacoplado de una API editorial
 
+[![Cómo funciona este portfolio](/diagrams/portfolio-ecosystem.47e54d61c12e.png)](/diagrams/portfolio-ecosystem.html)
+
+[Explorar la arquitectura static-first del portfolio](/diagrams/portfolio-ecosystem.html).
+
 ## Lo que gano con este enfoque
 
 La mejora más obvia fue complejidad. Hay menos piezas involucradas para publicar contenido y menos dependencias cruzadas entre frontend y backend.

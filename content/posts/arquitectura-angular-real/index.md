@@ -186,6 +186,10 @@ La página `lodgings-list` de [`modo-playa-admin`](https://github.com/matigalean
 
 Eso hace que la pantalla se enfoque en la feature y no en reimplementar infraestructura de frontend.
 
+[![Un listado Angular: UI, recurso y HTTP](/diagrams/angular-resource-layers.2901fa4505fb.png)](/diagrams/angular-resource-layers.html)
+
+[Explorar las capas de un listado Angular](/diagrams/angular-resource-layers.html).
+
 ## Por qué me sirve este enfoque
 
 No busco una arquitectura ultra abstracta. Busco una arquitectura que soporte crecimiento sin volverse caótica.

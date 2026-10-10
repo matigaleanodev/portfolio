@@ -67,16 +67,9 @@ El `docker-compose.yml` principal no publica Loki hacia afuera y deja a Grafana 
 
 La forma más simple de ver la arquitectura es esta:
 
-```mermaid
-flowchart LR
-    A["APIs en Docker"] --> B["json-file logs de Docker"]
-    T["Traefik"] --> A
-    B --> C["Promtail"]
-    C --> D["Loki"]
-    D --> E["Grafana"]
-    U["Navegador"] --> T
-    T --> E
-```
+[![De los logs de Docker a Grafana](/diagrams/docker-observability.4d9954e02e73.png)](/diagrams/docker-observability.html)
+
+[Explorar el diagrama interactivo del stack de logs](/diagrams/docker-observability.html): podés recorrer los componentes, consultar sus responsabilidades y exportar el diagrama.
 
 Hay un detalle importante en Promtail: no depende de tocar cada aplicación. Usa `docker_sd_configs` sobre `/var/run/docker.sock` y después resuelve el path real de cada contenedor en `/var/lib/docker/containers/<id>/*-json.log`.
 

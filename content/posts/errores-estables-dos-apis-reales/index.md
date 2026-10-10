@@ -273,6 +273,10 @@ En ambos casos busqué que la validación automática del framework no devolvier
 
 Esto me importa bastante. El contrato uniforme no vale solo para los errores “lindos”. También conviene que un error inesperado termine con un shape controlado en vez de respuestas arbitrarias o stack traces.
 
+[![Dos frameworks, un contrato de error estable](/diagrams/stable-api-errors.bca943b60eba.png)](/diagrams/stable-api-errors.html)
+
+[Explorar el contrato de errores entre API y frontend](/diagrams/stable-api-errors.html).
+
 ## 7. Qué cambia por culpa o a favor del framework
 
 Acá es donde los dos stacks empiezan a separarse de verdad.

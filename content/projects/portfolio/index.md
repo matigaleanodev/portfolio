@@ -16,6 +16,10 @@ stack:
   - NestJS API
   - AWS serverless
 links:
+  - label: Explorar arquitectura
+    url: /diagrams/portfolio-ecosystem.html
+    icon: server
+    primary: false
   - label: Blog técnico
     url: https://matiasgaleano.dev/blog
     icon: bookopen

@@ -169,6 +169,10 @@ El patrón se repite en:
 
 El punto importante no es solo automatizar el deploy. Es estandarizarlo entre proyectos para que operar un backend nuevo no implique ponerse a inventar otra receta.
 
+[![Del commit al contenedor en EC2](/diagrams/docker-ec2-deployment.3da6e01cd637.png)](/diagrams/docker-ec2-deployment.html)
+
+[Explorar el flujo de deploy a EC2](/diagrams/docker-ec2-deployment.html).
+
 ## Ejemplos reales del workspace
 
 ### Foodly Notes

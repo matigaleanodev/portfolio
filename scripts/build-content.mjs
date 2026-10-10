@@ -5,6 +5,7 @@ import matter from 'gray-matter';
 import { marked, Renderer } from 'marked';
 import hljs from 'highlight.js';
 import sanitizeHtml from 'sanitize-html';
+import { publishDiagrams } from './publish-diagrams.mjs';
 
 const rootDir = process.cwd();
 const contentDir = path.join(rootDir, 'content');
@@ -37,6 +38,7 @@ export async function runBuildContent(now = new Date()) {
 
   const projects = await loadProjects();
   const posts = await loadPosts(now);
+  await publishDiagrams(rootDir, projects, posts.details);
   const chatKnowledge = buildChatKnowledge(projects, posts.details);
 
   await fs.writeFile(projectsOutputPath, `${JSON.stringify(projects, null, 2)}\n`);
@@ -537,7 +539,7 @@ export function buildChatKnowledge(projects, posts) {
       title: project.title,
       excerpt: project.excerpt,
       stack: project.stack,
-      links: project.links,
+      links: project.links?.map((link) => ({ ...link, url: new URL(link.url, siteUrl).href })),
       highlights: buildProjectHighlights(project),
       searchText: buildProjectSearchText(project),
     })),

@@ -10,7 +10,11 @@ test('diagrama real y separación de texto sin overflow', async ({ page }) => {
   for (const route of ['/', '/blog', '/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion']) {
     await page.goto(route);
     await expect(page.locator('h1')).toBeVisible();
-    if (route.includes('docker-logs')) await expect(page.locator('.mermaid-diagram svg')).toBeVisible();
+    if (route.includes('docker-logs')) {
+      const preview = page.getByRole('img', { name: 'De los logs de Docker a Grafana' });
+      await expect(preview).toBeVisible();
+      await expect(preview.locator('..')).toHaveAttribute('href', '/diagrams/docker-observability.html');
+    }
     await page.addStyleTag({ content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-bottom: 2em !important; }' });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
