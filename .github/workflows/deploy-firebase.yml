@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '17 12 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: portfolio-production-publication
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -11,11 +18,12 @@ permissions:
 
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
-  PROCESS_RELEASE_FUNCTION_NAME: ${{ vars.PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME || 'portfolio-cloud-dev-process-release' }}
-  PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME: ${{ vars.PORTFOLIO_CLOUD_PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME || 'portfolio-cloud-dev-publish-chat-knowledge' }}
+  PROCESS_RELEASE_FUNCTION_NAME: ${{ vars.PORTFOLIO_CLOUD_PROCESS_RELEASE_FUNCTION_NAME || 'portfolio-cloud-prod-process-release' }}
+  PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME: ${{ vars.PORTFOLIO_CLOUD_PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME || 'portfolio-cloud-prod-publish-chat-knowledge' }}
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
@@ -34,8 +42,17 @@ jobs:
       - name: Build content artifacts
         run: npm run build:content
 
+      - name: Check whether Firebase needs a deployment
+        id: publication
+        run: node scripts/publication-state.mjs
+
       - name: Build Angular app
-        run: npm run build
+        if: steps.publication.outputs.deploy == 'true'
+        run: npx ng build
+
+      - name: Write deployed publication state
+        if: steps.publication.outputs.deploy == 'true'
+        run: node scripts/publication-state.mjs --write
 
       - name: Build release manifest
         run: npm run build:release-manifest
@@ -44,6 +61,7 @@ jobs:
         run: npm run build:chat-knowledge-payload
 
       - name: Deploy to Firebase Hosting
+        if: steps.publication.outputs.deploy == 'true'
         run: npx firebase-tools deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
 
       - name: Configure AWS credentials
@@ -63,6 +81,7 @@ jobs:
             > .generated/process-release-metadata.json
 
           node -e "const fs=require('node:fs'); const metadata=JSON.parse(fs.readFileSync('.generated/process-release-metadata.json','utf8')); if (metadata.FunctionError || metadata.StatusCode !== 200) { console.error('process-release invocation failed', metadata); process.exit(1); }"
+          node -e "const fs=require('node:fs'); const response=JSON.parse(fs.readFileSync('.generated/process-release-response.json','utf8')); if (response.statusCode !== 200) { console.error('process-release failed', response); process.exit(1); }"
 
       - name: Invoke portfolio-cloud publish-chat-knowledge
         run: |
@@ -75,6 +94,7 @@ jobs:
             > .generated/publish-chat-knowledge-metadata.json
 
           node -e "const fs=require('node:fs'); const metadata=JSON.parse(fs.readFileSync('.generated/publish-chat-knowledge-metadata.json','utf8')); if (metadata.FunctionError || metadata.StatusCode !== 200) { console.error('publish-chat-knowledge invocation failed', metadata); process.exit(1); }"
+          node -e "const fs=require('node:fs'); const response=JSON.parse(fs.readFileSync('.generated/publish-chat-knowledge-response.json','utf8')); if (response.statusCode !== 200) { console.error('publish-chat-knowledge failed', response); process.exit(1); }"
 
       - name: Upload release manifest
         uses: actions/upload-artifact@v4

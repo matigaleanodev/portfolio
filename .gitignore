@@ -3,6 +3,7 @@
 # Compiled output
 /dist
 /tmp
+/.tmp
 /out-tsc
 /bazel-out
 
@@ -39,6 +40,8 @@ testem.log
 /typings
 __screenshots__/
 /.generated
+/.archify
+/public/diagrams
 
 # System files
 .DS_Store

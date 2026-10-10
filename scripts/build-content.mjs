@@ -29,20 +29,20 @@ marked.setOptions({
   breaks: false,
 });
 
-export async function runBuildContent() {
+export async function runBuildContent(now = new Date()) {
   await ensureDirectory(assetsDir);
   await ensureDirectory(contentDir);
   await ensureDirectory(publicDir);
   await ensureDirectory(generatedChatDir);
 
   const projects = await loadProjects();
-  const posts = await loadPosts();
+  const posts = await loadPosts(now);
   const chatKnowledge = buildChatKnowledge(projects, posts.details);
 
   await fs.writeFile(projectsOutputPath, `${JSON.stringify(projects, null, 2)}\n`);
 
   await ensureDirectory(blogDir);
-  await ensureDirectory(postsOutputDir);
+  await ensureCleanDirectory(postsOutputDir);
   await fs.writeFile(postsIndexOutputPath, `${JSON.stringify(posts.index, null, 2)}\n`);
 
   for (const post of posts.details) {
@@ -137,7 +137,7 @@ async function loadProjects() {
   return projects.sort((left, right) => left.order - right.order);
 }
 
-async function loadPosts() {
+async function loadPosts(now) {
   const files = await getIndexMarkdownFiles(postsDir);
   const slugRegistry = new Set();
   const visiblePosts = [];
@@ -167,7 +167,7 @@ async function loadPosts() {
     const canonicalUrl = stringifyOptional(entry.data.canonicalUrl) ?? `${siteUrl}/blog/${slug}`;
     const ogImage = resolveOgImage(stringifyOptional(entry.data.ogImage), slug);
 
-    if (!isDraft) {
+    if (!isDraft && postDate <= getPublicationDay(now)) {
       visiblePosts.push({
         slug,
         title: entry.data.title.trim(),
@@ -370,8 +370,22 @@ function validateRequiredString(value, message) {
   }
 }
 
+export function getPublicationDay(now = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now);
+}
+
 export function normalizeDate(value, message) {
-  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+  if (
+    typeof value === 'string' &&
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    !Number.isNaN(Date.parse(`${value}T00:00:00Z`)) &&
+    new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value
+  ) {
     return value;
   }
 
