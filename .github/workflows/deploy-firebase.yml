@@ -24,6 +24,7 @@ env:
 jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
+    timeout-minutes: 30
     runs-on: ubuntu-latest
 
     steps:
@@ -69,6 +70,14 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify AWS identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          account_id=$(aws sts get-caller-identity --query Account --output text)
+          [[ "$account_id" == "650387442642" ]] || exit 1
+          [[ "$AWS_REGION" == "us-east-1" ]] || exit 1
 
       - name: Invoke portfolio-cloud process-release
         run: |
