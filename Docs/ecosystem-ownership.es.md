@@ -6,8 +6,6 @@ Este documento registra el ownership operativo final entre `portfolio`, `API run
 
 La API runtime es un solo elemento lógico: `portfolio-api-cloud` (TypeScript/CDK/Lambda) está activa en `https://api.matiasgaleano.dev/api`; `portfolio-api` conserva el espejo NestJS/EC2 intercambiable para recuperación. Ambas implementaciones ofrecen los mismos seis contratos, incluido health. Cloudflare selecciona una implementación por request; no son servicios en serie ni se duplican escrituras. La API conserva su límite frente al frontend y `portfolio-cloud`.
 
-Para 1.1.0 se planifica Middy y organizar `src` por dominio, HTTP y runtime, con `handler.ts` como composición. CDK, una Lambda e `infra/` separado se conservan.
-
 ## Resumen de ownership
 
 - `portfolio` es dueño de la superficie visual, el contenido editorial fuente, el pipeline de build estático, los artefactos SEO y el deploy en Firebase.
