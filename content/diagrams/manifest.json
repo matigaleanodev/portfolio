@@ -306,8 +306,10 @@
     "type": "architecture",
     "source": "portfolio-ecosystem.architecture.json",
     "artifact": "rendered/portfolio-ecosystem.html",
-    "specificationSha256": "16ad6bc702a0663d9a3d554df7e329b2f62208d667293d5a939b75e19d1a9224",
-    "artifactSha256": "47e54d61c12eb5733f5fb833b05f27d01d7de26cb0aaf3f9dca6ed154f5d2e5a",
+    "specificationSha256": "0dd4ac4c8982f05478ce069c2a240546c4cc9a3e86f2037db7baeb79b8f3bdc0",
+    "artifactSha256": "543aa6e04718fb1ba0f8a0f61d42cd2bf9c5d3d1ad2b380f8d17a13573ca5aba",
+    "preview": "portfolio-ecosystem.543aa6e04718.png",
+    "previewSha256": "9d86450587891310e62f4e3bd27bbb3534f75c27e1474e361942937e439a9e2e",
     "validation": {
       "checksPassed": 9,
       "checkCount": 9,
@@ -319,11 +321,9 @@
     "browserEvidence": "pass",
     "visualReview": "not-requested",
     "repository": {
-      "url": "https://github.com/matigaleanodev/portfolio.git",
-      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
-    },
-    "preview": "portfolio-ecosystem.47e54d61c12e.png",
-    "previewSha256": "dfe93efc063a06b4d4afc08d8fa4f5ffc9205d02d502ff5fc2d12b35e50d5fe2"
+      "url": "https://github.com/matigaleanodev/portfolio-api-cloud.git",
+      "revision": "17d4af9c40e217797122f3bb7c11968959daf720"
+    }
   },
   {
     "slug": "process-execution-states",

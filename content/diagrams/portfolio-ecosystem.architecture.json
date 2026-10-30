@@ -446,10 +446,10 @@
     },
     "quality_profile": "showcase",
     "repository": {
-      "url": "https://github.com/matigaleanodev/portfolio.git",
-      "revision": "863498fd6c27f9c4e0305daa7cedea4b639f5bfc"
+      "url": "https://github.com/matigaleanodev/portfolio-api-cloud.git",
+      "revision": "17d4af9c40e217797122f3bb7c11968959daf720"
     },
-    "output": ".archify/architecture-portfolio-ecosystem-20261009-193125/portfolio-ecosystem.html"
+    "output": ".archify/architecture-portfolio-ecosystem-20261026/portfolio-ecosystem.html"
   },
   "components": [
     {
@@ -467,10 +467,10 @@
       ],
       "sources": [
         {
-          "path": "src/app/app.routes.ts",
-          "line": 3,
-          "end_line": 29,
-          "label": "Rutas públicas"
+          "path": "Docs/audit.es.md",
+          "line": 70,
+          "end_line": 70,
+          "label": "Cliente Angular y contratos HTTP"
         }
       ]
     },
@@ -489,52 +489,53 @@
       ],
       "sources": [
         {
-          "path": "angular.json",
-          "line": 29,
-          "end_line": 49,
-          "label": "Build estático"
-        },
-        {
-          "path": "firebase.json",
-          "line": 1,
-          "end_line": 10,
-          "label": "Firebase Hosting"
+          "path": "README.es.md",
+          "line": 11,
+          "end_line": 15,
+          "label": "Ownership frontend y Firebase"
         }
       ]
     },
     {
       "id": "public-api",
       "type": "backend",
-      "label": "API NestJS",
-      "sublabel": "Contacto, chat y suscripciones",
+      "label": "API del portfolio",
+      "sublabel": "CDK/Lambda activa · NestJS/EC2 espejo",
       "pos": [
         700,
         70
       ],
       "size": [
-        190,
-        76
+        300,
+        96
       ],
       "sources": [
         {
-          "path": "src/app/services/api.service.ts",
-          "line": 23,
-          "end_line": 42,
-          "label": "Contratos HTTP públicos"
+          "path": "Docs/production-rollout.es.md",
+          "line": 5,
+          "end_line": 9,
+          "label": "Implementación Lambda activa"
         },
         {
-          "path": "Docs/ecosystem-ownership.es.md",
-          "line": 29,
-          "end_line": 41,
-          "label": "Responsabilidad de la API"
+          "path": "Docs/production.es.md",
+          "line": 5,
+          "end_line": 5,
+          "label": "Mismos contratos y dominio público"
+        },
+        {
+          "path": "Docs/production.es.md",
+          "line": 21,
+          "end_line": 21,
+          "label": "Recuperación con NestJS y EC2"
         }
-      ]
+      ],
+      "tag": "6 contratos intercambiables"
     },
     {
       "id": "editorial",
       "type": "external",
       "label": "Contenido editorial",
-      "sublabel": "Markdown en Git",
+      "sublabel": "Manifiesto y knowledge",
       "pos": [
         40,
         350
@@ -545,10 +546,10 @@
       ],
       "sources": [
         {
-          "path": "Docs/ecosystem-ownership.es.md",
-          "line": 15,
-          "end_line": 20,
-          "label": "Fuente editorial"
+          "path": "Docs/audit.es.md",
+          "line": 72,
+          "end_line": 72,
+          "label": "Handoff editorial desde el frontend"
         }
       ]
     },
@@ -567,10 +568,10 @@
       ],
       "sources": [
         {
-          "path": ".github/workflows/deploy-firebase.yml",
-          "line": 22,
-          "end_line": 44,
-          "label": "Build del sitio y handoff"
+          "path": "Docs/audit.es.md",
+          "line": 72,
+          "end_line": 72,
+          "label": "Workflow y handoff post-publicación"
         }
       ]
     },
@@ -589,16 +590,16 @@
       ],
       "sources": [
         {
-          "path": ".github/workflows/deploy-firebase.yml",
-          "line": 55,
-          "end_line": 75,
-          "label": "Invocación de Lambdas"
+          "path": "Docs/audit.es.md",
+          "line": 72,
+          "end_line": 74,
+          "label": "Funciones y ownership cloud"
         },
         {
-          "path": "Docs/ecosystem-ownership.es.md",
-          "line": 43,
-          "end_line": 51,
-          "label": "Responsabilidades cloud"
+          "path": "Docs/production-rollout.es.md",
+          "line": 24,
+          "end_line": 24,
+          "label": "Suscripciones y knowledge canónico"
         }
       ]
     }
@@ -646,10 +647,11 @@
     },
     {
       "dot": "emerald",
-      "title": "Funciones dinámicas",
+      "title": "Una API, dos implementaciones",
       "items": [
-        "Contacto, chat y suscripciones entran por la API.",
-        "El contenido editorial no depende de la API."
+        "CDK/Lambda es la implementación activa.",
+        "NestJS/EC2 se conserva como espejo para recuperación.",
+        "Comparten seis contratos; el routing selecciona una."
       ]
     },
     {

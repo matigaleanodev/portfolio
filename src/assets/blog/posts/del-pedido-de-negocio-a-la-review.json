@@ -1,0 +1,69 @@
+{
+  "slug": "del-pedido-de-negocio-a-la-review",
+  "title": "Del pedido de negocio a la review: cómo trabajamos una funcionalidad",
+  "excerpt": "Refinamiento con negocio, refinamiento técnico, planning, desarrollo y QA: cómo se ordena el trabajo de una funcionalidad y qué pasa cuando producción interrumpe lo planificado.",
+  "date": "2026-10-23",
+  "tags": [
+    "engineering",
+    "agile",
+    "scrum",
+    "jira",
+    "teamwork"
+  ],
+  "coverImage": "/assets/blog/del-pedido-de-negocio-a-la-review/cover.webp",
+  "readingTimeMinutes": 8,
+  "contentHtml": "<p>Una parte importante del desarrollo profesional ocurre antes de abrir el editor.</p>\n<p>Hay que entender qué necesita negocio, convertir esa necesidad en trabajo concreto, encontrar dependencias y acordar qué puede entregar el equipo. Después hay que desarrollar, probar y mostrar lo que se hizo. Mientras tanto, producción sigue funcionando y puede pedir atención en cualquier momento.</p>\n<p>En mi experiencia, ese recorrido se vuelve mucho más llevadero cuando cada etapa tiene una intención clara. El tablero ayuda a verlo, pero lo que sostiene el proceso son las conversaciones y los acuerdos detrás de cada movimiento.</p>\n<p>Quiero contar cómo trabajamos ese recorrido en un equipo de desarrollo, sin entrar en sistemas ni información interna. Para hacerlo más concreto, voy a usar una funcionalidad ficticia: agregar filtros y una exportación a un listado.</p>\n<h2 id=\"section-el-refinamiento-con-negocio-empieza-por-entender-el-problema\">El refinamiento con negocio empieza por entender el problema</h2><p>Un pedido puede llegar como “necesitamos exportar esta pantalla”. Parece suficiente para empezar, hasta que aparecen las preguntas.</p>\n<p>¿Se exporta la página visible o todos los resultados? ¿Se respetan los filtros? ¿Quién puede hacerlo? ¿Qué necesita resolver la persona con ese archivo? ¿Qué pasa si hay demasiados registros?</p>\n<p>El refinamiento con negocio sirve para aclarar ese tipo de decisiones y construir criterios de aceptación. Si todavía existen dos interpretaciones distintas sobre el resultado esperado, avanzar más rápido con código solamente adelanta el momento de la discusión.</p>\n<p>Me interesa salir de esa conversación con una necesidad entendible y un alcance que podamos explicar. También con las dudas visibles: algo que depende de otra definición no debería convertirse en una certeza solo porque quedó escrito en una tarjetita de Jira.</p>\n<h2 id=\"section-el-refinamiento-tecnico-convierte-ese-alcance-en-trabajo-realizable\">El refinamiento técnico convierte ese alcance en trabajo realizable</h2><p>Con la necesidad más clara, la conversación cambia. Ahora hay que pensar cómo llevarla al sistema que ya existe.</p>\n<p>En el ejemplo, revisaría el contrato del listado, los permisos, la forma de consultar datos y el costo de generar la exportación. También qué equipos o componentes intervienen y qué puede desarrollarse de manera independiente.</p>\n<p>El refinamiento técnico permite descubrir que un pedido aparentemente chico requiere una modificación de API, un ajuste de frontend y una definición sobre volumen máximo. O que conviene dividirlo en entregas más acotadas.</p>\n<p>Separar ambos refinamientos ayuda a enfocar la conversación, aunque no los vuelve compartimentos cerrados. Si aparece una limitación técnica que cambia el alcance, hay que volver a hablar con negocio. Una decisión técnica que modifica la experiencia también necesita esa conversación.</p>\n<p>Lo que intento evitar es llegar a la planning con dependencias importantes escondidas detrás de una descripción demasiado general.</p>\n<h2 id=\"section-la-planning-necesita-capacidad-real\">La planning necesita capacidad real</h2><p>En la planning se acuerda el trabajo que entra al sprint. Para que ese acuerdo sirva, tiene que considerar la disponibilidad del equipo, las dependencias y la incertidumbre que todavía queda.</p>\n<p>No me resulta útil pensar la capacidad como si cada día estuviera disponible para desarrollo nuevo y nada pudiera interrumpirlo. En un equipo que también atiende producción, parte de esa capacidad ya tiene otro compromiso.</p>\n<p>Eso no obliga a adivinar cada incidente. Obliga a reconocer que existen y que pueden consumir tiempo de análisis, coordinación y resolución.</p>\n<p>La planificación se vuelve más honesta cuando el equipo puede decir qué está preparado para iniciar, qué necesita una definición adicional y qué entrega podría verse afectada si aparece una interrupción importante.</p>\n<h2 id=\"section-las-columnas-representan-acuerdos-sobre-el-trabajo\">Las columnas representan acuerdos sobre el trabajo</h2><p>En nuestro flujo, el desarrollo pasa por estas etapas:</p>\n<div class=\"table-scroll\" role=\"region\" aria-label=\"Tabla del artículo\" tabindex=\"0\"><table>\n<thead>\n<tr>\n<th>Columna</th>\n<th>Qué representa</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Listo para iniciar</td>\n<td>La tarea está preparada para que alguien tome su desarrollo.</td>\n</tr>\n<tr>\n<td>Desarrollo en progreso</td>\n<td>El trabajo de implementación está activo.</td>\n</tr>\n<tr>\n<td>Desarrollo finalizado</td>\n<td>El código está completo, probado en desarrollo y cumple los criterios de aceptación de la tarea.</td>\n</tr>\n<tr>\n<td>Inspección</td>\n<td>El equipo de QA verifica el cambio en el entorno de release.</td>\n</tr>\n</tbody></table>\n</div><p>Después, en la review, presentamos a negocio las funcionalidades realizadas durante el sprint mediante una o varias pruebas de uso en vivo.</p>\n<p>La distinción entre desarrollo finalizado e inspección me parece especialmente útil. Terminar la implementación no elimina el trabajo de validación que viene después. Si ambas cosas se mezclan bajo una sola columna de “terminado”, resulta difícil ver dónde está realmente una funcionalidad.</p>\n<p>También importa registrar qué bloquea una tarea. Que una tarjeta siga en desarrollo no explica por sí solo si alguien está programando, esperando un contrato o investigando un problema de ambiente.</p>\n<p><a href=\"/diagrams/feature-delivery.html\" rel=\"noopener noreferrer\" target=\"_blank\"><img src=\"/diagrams/feature-delivery.5a1b84fd702d.png\" alt=\"Del refinamiento a la review\" /></a></p>\n<p><a href=\"/diagrams/feature-delivery.html\" rel=\"noopener noreferrer\" target=\"_blank\">Explorar el recorrido de una funcionalidad</a>.</p>\n<h2 id=\"section-scrum-y-kanban-ayudan-a-mirar-aspectos-distintos\">Scrum y Kanban ayudan a mirar aspectos distintos</h2><p>En Jira, un tablero Scrum permite organizar el trabajo alrededor de sprints. Un tablero Kanban pone el foco en visualizar un flujo continuo. Atlassian describe ambas opciones en su <a href=\"https://support.atlassian.com/jira-software-cloud/docs/what-is-a-jira-software-board/\" rel=\"noopener noreferrer\" target=\"_blank\">documentación de tableros</a>. Ninguno garantiza que las tareas estén bien definidas o que el equipo tenga capacidad para todo lo que aparece.</p>\n<p>Al mirar un sprint me interesa qué objetivo estamos buscando y qué trabajo se previó. Al mirar el flujo me interesa dónde se acumulan tareas, qué está bloqueado y cuánto trabajo hay abierto al mismo tiempo.</p>\n<p>No hace falta asumir que usamos dos tableros para la misma tarea. Son perspectivas que ayudan a hacer preguntas diferentes. Una lista larga de tarjetas en progreso puede mostrar mucha actividad y, al mismo tiempo, muy pocas entregas completas.</p>\n<p>Además, las columnas y la separación de refinamientos que describo son acuerdos de nuestro equipo. La <a href=\"https://scrumguides.org/scrum-guide.html\" rel=\"noopener noreferrer\" target=\"_blank\">Scrum Guide</a> define el marco; no prescribe este workflow específico de Jira.</p>\n<h2 id=\"section-inspeccion-en-release-permite-exigirle-mas-al-cambio\">Inspección en release permite exigirle más al cambio</h2><p>El equipo de QA prueba en el entorno de release y hace verificaciones más exhaustivas que recorrer únicamente los casos de uso esperados.</p>\n<p>También estresa flujos para evaluar volumen, tiempos de respuesta y performance. En una exportación, por ejemplo, importa que el archivo tenga los datos correctos, pero también cómo se comporta el flujo cuando aumenta la cantidad de registros.</p>\n<p>Es una validación con un foco distinto al que tuvimos durante el desarrollo. Que una prueba haya funcionado en el ambiente de desarrollo aporta evidencia, pero todavía queda contrastar el comportamiento en el entorno de release.</p>\n<p>Si aparece un problema, hay que resolverlo y volver a verificar. El tablero debería permitir reconocer ese recorrido, en lugar de conservar una apariencia de avance que ya no representa el estado real de la tarea.</p>\n<h2 id=\"section-el-buffer-de-interrupcion-reconoce-que-produccion-sigue-viva\">El buffer de interrupción reconoce que producción sigue viva</h2><p>En nuestra metodología contemplamos capacidad para atender errores detectados en producción. Puede tratarse de un bug, un problema en los datos, una dificultad de experiencia de usuario o desconocimiento de una funcionalidad.</p>\n<p>Esas situaciones requieren atención, pero no todas necesitan modificar código. A veces la resolución pasa por explicar un comportamiento, revisar datos o entender qué ocurrió. Otras veces exige una corrección y un despliegue de emergencia.</p>\n<p>El buffer permite considerar ese trabajo dentro del sprint. No significa que cualquier cantidad de interrupciones entre sin afectar los entregables.</p>\n<p>Si un problema consume más capacidad de la prevista, puede comprometer lo planificado. Ahí hace falta hacerlo visible y revisar prioridades. Mantener todas las fechas como si esa capacidad siguiera disponible solamente traslada el problema al cierre del sprint.</p>\n<p>Me parece importante que esa atención quede registrada. Investigar un incidente también es trabajo, incluso cuando termina sin un cambio de código.</p>\n<h2 id=\"section-la-review-pone-el-resultado-frente-a-negocio\">La review pone el resultado frente a negocio</h2><p>En la review presentamos las tareas realizadas durante el sprint y mostramos una o varias pruebas de uso en vivo.</p>\n<p>Para el ejemplo del listado, recorreríamos los filtros, ejecutaríamos la exportación y mostraríamos el resultado. Eso permite conversar sobre algo concreto y relacionarlo con la necesidad que abrió el trabajo.</p>\n<p>La presentación también ayuda a identificar dudas, nuevas necesidades o ajustes para el backlog. No todo comentario implica que la tarea original estuvo mal: a veces usar una funcionalidad hace visible una necesidad que antes no se había considerado.</p>\n<p>Lo valioso es poder distinguir ese feedback de un criterio de aceptación que ya estaba acordado y todavía no se cumple.</p>\n<h2 id=\"section-lo-que-me-sirve-de-este-recorrido\">Lo que me sirve de este recorrido</h2><p>El proceso funciona mejor cuando cada etapa reduce una incertidumbre concreta: qué necesita negocio, cómo podemos implementarlo, qué capacidad tenemos y cómo se comporta el resultado.</p>\n<p>Jira permite dejar visibles esos acuerdos. El equipo tiene que sostenerlos y revisarlos cuando cambia la realidad.</p>\n<p>Para mí, una buena metodología ayuda a que una funcionalidad llegue a la review con una historia entendible: qué problema buscaba resolver, qué se construyó, cómo se probó y qué aprendimos durante el camino.</p>\n",
+  "headings": [
+    {
+      "id": "section-el-refinamiento-con-negocio-empieza-por-entender-el-problema",
+      "title": "El refinamiento con negocio empieza por entender el problema",
+      "level": 2
+    },
+    {
+      "id": "section-el-refinamiento-tecnico-convierte-ese-alcance-en-trabajo-realizable",
+      "title": "El refinamiento técnico convierte ese alcance en trabajo realizable",
+      "level": 2
+    },
+    {
+      "id": "section-la-planning-necesita-capacidad-real",
+      "title": "La planning necesita capacidad real",
+      "level": 2
+    },
+    {
+      "id": "section-las-columnas-representan-acuerdos-sobre-el-trabajo",
+      "title": "Las columnas representan acuerdos sobre el trabajo",
+      "level": 2
+    },
+    {
+      "id": "section-scrum-y-kanban-ayudan-a-mirar-aspectos-distintos",
+      "title": "Scrum y Kanban ayudan a mirar aspectos distintos",
+      "level": 2
+    },
+    {
+      "id": "section-inspeccion-en-release-permite-exigirle-mas-al-cambio",
+      "title": "Inspección en release permite exigirle más al cambio",
+      "level": 2
+    },
+    {
+      "id": "section-el-buffer-de-interrupcion-reconoce-que-produccion-sigue-viva",
+      "title": "El buffer de interrupción reconoce que producción sigue viva",
+      "level": 2
+    },
+    {
+      "id": "section-la-review-pone-el-resultado-frente-a-negocio",
+      "title": "La review pone el resultado frente a negocio",
+      "level": 2
+    },
+    {
+      "id": "section-lo-que-me-sirve-de-este-recorrido",
+      "title": "Lo que me sirve de este recorrido",
+      "level": 2
+    }
+  ],
+  "seo": {
+    "title": "Del pedido de negocio a la review: cómo trabajamos una funcionalidad | Matias Galeano",
+    "description": "Refinamiento con negocio, refinamiento técnico, planning, desarrollo y QA: cómo se ordena el trabajo de una funcionalidad y qué pasa cuando producción interrumpe lo planificado.",
+    "canonicalUrl": "https://matiasgaleano.dev/blog/del-pedido-de-negocio-a-la-review",
+    "ogImage": "https://media.matiasgaleano.dev/og/del-pedido-de-negocio-a-la-review.png"
+  }
+}
