@@ -102,7 +102,7 @@ Lo que me interesaba no era solo "tener blog". Me interesaba que el modelo compl
 - SEO generado desde la misma fuente
 - frontend desacoplado de una API editorial
 
-[![Cómo funciona este portfolio](/diagrams/portfolio-ecosystem.47e54d61c12e.png)](/diagrams/portfolio-ecosystem.html)
+[![Cómo funciona este portfolio](/diagrams/portfolio-ecosystem.543aa6e04718.png)](/diagrams/portfolio-ecosystem.html)
 
 [Explorar la arquitectura static-first del portfolio](/diagrams/portfolio-ecosystem.html).
 

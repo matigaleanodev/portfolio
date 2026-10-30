@@ -112,15 +112,15 @@
     "productType": "Plataforma técnica personal",
     "primarySignal": "Static-first + automatización serverless",
     "proof": "Blog público prerenderizado, artifacts editoriales versionados y separación real entre frontend, API y capa cloud.",
-    "role": "Diseñé la arquitectura del ecosistema, el pipeline de contenido y la integración entre Angular, NestJS y AWS para publicar y operar el sitio.",
-    "architecture": "Frontend estático en Firebase, API mínima en NestJS, handoff de artifacts hacia Lambdas y publicación canónica del knowledge del chat en la capa cloud.",
+    "role": "Diseñé la arquitectura del ecosistema, el pipeline de contenido y la integración entre Angular, TypeScript y AWS para publicar y operar el sitio.",
+    "architecture": "Frontend estático en Firebase, API TypeScript en Lambda con HTTP API Gateway, cuotas DynamoDB y Secrets Manager, handoff editorial hacia Lambdas y knowledge canónico publicado por portfolio-cloud. La implementación NestJS en EC2 se conserva para recuperación.",
     "date": "2026-03-09",
     "coverImage": "/assets/portfolio-platform.webp",
     "stack": [
       "Static-first",
       "SSG blog",
       "IA chat",
-      "NestJS API",
+      "TypeScript API",
       "AWS serverless"
     ],
     "links": [
@@ -143,8 +143,8 @@
         "primary": false
       },
       {
-        "label": "Repositorio API",
-        "url": "https://github.com/matigaleanodev/portfolio-api",
+        "label": "Repositorio API serverless",
+        "url": "https://github.com/matigaleanodev/portfolio-api-cloud",
         "icon": "server",
         "primary": false
       },
