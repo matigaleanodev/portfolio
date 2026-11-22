@@ -1,45 +1,41 @@
 ---
 title: Foodly Notes
 slug: foodly-notes
-excerpt: "App de recetas publicada en Google Play y construida como producto fullstack real: experiencia mobile en Ionic/Angular, API NestJS propia y despliegue continuo en AWS."
-productType: App publicada
-primarySignal: Backend propio + cloud operable
-proof: "Disponible en Google Play con recetas y traducciones desde una API propia; favoritos y progreso de compras persistidos en el dispositivo."
-role: "Diseñé y construí la app mobile, la API NestJS y el flujo de CI/CD para publicar cambios sin fricción."
-architecture: "Frontend Ionic/Angular desacoplado de una API NestJS + MongoDB, contenedores en AWS EC2 y deploy automatizado con GitHub Actions."
+excerpt: "Una app para buscar qué cocinar, guardar las recetas que querés volver a preparar y marcar ingredientes mientras hacés las compras."
+productType: App de recetas
+primarySignal: Favoritos y listas en el dispositivo
+proof: "La app está disponible en Google Play. Guarda favoritos, listas de compras y su progreso en el dispositivo. La API administra recetas, ingredientes, traducciones y cuotas de proveedores."
+role: "Construí la app en Ionic y Angular, definí qué datos quedan en el teléfono y desarrollé la integración con la API de recetas."
+architecture: "AWS CDK define la API en API Gateway y Lambda. El backend centraliza las credenciales de los proveedores y usa MongoDB para recetas, caché y control de cuotas."
 date: 2026-03-07
 coverImage: /assets/foodly-notes.webp
 stack:
-  - Google Play
-  - API NestJS
-  - AWS
-  - Docker
-  - CI/CD
+  - Angular
+  - Ionic
+  - Capacitor
+  - AWS CDK
+  - AWS Lambda
 links:
-  - label: Play Store
+  - label: Google Play
     url: https://play.google.com/store/apps/details?id=io.matiasgaleano.foodlynotes
     icon: play
     primary: true
-  - label: Repositorio Frontend
-    url: https://github.com/matigaleanodev/foodly-notes
-    icon: code
-    primary: false
-  - label: Repositorio Backend
-    url: https://github.com/matigaleanodev/foodly-notes-api
-    icon: server
-    primary: false
-  - label: Documentación
-    url: https://matigaleano-dev.notion.site/Foodly-Notes-2f9aa07ef7dd80f0b9a0f2af1030bdb0
-    icon: bookopen
-    primary: false
   - label: Explorar arquitectura
     url: /diagrams/foodly-notes-ecosystem.html
     icon: server
     primary: false
-featured: true
-order: 1
+  - label: Foodly Notes Platform
+    url: https://github.com/matigaleanodev/foodly-notes-platform
+    icon: bookopen
+    primary: false
+  - label: Repositorio de la app
+    url: https://github.com/matigaleanodev/foodly-notes
+    icon: code
+    primary: false
+  - label: Repositorio de la API
+    url: https://github.com/matigaleanodev/foodly-notes-api-cloud
+    icon: code
+    primary: false
+featured: false
+order: 2
 ---
-
-Foodly Notes es una app publicada en Google Play pensada como producto real para el uso cotidiano.
-
-La parte importante para este portfolio no es solo la UX mobile: también muestra backend propio, deploy cloud y una operación simple pero real sobre AWS.

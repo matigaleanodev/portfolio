@@ -88,6 +88,5 @@ Versión actual de la aplicación: **1.3.0**
 
 ## Revisión de diseño y accesibilidad
 
-El [informe de verificación](./Docs/design-accessibility-review.es.md) incluye capturas comparables, medidas, pruebas y verificaciones manuales pendientes.
 
 La guía de [diagramas editoriales](./Docs/architecture-diagrams.es.md) explica las fuentes Archify, su validación y la publicación por fecha.

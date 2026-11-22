@@ -128,7 +128,12 @@ describe('build-content pipeline', () => {
     );
     const knowledge = JSON.parse(knowledgeRaw) as {
       generatedAt: string;
-      projects: { slug: string; highlights: string[]; searchText: string; links: { url: string }[] }[];
+      projects: {
+        slug: string;
+        highlights: string[];
+        searchText: string;
+        links: { url: string; primary?: boolean }[];
+      }[];
       posts: { slug: string; canonicalUrl: string; summary: string; searchText: string }[];
     };
 
@@ -153,21 +158,24 @@ describe('build-content pipeline', () => {
       expect(url.username + url.password).toBe('');
     }
     expect(diagramLinks.every((link) => link.url.startsWith('https://matiasgaleano.dev/diagrams/'))).toBe(true);
-    expect(knowledge.projects.some((project) => project.slug === 'foodly-notes')).toBe(true);
-    expect(knowledge.projects.some((project) => project.slug === 'portfolio')).toBe(true);
-    expect(
-      knowledge.projects.some((project) =>
-        project.highlights.includes('Proyecto destacado del portfolio.'),
-      ),
-    ).toBe(true);
-    expect(
-      knowledge.projects.some((project) =>
-        project.highlights.includes('Static-first + automatización serverless'),
-      ),
-    ).toBe(true);
-    expect(
-      knowledge.projects.some((project) => project.searchText.includes('Repositorio Frontend')),
-    ).toBe(true);
+    expect(knowledge.projects.map((project) => project.slug)).toEqual([
+      'modo-playa',
+      'foodly-notes',
+      'portfolio',
+      'nora',
+    ]);
+    expect(knowledge.projects.map((project) => project.links.find((link) => link.primary)?.url))
+      .toEqual([
+        'https://play.google.com/store/apps/details?id=io.modoplay.app',
+        'https://play.google.com/store/apps/details?id=io.matiasgaleano.foodlynotes',
+        'https://matiasgaleano.dev/blog',
+        'https://github.com/matigaleanodev/nora-app',
+      ]);
+    expect(knowledge.projects[0].highlights).toContain('Proyecto destacado del portfolio.');
+    expect(knowledge.projects[2].searchText).toContain('SSM Parameter Store');
+    expect(knowledge.projects[3].links).toContainEqual(expect.objectContaining({
+      url: 'https://matiasgaleano.dev/blog/mis-expectativas-con-angular-native',
+    }));
     expect(
       knowledge.posts.some(
         (post) =>

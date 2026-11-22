@@ -1,11 +1,15 @@
 # Portfolio Ecosystem Ownership
 
-This document records the final operational ownership between `portfolio`, `portfolio-api`, and `portfolio-cloud`.
+This document records the final operational ownership between `portfolio`, `API runtime`, and `portfolio-cloud`.
+
+## One API, two implementations
+
+The runtime API is one logical component: `portfolio-api-cloud` (TypeScript/CDK/Lambda) is active at `https://api.matiasgaleano.dev/api`; `portfolio-api` retains the interchangeable NestJS/EC2 recovery mirror. Both expose the same six contracts, including health. Cloudflare selects one implementation per request; they are not services in series and writes are not duplicated. The API retains its boundary with the frontend and `portfolio-cloud`.
 
 ## Ownership Summary
 
 - `portfolio` owns the visual surface, editorial source content, static build pipeline, SEO artifacts, and Firebase deployment.
-- `portfolio-api` owns the minimal public dynamic API consumed by the frontend: contact, chat, and subscription facade endpoints.
+- `API runtime` owns the minimal public dynamic API consumed by the frontend: contact, chat, and subscription facade endpoints.
 - `portfolio-cloud` owns the cloud automation layer: release processing, canonical chat knowledge publication, subscriber workflows, notifications, and post-publication automation.
 
 ## Repository Responsibilities
@@ -26,9 +30,9 @@ This document records the final operational ownership between `portfolio`, `port
 - Lambda orchestration
 - runtime editorial APIs
 
-### `portfolio-api`
+### `API runtime`
 
-`portfolio-api` is the source of truth for the public dynamic contract used by the frontend.
+`API runtime` is the source of truth for the public dynamic contract used by the frontend.
 
 Current public scope:
 
@@ -38,7 +42,7 @@ Current public scope:
 - `POST /subscriptions`
 - `DELETE /subscriptions`
 
-`portfolio-api` must remain a narrow facade. It can consume cloud-backed knowledge and services, but it should not absorb static editorial delivery or serverless workflow ownership.
+`API runtime` must remain a narrow facade. It can consume cloud-backed knowledge and services, but it should not absorb static editorial delivery or serverless workflow ownership.
 
 ### `portfolio-cloud`
 
@@ -67,17 +71,17 @@ Current public scope:
 - source artifact: `.generated/chat/knowledge.json`
 - invoke payload: `.generated/chat/knowledge-payload.json`
 - consumer: `portfolio-cloud` via `publish-chat-knowledge`
-- runtime reader: `portfolio-api`
+- runtime reader: `API runtime`
 
 ### Subscriptions flow
 
 - UI owner: `portfolio`
-- public API owner: `portfolio-api`
+- public API owner: `API runtime`
 - persistence and automation owner: `portfolio-cloud`
 
 ## Boundary Rules
 
 - Static editorial content enters only through `portfolio`.
-- Public dynamic frontend calls enter only through `portfolio-api`.
+- Public dynamic frontend calls enter only through `API runtime`.
 - Cloud automation and post-publication execution remain inside `portfolio-cloud`.
 - Cross-repo integrations should be documented as artifacts and contracts, not as implicit filesystem coupling.

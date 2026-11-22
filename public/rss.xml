@@ -6,6 +6,20 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Tarjetitas de Jira, versiones y correcciones urgentes: cómo mantengo la trazabilidad</title>
+    <link>https://matiasgaleano.dev/blog/tarjetitas-versiones-y-correcciones-urgentes-en-jira</link>
+    <guid>https://matiasgaleano.dev/blog/tarjetitas-versiones-y-correcciones-urgentes-en-jira</guid>
+    <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
+    <description>Un incidente de producción puede terminar en asistencia, una corrección de datos o un despliegue de emergencia. Cómo relacionar ese recorrido con tarjetitas de Jira, versiones y evidencia sin confundir una release de Jira con el deploy.</description>
+  </item>
+  <item>
+    <title>Del pedido de negocio a la review: cómo trabajamos una funcionalidad</title>
+    <link>https://matiasgaleano.dev/blog/del-pedido-de-negocio-a-la-review</link>
+    <guid>https://matiasgaleano.dev/blog/del-pedido-de-negocio-a-la-review</guid>
+    <pubDate>Fri, 23 Oct 2026 00:00:00 GMT</pubDate>
+    <description>Refinamiento con negocio, refinamiento técnico, planning, desarrollo y QA: cómo se ordena el trabajo de una funcionalidad y qué pasa cuando producción interrumpe lo planificado.</description>
+  </item>
+  <item>
     <title>Mis expectativas con Angular Native</title>
     <link>https://matiasgaleano.dev/blog/mis-expectativas-con-angular-native</link>
     <guid>https://matiasgaleano.dev/blog/mis-expectativas-con-angular-native</guid>

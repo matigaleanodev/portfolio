@@ -88,6 +88,5 @@ Current application version: **1.3.0**
 
 ## Design and accessibility review
 
-See [the verification report](./Docs/design-accessibility-review.md) for comparable captures, measurements, test coverage and remaining manual checks.
 
 See [editorial diagrams](./Docs/architecture-diagrams.md) for Archify sources, validation and scheduled publication.
