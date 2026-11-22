@@ -206,14 +206,14 @@
   },
   {
     "slug": "foodly-notes-ecosystem",
-    "title": "Foodly Notes: recetas, traducciones y estado local",
+    "title": "Foodly Notes · recetas, traducciones y estado local",
     "type": "architecture",
     "source": "foodly-notes-ecosystem.architecture.json",
     "artifact": "rendered/foodly-notes-ecosystem.html",
-    "specificationSha256": "414f1c4accf6ba96207d244fafc1e0c08996d41f187a22f6f44b2aba8a141ab5",
-    "artifactSha256": "1be4ee3150404a628bc7f7e6e16140817c79b281db35770f59af1034ac86ef41",
-    "preview": "foodly-notes-ecosystem.1be4ee315040.png",
-    "previewSha256": "6f76b829c039815408d7116a9759808050620c3fc652a61f20a666ba8a120dca",
+    "specificationSha256": "72135c43b1d902d653a90b5a0e53bddca31a23378c775ec5feeaf19faefa6437",
+    "artifactSha256": "2bea6550034e7314ab72df7feae5a32db9449a6371807b483aac2d6ddb93edb7",
+    "preview": "foodly-notes-ecosystem.2bea6550034e.png",
+    "previewSha256": "813a95de4174c3c49046a4ff03fca48a55a24424c452870403a8a25dbfbf8342",
     "validation": {
       "checksPassed": 9,
       "checkCount": 9,
@@ -225,8 +225,8 @@
     "browserEvidence": "pass",
     "visualReview": "not-requested",
     "repository": {
-      "url": "https://github.com/matigaleanodev/foodly-notes-api.git",
-      "revision": "e006764540b638f86c2998618809b4f6037fd6e6"
+      "url": "https://github.com/matigaleanodev/foodly-notes-api-cloud.git",
+      "revision": "3904b584b4a3f84fb82bce2936b21f9507bc0c9e"
     }
   },
   {
@@ -252,14 +252,14 @@
   },
   {
     "slug": "modo-playa-ecosystem",
-    "title": "Modo Playa: catálogo, administración y servicios",
+    "title": "Modo Playa · catálogo, administración e imágenes",
     "type": "architecture",
     "source": "modo-playa-ecosystem.architecture.json",
     "artifact": "rendered/modo-playa-ecosystem.html",
-    "specificationSha256": "5a048ca8022d199e7fa074f5f9cc6b0763c6e17661a70aec0b720872df80ac32",
-    "artifactSha256": "61f1cf96e400dd9cac26a8ca714c9deb8765f4480ddd95f65a9668951794e482",
-    "preview": "modo-playa-ecosystem.61f1cf96e400.png",
-    "previewSha256": "a4ab95efa865aa43ad6cb9f67685fb258a133f216aa601cf604ee1d72215a983",
+    "specificationSha256": "e278a3252fe84fec50cd05f3c1b880a275ca0ee583047df47a82d503bdb26249",
+    "artifactSha256": "5081eed69e22226eb2d8fe297b6f3eb7ba75da3a7f0496f2adc17a894e4749b3",
+    "preview": "modo-playa-ecosystem.5081eed69e22.png",
+    "previewSha256": "82dab975c70f56a8c5c511a3320d226875b65f1d44e1623c0c4435adc4447dd3",
     "validation": {
       "checksPassed": 9,
       "checkCount": 9,
@@ -271,8 +271,8 @@
     "browserEvidence": "pass",
     "visualReview": "not-requested",
     "repository": {
-      "url": "https://github.com/matigaleanodev/modo-playa-api.git",
-      "revision": "c25b9cc6f3fd9ce82d541f78be186b3a7832800b"
+      "url": "https://github.com/matigaleanodev/modo-playa-api-cloud.git",
+      "revision": "4cd19ee3eb91d04612b6234645feda98bab52bbf"
     }
   },
   {
@@ -302,14 +302,14 @@
   },
   {
     "slug": "portfolio-ecosystem",
-    "title": "Cómo funciona este portfolio",
+    "title": "Portfolio · sitio estático, API y publicación editorial",
     "type": "architecture",
     "source": "portfolio-ecosystem.architecture.json",
     "artifact": "rendered/portfolio-ecosystem.html",
-    "specificationSha256": "0dd4ac4c8982f05478ce069c2a240546c4cc9a3e86f2037db7baeb79b8f3bdc0",
-    "artifactSha256": "543aa6e04718fb1ba0f8a0f61d42cd2bf9c5d3d1ad2b380f8d17a13573ca5aba",
-    "preview": "portfolio-ecosystem.543aa6e04718.png",
-    "previewSha256": "9d86450587891310e62f4e3bd27bbb3534f75c27e1474e361942937e439a9e2e",
+    "specificationSha256": "b3c6871afb36dce459d3de019a69e22e572a16fe39fc645bff9b75696b2e24d2",
+    "artifactSha256": "9f54c8babe2e521904ac5ed52af5c9d4d442c5adf9efd6f3a20425c5b74c210f",
+    "preview": "portfolio-ecosystem.9f54c8babe2e.png",
+    "previewSha256": "962c6055387afa65f1f1015512c850c6610feebb807b457d45f5318d46fccc25",
     "validation": {
       "checksPassed": 9,
       "checkCount": 9,
@@ -322,7 +322,7 @@
     "visualReview": "not-requested",
     "repository": {
       "url": "https://github.com/matigaleanodev/portfolio-api-cloud.git",
-      "revision": "17d4af9c40e217797122f3bb7c11968959daf720"
+      "revision": "cbf2383b8b29556754f68e273b7a8ef664f35a36"
     }
   },
   {
