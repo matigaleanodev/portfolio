@@ -1,51 +1,45 @@
 [
   {
-    "slug": "foodly-notes",
-    "title": "Foodly Notes",
-    "excerpt": "App de recetas publicada en Google Play y construida como producto fullstack real: experiencia mobile en Ionic/Angular, API NestJS propia y despliegue continuo en AWS.",
-    "productType": "App publicada",
-    "primarySignal": "Backend propio + cloud operable",
-    "proof": "Disponible en Google Play con recetas y traducciones desde una API propia; favoritos y progreso de compras persistidos en el dispositivo.",
-    "role": "Diseñé y construí la app mobile, la API NestJS y el flujo de CI/CD para publicar cambios sin fricción.",
-    "architecture": "Frontend Ionic/Angular desacoplado de una API NestJS + MongoDB, contenedores en AWS EC2 y deploy automatizado con GitHub Actions.",
+    "slug": "modo-playa",
+    "title": "Modo Playa",
+    "excerpt": "Un catálogo público para encontrar alojamientos y un panel privado para que cada propietario administre los suyos. Las dos aplicaciones comparten una API multi-tenant.",
+    "productType": "Plataforma de alojamientos",
+    "primarySignal": "Aislamiento por propietario",
+    "proof": "El catálogo publicado en Google Play muestra los alojamientos visibles. En el panel, la API verifica el rol y el propietario de cada recurso antes de permitir cambios.",
+    "role": "Diseñé la separación entre catálogo y administración, el modelo de permisos por propietario y el flujo de carga y procesamiento de imágenes.",
+    "architecture": "modo-playa-api-cloud es la implementación principal, con AWS CDK y Lambda. CloudFront elige el origen por ruta: envía las solicitudes JSON a API Gateway y las cargas multipart a una Lambda Web Function con runtime HTTP nativo. Así conserva los límites de carga del contrato. La API NestJS queda disponible para recuperación.",
     "date": "2026-03-07",
-    "coverImage": "/assets/foodly-notes.webp",
+    "coverImage": "/assets/modo_playa.webp",
     "stack": [
-      "Google Play",
-      "API NestJS",
-      "AWS",
-      "Docker",
-      "CI/CD"
+      "Angular",
+      "AWS CDK",
+      "AWS Lambda",
+      "CloudFront",
+      "MongoDB"
     ],
     "links": [
       {
-        "label": "Play Store",
-        "url": "https://play.google.com/store/apps/details?id=io.matiasgaleano.foodlynotes",
+        "label": "Google Play",
+        "url": "https://play.google.com/store/apps/details?id=io.modoplay.app",
         "icon": "play",
         "primary": true
       },
       {
-        "label": "Repositorio Frontend",
-        "url": "https://github.com/matigaleanodev/foodly-notes",
-        "icon": "code",
-        "primary": false
-      },
-      {
-        "label": "Repositorio Backend",
-        "url": "https://github.com/matigaleanodev/foodly-notes-api",
+        "label": "Explorar arquitectura",
+        "url": "/diagrams/modo-playa-ecosystem.html",
         "icon": "server",
         "primary": false
       },
       {
-        "label": "Documentación",
-        "url": "https://matigaleano-dev.notion.site/Foodly-Notes-2f9aa07ef7dd80f0b9a0f2af1030bdb0",
+        "label": "Modo Playa Platform",
+        "url": "https://github.com/matigaleanodev/modo-playa-platform",
         "icon": "bookopen",
         "primary": false
       },
       {
-        "label": "Explorar arquitectura",
-        "url": "/diagrams/foodly-notes-ecosystem.html",
-        "icon": "server",
+        "label": "Repositorio de la API",
+        "url": "https://github.com/matigaleanodev/modo-playa-api-cloud",
+        "icon": "code",
         "primary": false
       }
     ],
@@ -53,52 +47,52 @@
     "order": 1
   },
   {
-    "slug": "modo-playa",
-    "title": "Modo Playa",
-    "excerpt": "Plataforma de alojamientos pensada como caso de arquitectura backend: API multi-tenant, panel admin y catálogo público desacoplado para escalar por propietario sin duplicar sistema.",
-    "productType": "Plataforma multi-tenant",
-    "primarySignal": "Arquitectura API + modelado de dominio",
-    "proof": "Producto real con app publicada en Google Play, panel admin operativo y aislamiento de datos por ownerId sobre un backend compartido.",
-    "role": "Definí la estrategia multi-tenant, la API NestJS, la separación entre superficies y los flujos de administración y publicación.",
-    "architecture": "NestJS + MongoDB con JWT, media pipeline en backend y fronteras explícitas entre app pública, admin y capa de datos.",
+    "slug": "foodly-notes",
+    "title": "Foodly Notes",
+    "excerpt": "Una app para buscar qué cocinar, guardar las recetas que querés volver a preparar y marcar ingredientes mientras hacés las compras.",
+    "productType": "App de recetas",
+    "primarySignal": "Favoritos y listas en el dispositivo",
+    "proof": "La app está disponible en Google Play. Guarda favoritos, listas de compras y su progreso en el dispositivo. La API administra recetas, ingredientes, traducciones y cuotas de proveedores.",
+    "role": "Construí la app en Ionic y Angular, definí qué datos quedan en el teléfono y desarrollé la integración con la API de recetas.",
+    "architecture": "AWS CDK define la API en API Gateway y Lambda. El backend centraliza las credenciales de los proveedores y usa MongoDB para recetas, caché y control de cuotas.",
     "date": "2026-03-07",
-    "coverImage": "/assets/modo_playa.webp",
+    "coverImage": "/assets/foodly-notes.webp",
     "stack": [
-      "Multi-tenant",
-      "API NestJS",
-      "MongoDB",
-      "JWT",
-      "Media pipeline"
+      "Angular",
+      "Ionic",
+      "Capacitor",
+      "AWS CDK",
+      "AWS Lambda"
     ],
     "links": [
       {
-        "label": "Play Store",
-        "url": "https://play.google.com/store/apps/details?id=io.modoplay.app",
+        "label": "Google Play",
+        "url": "https://play.google.com/store/apps/details?id=io.matiasgaleano.foodlynotes",
         "icon": "play",
         "primary": true
       },
       {
-        "label": "Repositorio Backend",
-        "url": "https://github.com/matigaleanodev/modo-playa-api",
-        "icon": "server",
-        "primary": false
-      },
-      {
-        "label": "Repositorio Catálogo",
-        "url": "https://github.com/matigaleanodev/modo-playa-app",
-        "icon": "code",
-        "primary": false
-      },
-      {
-        "label": "Repositorio Admin",
-        "url": "https://github.com/matigaleanodev/modo-playa-admin",
-        "icon": "code",
-        "primary": false
-      },
-      {
         "label": "Explorar arquitectura",
-        "url": "/diagrams/modo-playa-ecosystem.html",
+        "url": "/diagrams/foodly-notes-ecosystem.html",
         "icon": "server",
+        "primary": false
+      },
+      {
+        "label": "Foodly Notes Platform",
+        "url": "https://github.com/matigaleanodev/foodly-notes-platform",
+        "icon": "bookopen",
+        "primary": false
+      },
+      {
+        "label": "Repositorio de la app",
+        "url": "https://github.com/matigaleanodev/foodly-notes",
+        "icon": "code",
+        "primary": false
+      },
+      {
+        "label": "Repositorio de la API",
+        "url": "https://github.com/matigaleanodev/foodly-notes-api-cloud",
+        "icon": "code",
         "primary": false
       }
     ],
@@ -108,28 +102,22 @@
   {
     "slug": "portfolio",
     "title": "Portfolio",
-    "excerpt": "Plataforma técnica personal construida como sistema static-first: frontend Angular, pipeline editorial en Markdown, blog prerenderizado, chatbot con IA y automatización serverless post-publicación.",
-    "productType": "Plataforma técnica personal",
-    "primarySignal": "Static-first + automatización serverless",
-    "proof": "Blog público prerenderizado, artifacts editoriales versionados y separación real entre frontend, API y capa cloud.",
-    "role": "Diseñé la arquitectura del ecosistema, el pipeline de contenido y la integración entre Angular, TypeScript y AWS para publicar y operar el sitio.",
-    "architecture": "Frontend estático en Firebase, API TypeScript en Lambda con HTTP API Gateway, cuotas DynamoDB y Secrets Manager, handoff editorial hacia Lambdas y knowledge canónico publicado por portfolio-cloud. La implementación NestJS en EC2 se conserva para recuperación.",
+    "excerpt": "Escribo las fichas y los artículos en Markdown. El build genera el contenido, Angular prerenderiza las páginas y GitHub Actions las publica en Firebase Hosting.",
+    "productType": "Cómo está hecho este sitio",
+    "primarySignal": "Contenido estático y publicación editorial",
+    "proof": "Después de publicar el sitio, las funciones editoriales coordinan las imágenes para compartir, los avisos a suscriptores y la publicación del contenido del chat. El chat combina preguntas frecuentes con el índice de fichas y artículos publicados en Cloudflare R2.",
+    "role": "Diseñé el pipeline que genera el sitio y el contenido del chat a partir de las mismas fuentes editoriales.",
+    "architecture": "portfolio-api-cloud define seis Lambdas con CDK. Dos atienden la API HTTP y cuatro se ocupan de la publicación editorial. SSM Parameter Store guarda la configuración sensible. Portfolio Platform documenta dos vías de recuperación independientes, la API HTTP en NestJS/EC2 y la publicación editorial en AWS SAM.",
     "date": "2026-03-09",
     "coverImage": "/assets/portfolio-platform.webp",
     "stack": [
-      "Static-first",
-      "SSG blog",
-      "IA chat",
-      "TypeScript API",
-      "AWS serverless"
+      "Angular",
+      "TypeScript",
+      "Firebase Hosting",
+      "AWS CDK",
+      "AWS Lambda"
     ],
     "links": [
-      {
-        "label": "Explorar arquitectura",
-        "url": "/diagrams/portfolio-ecosystem.html",
-        "icon": "server",
-        "primary": false
-      },
       {
         "label": "Blog técnico",
         "url": "https://matiasgaleano.dev/blog",
@@ -137,25 +125,65 @@
         "primary": true
       },
       {
-        "label": "Repositorio Frontend",
+        "label": "Explorar arquitectura",
+        "url": "/diagrams/portfolio-ecosystem.html",
+        "icon": "server",
+        "primary": false
+      },
+      {
+        "label": "Portfolio Platform",
+        "url": "https://github.com/matigaleanodev/portfolio-platform",
+        "icon": "bookopen",
+        "primary": false
+      },
+      {
+        "label": "Repositorio del sitio",
         "url": "https://github.com/matigaleanodev/portfolio",
         "icon": "code",
         "primary": false
       },
       {
-        "label": "Repositorio API serverless",
+        "label": "Repositorio de la API",
         "url": "https://github.com/matigaleanodev/portfolio-api-cloud",
-        "icon": "server",
-        "primary": false
-      },
-      {
-        "label": "Repositorio Cloud",
-        "url": "https://github.com/matigaleanodev/portfolio-cloud",
-        "icon": "server",
+        "icon": "code",
         "primary": false
       }
     ],
     "featured": false,
     "order": 3
+  },
+  {
+    "slug": "nora",
+    "title": "Nora",
+    "excerpt": "App Android para técnicos independientes que necesitan presupuestar trabajos y organizar visitas desde el teléfono, incluso sin conexión.",
+    "productType": "App Android sin conexión",
+    "primarySignal": "Presupuestos y visitas en el dispositivo",
+    "proof": "Cargás los ítems de un presupuesto, generás un PDF para compartir desde Android y agendás la visita con un recordatorio local.",
+    "role": "Diseñé y desarrollé el flujo de presupuestos, la generación del PDF y la agenda de visitas.",
+    "architecture": "La interfaz usa Angular Native y Expo. SQLite guarda los datos y el teléfono genera el PDF. El flujo funciona sin cuenta ni servidor.",
+    "date": "2026-11-22",
+    "coverImage": "/assets/nora.png",
+    "stack": [
+      "Angular Native",
+      "TypeScript",
+      "Expo",
+      "SQLite"
+    ],
+    "links": [
+      {
+        "label": "Repositorio de Nora",
+        "url": "https://github.com/matigaleanodev/nora-app",
+        "icon": "code",
+        "primary": true
+      },
+      {
+        "label": "Mis expectativas con Angular Native",
+        "url": "/blog/mis-expectativas-con-angular-native",
+        "icon": "bookopen",
+        "primary": false
+      }
+    ],
+    "featured": false,
+    "order": 4
   }
 ]

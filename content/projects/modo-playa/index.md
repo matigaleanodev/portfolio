@@ -1,45 +1,37 @@
 ---
 title: Modo Playa
 slug: modo-playa
-excerpt: "Plataforma de alojamientos pensada como caso de arquitectura backend: API multi-tenant, panel admin y catálogo público desacoplado para escalar por propietario sin duplicar sistema."
-productType: Plataforma multi-tenant
-primarySignal: Arquitectura API + modelado de dominio
-proof: "Producto real con app publicada en Google Play, panel admin operativo y aislamiento de datos por ownerId sobre un backend compartido."
-role: "Definí la estrategia multi-tenant, la API NestJS, la separación entre superficies y los flujos de administración y publicación."
-architecture: "NestJS + MongoDB con JWT, media pipeline en backend y fronteras explícitas entre app pública, admin y capa de datos."
+excerpt: "Un catálogo público para encontrar alojamientos y un panel privado para que cada propietario administre los suyos. Las dos aplicaciones comparten una API multi-tenant."
+productType: Plataforma de alojamientos
+primarySignal: Aislamiento por propietario
+proof: "El catálogo publicado en Google Play muestra los alojamientos visibles. En el panel, la API verifica el rol y el propietario de cada recurso antes de permitir cambios."
+role: "Diseñé la separación entre catálogo y administración, el modelo de permisos por propietario y el flujo de carga y procesamiento de imágenes."
+architecture: "modo-playa-api-cloud es la implementación principal, con AWS CDK y Lambda. CloudFront elige el origen por ruta: envía las solicitudes JSON a API Gateway y las cargas multipart a una Lambda Web Function con runtime HTTP nativo. Así conserva los límites de carga del contrato. La API NestJS queda disponible para recuperación."
 date: 2026-03-07
 coverImage: /assets/modo_playa.webp
 stack:
-  - Multi-tenant
-  - API NestJS
+  - Angular
+  - AWS CDK
+  - AWS Lambda
+  - CloudFront
   - MongoDB
-  - JWT
-  - Media pipeline
 links:
-  - label: Play Store
+  - label: Google Play
     url: https://play.google.com/store/apps/details?id=io.modoplay.app
     icon: play
     primary: true
-  - label: Repositorio Backend
-    url: https://github.com/matigaleanodev/modo-playa-api
-    icon: server
-    primary: false
-  - label: Repositorio Catálogo
-    url: https://github.com/matigaleanodev/modo-playa-app
-    icon: code
-    primary: false
-  - label: Repositorio Admin
-    url: https://github.com/matigaleanodev/modo-playa-admin
-    icon: code
-    primary: false
   - label: Explorar arquitectura
     url: /diagrams/modo-playa-ecosystem.html
     icon: server
     primary: false
-featured: false
-order: 2
+  - label: Modo Playa Platform
+    url: https://github.com/matigaleanodev/modo-playa-platform
+    icon: bookopen
+    primary: false
+  - label: Repositorio de la API
+    url: https://github.com/matigaleanodev/modo-playa-api-cloud
+    icon: code
+    primary: false
+featured: true
+order: 1
 ---
-
-Modo Playa es una suite orientada a la gestión y publicación de alojamientos turísticos, con app pública ya publicada en Google Play.
-
-La pieza más fuerte del caso es el backend: modelado multi-tenant, separación entre admin y catálogo, y decisiones pensadas para crecer con múltiples propietarios.

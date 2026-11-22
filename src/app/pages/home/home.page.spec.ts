@@ -46,7 +46,7 @@ describe('HomePage', () => {
     expect(setPageSeoMock).toHaveBeenCalledWith({
       title: 'Matias Galeano · Software Developer',
       description:
-        'Portfolio de Matias Galeano, Software Developer especializado en Angular, Ionic y NestJS. Desarrollo de productos digitales con foco en claridad, mantenimiento y decisiones técnicas bien pensadas.',
+        'Portfolio de Matias Galeano, desarrollador full stack. Aplicaciones con Angular y TypeScript, servicios en AWS y un blog sobre decisiones técnicas.',
       canonicalUrl: 'https://matiasgaleano.dev/',
       ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
       type: 'website',

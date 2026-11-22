@@ -70,7 +70,7 @@ También me sirven los endpoints fachada cuando necesito exponer una capacidad p
 
 Lo mismo aplica a los outputs de build. Si un repo produce contenido estático, manifests o payloads para otro, ese output tiene que tratarse como parte del sistema, no como un detalle accesorio del pipeline.
 
-[![Cómo funciona este portfolio](/diagrams/portfolio-ecosystem.543aa6e04718.png)](/diagrams/portfolio-ecosystem.html)
+[![Cómo funciona este portfolio](/diagrams/portfolio-ecosystem.9f54c8babe2e.png)](/diagrams/portfolio-ecosystem.html)
 
 [Explorar los límites entre frontend, API y cloud](/diagrams/portfolio-ecosystem.html).
 
