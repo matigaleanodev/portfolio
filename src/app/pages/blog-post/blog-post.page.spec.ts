@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import mermaid from 'mermaid';
 
@@ -38,6 +38,7 @@ describe('BlogPostPage', () => {
   };
 
   const getPostBySlugMock = vi.fn(() => of(postMock));
+  const paramMap$ = new BehaviorSubject(convertToParamMap({ slug: postMock.slug }));
   const trackEventMock = vi.fn();
   const setPageSeoMock = vi.fn();
 
@@ -46,6 +47,7 @@ describe('BlogPostPage', () => {
     getPostBySlugMock.mockReturnValue(of(postMock));
     trackEventMock.mockReset();
     setPageSeoMock.mockReset();
+    paramMap$.next(convertToParamMap({ slug: postMock.slug }));
 
     await TestBed.configureTestingModule({
       imports: [BlogPostPage],
@@ -72,7 +74,7 @@ describe('BlogPostPage', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            paramMap: of(convertToParamMap({ slug: 'arquitectura-modo-playa' })),
+            paramMap: paramMap$,
           },
         },
       ],
@@ -98,6 +100,41 @@ describe('BlogPostPage', () => {
       post_title: 'Cómo diseñé la arquitectura de Modo Playa',
       reading_time_minutes: 4,
     });
+  });
+
+  it('deberia mostrar el articulo en la primera deteccion si el servicio es sincrono', () => {
+    const fixture = TestBed.createComponent(BlogPostPage);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('h1')?.textContent).toContain(postMock.title);
+    expect(host.querySelector('.blog-post-loading')).toBeNull();
+  });
+
+  it('deberia mostrar la carga sin contenido anterior mientras llega otro post', () => {
+    const fixture = TestBed.createComponent(BlogPostPage);
+    fixture.detectChanges();
+    getPostBySlugMock.mockReturnValue(new Subject<BlogPost>());
+
+    paramMap$.next(convertToParamMap({ slug: 'otro-post' }));
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.blog-post-loading')).not.toBeNull();
+    expect(host.querySelector('h1')).toBeNull();
+    expect(host.textContent).not.toContain('Modo Playa');
+  });
+
+  it('deberia mostrar el error si falla la carga', () => {
+    getPostBySlugMock.mockReturnValue(throwError(() => new Error('Fallo simulado')));
+
+    const fixture = TestBed.createComponent(BlogPostPage);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('No se pudo cargar el post.');
+    expect(host.textContent).toContain('Fallo simulado');
+    expect(host.querySelector('.blog-post-loading')).toBeNull();
   });
 
   it('deberia renderizar bloques mermaid dentro del contenido del post', async () => {

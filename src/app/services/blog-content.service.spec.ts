@@ -1,9 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { PLATFORM_ID } from '@angular/core';
+import { makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { BlogPost } from '../models/blog.model';
 import { BlogContentService } from './blog-content.service';
 
 interface BlogContentServicePrivateApi {
@@ -163,7 +164,93 @@ describe('BlogContentService', () => {
     ]);
     httpMock.expectNone('/assets/blog/posts/arquitectura-modo-playa.json');
   });
+
+  it('deberia guardar el post en TransferState cuando corre en SSR', async () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: PLATFORM_ID, useValue: 'server' },
+      ],
+    });
+    service = TestBed.inject(BlogContentService);
+    httpMock = TestBed.inject(HttpTestingController);
+    vi.spyOn(
+      service as unknown as BlogContentServicePrivateApi,
+      'readContentFile',
+    ).mockResolvedValueOnce(postMock('a'));
+
+    await new Promise((resolve) => service.getPostBySlug('a').subscribe(resolve));
+
+    expect(TestBed.inject(TransferState).get(stateKey('a'), null)).toEqual(postMock('a'));
+  });
+
+  it('deberia emitir el estado transferido en forma sincrona, sin request, y borrarlo', () => {
+    const state = TestBed.inject(TransferState);
+    state.set(stateKey('a'), postMock('a'));
+    const received: BlogPost[] = [];
+
+    service.getPostBySlug('a').subscribe((post) => received.push(post));
+
+    expect(received).toEqual([postMock('a')]);
+    expect(state.hasKey(stateKey('a'))).toBe(false);
+    httpMock.expectNone('/assets/blog/posts/a.json');
+  });
+
+  it('deberia conservar el estado transferido hasta la suscripcion', () => {
+    const state = TestBed.inject(TransferState);
+    state.set(stateKey('a'), postMock('a'));
+
+    service.getPostBySlug('a');
+
+    expect(state.hasKey(stateKey('a'))).toBe(true);
+  });
+
+  it('deberia pedir el post por HTTP en la segunda lectura', () => {
+    TestBed.inject(TransferState).set(stateKey('a'), postMock('a'));
+    service.getPostBySlug('a').subscribe();
+
+    service.getPostBySlug('a').subscribe();
+
+    httpMock.expectOne('/assets/blog/posts/a.json').flush(postMock('a'));
+  });
+
+  it('deberia ignorar y conservar el estado de otro slug', () => {
+    const state = TestBed.inject(TransferState);
+    state.set(stateKey('a'), postMock('a'));
+    const received: BlogPost[] = [];
+
+    service.getPostBySlug('b').subscribe((post) => received.push(post));
+    httpMock.expectOne('/assets/blog/posts/b.json').flush(postMock('b'));
+
+    expect(received).toEqual([postMock('b')]);
+    expect(state.hasKey(stateKey('a'))).toBe(true);
+  });
 });
+
+function stateKey(slug: string) {
+  return makeStateKey<BlogPost>(`blog-post:${slug}`);
+}
+
+function postMock(slug: string): BlogPost {
+  return {
+    slug,
+    title: `Post ${slug}`,
+    excerpt: 'Extracto',
+    date: '2026-03-07',
+    tags: ['angular'],
+    coverImage: `/assets/blog/${slug}/cover.webp`,
+    readingTimeMinutes: 4,
+    contentHtml: '<p>Contenido</p>',
+    seo: {
+      title: `Post ${slug} | Matias Galeano`,
+      description: 'Extracto',
+      canonicalUrl: `https://matiasgaleano.dev/blog/${slug}`,
+      ogImage: `/assets/blog/${slug}/og.webp`,
+    },
+  };
+}
 
 function postsMock() {
   return [
