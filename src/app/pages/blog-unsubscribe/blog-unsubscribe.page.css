@@ -60,6 +60,10 @@
 .unsubscribe-form {
   display: grid;
   gap: 0.9rem;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
 .unsubscribe-form__field {
@@ -129,13 +133,23 @@
     opacity 180ms ease;
 }
 
-.unsubscribe-form__actions button:hover:not(:disabled) {
+.unsubscribe-form__actions button:hover:not([aria-disabled='true']) {
   transform: translateY(-1px);
 }
 
-.unsubscribe-form__actions button:disabled {
+.unsubscribe-form__actions button[aria-disabled='true'] {
   opacity: 0.72;
   cursor: progress;
+}
+
+.unsubscribe-form__feedback[role='status']:empty {
+  position: absolute;
+}
+
+.unsubscribe-card__success h1:focus-visible,
+.unsubscribe-form__feedback--error:focus-visible {
+  outline: 2px solid var(--color-bg);
+  outline-offset: 0.25rem;
 }
 
 .unsubscribe-card__secondary-link {
