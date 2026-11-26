@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
-import { inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { defer, from } from 'rxjs';
+import { inject, Injectable, makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
+import { defer, from, of, tap } from 'rxjs';
 import { BlogPost, BlogPostSummary } from '../models/blog.model';
 
 @Injectable({
@@ -10,6 +10,7 @@ import { BlogPost, BlogPostSummary } from '../models/blog.model';
 export class BlogContentService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly transferState = inject(TransferState);
 
   getPosts() {
     return this.getContent<BlogPostSummary[]>(
@@ -19,10 +20,27 @@ export class BlogContentService {
   }
 
   getPostBySlug(slug: string) {
-    return this.getContent<BlogPost>(
+    const stateKey = makeStateKey<BlogPost | null>(`blog-post:${slug}`);
+    const content$ = this.getContent<BlogPost>(
       ['src', 'assets', 'blog', 'posts', `${slug}.json`],
       `/assets/blog/posts/${slug}.json`,
     );
+
+    if (isPlatformServer(this.platformId)) {
+      return content$.pipe(tap((post) => this.transferState.set(stateKey, post)));
+    }
+
+    // El estado del prerender se usa una sola vez y emite en forma síncrona para conservar el DOM.
+    return defer(() => {
+      const transferred = this.transferState.get(stateKey, null);
+
+      if (!transferred) {
+        return content$;
+      }
+
+      this.transferState.remove(stateKey);
+      return of(transferred);
+    });
   }
 
   private getContent<T>(fileSegments: string[], assetUrl: string) {

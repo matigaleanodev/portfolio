@@ -30,12 +30,20 @@ export class App {
   protected readonly chatModal = signal(false);
 
   constructor() {
+    // La primera navegación muestra el contenido prerenderizado: no se anima.
+    let isInitialNavigation = true;
+
     this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       if (!(event instanceof NavigationEnd)) {
         return;
       }
 
       this.routeTransitionActive.set(false);
+
+      if (isInitialNavigation) {
+        isInitialNavigation = false;
+        return;
+      }
 
       if (!isPlatformBrowser(this.platformId) || typeof requestAnimationFrame !== 'function') {
         return;

@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { provideRouter, RouterOutlet } from '@angular/router';
+import { provideRouter, Router, RouterOutlet } from '@angular/router';
+import { afterEach, vi } from 'vitest';
 
 import { App } from './app';
 import { FragmentLinkDirective } from './ui/fragment-link.directive';
@@ -31,7 +32,12 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([
+          { path: '', component: HeroStubComponent },
+          { path: 'blog', component: ProjectsStubComponent },
+        ]),
+      ],
     })
       .overrideComponent(App, {
         set: {
@@ -49,6 +55,32 @@ describe('App', () => {
         },
       })
       .compileComponents();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it('deberia aplicar la transicion solo despues de la primera navegacion', async () => {
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      callback(0);
+      return 0;
+    });
+    // Solo interesa el estado: sin template no intervienen los enlaces dependientes de la URL.
+    TestBed.overrideTemplate(App, '');
+    const app = TestBed.createComponent(App).componentInstance;
+    const router = TestBed.inject(Router);
+    vi.useFakeTimers({ toFake: ['setTimeout'] });
+
+    await router.navigateByUrl('/');
+    expect(app.routeTransitionActive()).toBe(false);
+
+    await router.navigateByUrl('/blog');
+    expect(app.routeTransitionActive()).toBe(true);
+
+    vi.advanceTimersByTime(620);
+    expect(app.routeTransitionActive()).toBe(false);
   });
 
   it('debería crearse', () => {
