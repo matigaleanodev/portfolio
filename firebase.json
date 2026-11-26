@@ -11,6 +11,15 @@
     ],
     "headers": [
       {
+        "regex": "^/blog/unsubscribe(\\.html|/(index(\\.html)?)?)?$",
+        "headers": [
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin"
+          }
+        ]
+      },
+      {
         "source": "**/*.html",
         "headers": [
           {

@@ -2,6 +2,43 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
+    <meta name="referrer" content="strict-origin" />
+
+    <script>
+      (() => {
+        const isLegacyUnsubscribe = (url) =>
+          /^\/blog\/unsubscribe(?:\.html|\/(?:index(?:\.html)?)?)?$/.test(url.pathname) &&
+          url.searchParams.has('email');
+
+        const url = new URL(location.href);
+        if (isLegacyUnsubscribe(url)) {
+          // Hand the prefill to Angular once, without putting it in storage or history state.
+          document.portfolioUnsubscribeEmail = url.searchParams.get('email');
+          url.searchParams.delete('email');
+          try {
+            history.replaceState(history.state, '', url.href);
+          } catch {
+            // A restricted history still permits the prefill and must keep analytics disabled.
+          }
+          return;
+        }
+        if (document.referrer && isLegacyUnsubscribe(new URL(document.referrer))) {
+          return;
+        }
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-GBQ307ZC8X');
+
+        const tag = document.createElement('script');
+        tag.async = true;
+        tag.src = 'https://www.googletagmanager.com/gtag/js?id=G-GBQ307ZC8X';
+        document.head.appendChild(tag);
+      })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -9,16 +46,6 @@
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="dns-prefetch" href="//api.matiasgaleano.dev" />
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GBQ307ZC8X"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', 'G-GBQ307ZC8X');
-    </script>
 
     <script type="application/ld+json">
       {
@@ -55,7 +82,6 @@
     <meta name="author" content="Matias Galeano" />
 
     <meta name="robots" content="index, follow" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
 
     <link rel="canonical" href="https://matiasgaleano.dev/" />
 
