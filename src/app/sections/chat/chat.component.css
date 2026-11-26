@@ -1,19 +1,16 @@
 :host {
   --chat-accent: rgb(91 95 143);
   --chat-accent-strong: rgb(72 76 116);
-  --chat-accent-border-soft: rgb(91 95 143 / 0.16);
   --chat-accent-border: rgb(91 95 143 / 0.22);
   --chat-accent-border-strong: rgb(91 95 143 / 0.28);
-  --chat-accent-border-focus: rgb(91 95 143 / 0.35);
   --chat-accent-border-submit: rgb(91 95 143 / 0.42);
   --chat-accent-surface-soft: rgb(91 95 143 / 0.12);
   --chat-accent-surface-user: rgb(91 95 143 / 0.13);
   --chat-accent-ring: rgb(91 95 143 / 0.08);
   --chat-text-danger: rgb(190 24 93);
   --chat-border-subtle: rgb(31 41 55 / 0.08);
-  --chat-border-default: rgb(31 41 55 / 0.1);
+  --chat-border-field: #6b7280;
   --chat-border-soft: rgb(31 41 55 / 0.12);
-  --chat-border-hover: rgb(31 41 55 / 0.16);
   --chat-surface-white: rgb(255 255 255 / 0.62);
   --chat-surface-white-strong: rgb(255 255 255 / 0.82);
   --chat-surface-white-soft: rgb(255 255 255 / 0.58);
@@ -72,6 +69,7 @@
 }
 
 .chat-fab--hidden {
+  visibility: hidden;
   opacity: 0;
   transform: scale(0.92);
 }
@@ -202,7 +200,7 @@
 }
 
 .chat-input {
-  border: 1px solid var(--chat-border-default);
+  border: 1px solid var(--chat-border-field);
   background: var(--chat-surface-white);
   font: inherit;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4);
@@ -213,32 +211,30 @@
 }
 
 .chat-input:hover {
-  border-color: var(--chat-border-hover);
+  border-color: var(--color-text-muted);
 }
 
 .chat-input:focus-visible {
   outline: none;
-  border-color: var(--chat-accent-border-focus);
+  border-color: var(--chat-accent);
   box-shadow: var(--chat-shadow-input-focus);
   transform: translateY(-1px);
 }
 
 .chat-input--has-text {
-  border-color: var(--chat-accent-border-soft);
+  border-color: var(--chat-accent);
 }
 
 .chat-counter {
   font-family: var(--font-mono);
-  opacity: 0.6;
+  color: var(--color-text-muted);
   transition:
     color var(--chat-transition-fast),
-    opacity var(--chat-transition-fast),
     transform var(--chat-transition-fast);
 }
 
 .chat-counter--active {
-  color: var(--chat-accent);
-  opacity: 0.82;
+  color: var(--chat-accent-strong);
   transform: translateY(-1px);
 }
 
@@ -447,5 +443,17 @@
   }
   .chat-widget__body {
     overflow-y: auto;
+  }
+}
+/* Con poca altura se desplaza el cuerpo entero para que la conversación no colapse. */
+@media (max-height: 599px) {
+  .chat-widget__body {
+    overflow-y: auto;
+  }
+  .chat-widget__body > * {
+    flex-shrink: 0;
+  }
+  .chat-messages {
+    flex-basis: 6rem;
   }
 }

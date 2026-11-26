@@ -9,6 +9,7 @@ import {
   computed,
   effect,
   inject,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
@@ -21,6 +22,12 @@ import { AnalyticsService } from '../../services/analytics.service';
 import { buildChatRequest } from './chat-history';
 
 type ChatRole = 'user' | 'assistant';
+type CloseReason = 'button' | 'overlay' | 'escape' | 'focus_obscured';
+
+/** Por debajo de este ancho el chat cubre la pantalla y se comporta como diálogo modal. */
+const MODAL_MEDIA_QUERY = '(max-width: 767.98px)';
+const FOCUSABLE_SELECTOR =
+  'button:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 interface ChatMessage {
   id: number;
@@ -47,10 +54,14 @@ export class ChatComponent {
   private readonly messagesStorageKey = 'portfolio-chat-messages';
 
   protected readonly messagesViewport = viewChild<ElementRef<HTMLDivElement>>('messagesViewport');
+  readonly modalChange = output<boolean>();
+
   protected readonly botIcon = Bot;
   protected readonly closeIcon = X;
 
   protected readonly isOpen = signal(false);
+  private readonly coversViewport = signal(false);
+  protected readonly isModal = computed(() => this.isOpen() && this.coversViewport());
   protected readonly draft = signal('');
   protected readonly messages = signal<ChatMessage[]>([
     {
@@ -88,15 +99,36 @@ export class ChatComponent {
     this.syncMessageCounter();
     this.setupEffects();
     this.registerCleanup();
+    this.watchViewport();
     this.loadStarters();
   }
 
   @HostListener('document:keydown', ['$event'])
   protected onDocumentKeydown(event: KeyboardEvent) {
-    if (event.key !== 'Escape' || !this.isOpen()) return;
+    if (!this.isOpen() || event.defaultPrevented) return;
+
+    if (event.key === 'Tab' && this.isModal()) {
+      this.keepTabInside(event);
+      return;
+    }
+
+    if (event.key !== 'Escape' || event.isComposing) return;
+    if (!this.isModal() && !this.isFocusInChat()) return;
 
     event.preventDefault();
     this.closeChat('escape');
+  }
+
+  @HostListener('document:focusin', ['$event'])
+  protected onDocumentFocusIn(event: FocusEvent) {
+    if (!this.isOpen() || this.isModal()) return;
+
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || this.host.contains(target)) return;
+    if (!this.isHiddenByPanel(target)) return;
+
+    // El navegador ya desplazó lo necesario; cerrar revela el control sin mover la página.
+    this.closeChat('focus_obscured');
   }
 
   protected openChat() {
@@ -112,7 +144,7 @@ export class ChatComponent {
     });
   }
 
-  protected closeChat(reason: 'button' | 'overlay' | 'escape' = 'button') {
+  protected closeChat(reason: CloseReason = 'button') {
     if (!this.isOpen()) return;
 
     this.isOpen.set(false);
@@ -125,7 +157,7 @@ export class ChatComponent {
           : undefined,
     });
     this.lastOpenTimestamp = null;
-    this.scheduleDomTask(() => this.focusFabButton());
+    if (reason !== 'focus_obscured') this.scheduleDomTask(() => this.focusFabButton());
   }
 
   protected toggleChat() {
@@ -142,6 +174,7 @@ export class ChatComponent {
     if (!this.canSend()) return;
 
     this.sendMessage(this.draft().trim());
+    this.focusTextarea();
   }
 
   protected useSuggestion(question: string) {
@@ -156,6 +189,7 @@ export class ChatComponent {
     this.suggestionPulseTimeout = setTimeout(() => this.activeSuggestion.set(null), 260);
 
     this.sendMessage(question);
+    this.focusTextarea();
   }
 
   protected onTextareaKeydown(event: KeyboardEvent) {
@@ -258,10 +292,70 @@ export class ChatComponent {
     if (this.loadingStarters()) return;
 
     this.analytics.trackEvent('chat_retry_starters');
+    this.focusTextarea();
     this.loadStarters();
   }
 
+  private get host(): HTMLElement {
+    return this.hostRef.nativeElement;
+  }
+
+  private watchViewport() {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+
+    const query = window.matchMedia(MODAL_MEDIA_QUERY);
+    const update = () => this.coversViewport.set(query.matches);
+    update();
+    query.addEventListener('change', update);
+    this.destroyRef.onDestroy(() => query.removeEventListener('change', update));
+  }
+
+  private keepTabInside(event: KeyboardEvent) {
+    const items = Array.from(
+      this.host.querySelectorAll<HTMLElement>(`#chat-widget :is(${FOCUSABLE_SELECTOR})`),
+    );
+    if (items.length === 0) return;
+
+    const index = items.indexOf(document.activeElement as HTMLElement);
+    const leavesStart = event.shiftKey && index <= 0;
+    const leavesEnd = !event.shiftKey && (index === -1 || index === items.length - 1);
+    if (!leavesStart && !leavesEnd) return;
+
+    event.preventDefault();
+    items[event.shiftKey ? items.length - 1 : 0].focus();
+  }
+
+  private isFocusInChat(): boolean {
+    const active = document.activeElement;
+    return !!active && this.host.contains(active);
+  }
+
+  private isHiddenByPanel(element: HTMLElement): boolean {
+    const panel = this.host.querySelector('#chat-widget')?.getBoundingClientRect();
+    const target = element.getBoundingClientRect();
+    if (!panel || target.width === 0 || target.height === 0) return false;
+
+    return (
+      target.left >= panel.left &&
+      target.right <= panel.right &&
+      target.top >= panel.top &&
+      target.bottom <= panel.bottom
+    );
+  }
+
   private setupEffects() {
+    effect(() => this.modalChange.emit(this.isModal()));
+
+    effect(() => {
+      if (!this.isModal()) return;
+
+      this.scheduleDomTask(() => {
+        if (!this.host.querySelector('#chat-widget')?.contains(document.activeElement)) {
+          this.focusTextarea();
+        }
+      });
+    });
+
     effect(() => {
       const messages = this.messages();
       this.persistMessages(messages);

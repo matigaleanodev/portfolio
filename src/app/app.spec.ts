@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter, RouterOutlet } from '@angular/router';
 
 import { App } from './app';
@@ -70,5 +71,23 @@ describe('App', () => {
     expect(el.querySelector('app-footer')).toBeTruthy();
     expect(el.querySelector('app-chat')).toBeTruthy();
     expect(el.querySelector('app-toast')).toBeTruthy();
+  });
+
+  it('deja inerte el fondo solo mientras el chat es modal', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    const chat = fixture.debugElement.query(By.css('app-chat'));
+    const background = () =>
+      ['.skip-link', '.app-shell'].map((s) => el.querySelector(s)!.hasAttribute('inert'));
+
+    chat.triggerEventHandler('modalChange', true);
+    fixture.detectChanges();
+    expect(background()).toEqual([true, true]);
+    expect(el.querySelector('app-chat')!.hasAttribute('inert')).toBe(false);
+
+    chat.triggerEventHandler('modalChange', false);
+    fixture.detectChanges();
+    expect(background()).toEqual([false, false]);
   });
 });
