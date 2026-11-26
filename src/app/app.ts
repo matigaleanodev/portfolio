@@ -27,6 +27,7 @@ export class App {
   private readonly router = inject(Router);
 
   readonly routeTransitionActive = signal(false);
+  protected readonly chatModal = signal(false);
 
   constructor() {
     this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {

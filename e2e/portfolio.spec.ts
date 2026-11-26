@@ -160,16 +160,16 @@ test('contacto y suscripción con errores asociados sin efectos externos', async
   await page.goto('/blog');
   await page.getByRole('button', { name: 'Suscribirme' }).click();
   await expect(page.locator('#blog-subscription-email')).toHaveAttribute('aria-invalid', 'true');
-  await expect(page.locator('#blog-subscription-error')).toBeVisible();
+  await expect(page.locator('#blog-subscription-feedback')).toBeVisible();
 });
 
-test('chat no modal, teclado, loading, respuesta extensa y error simulados', async ({ page }) => {
+test('chat modal en móvil, teclado, loading, respuesta extensa y error simulados', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   const launcher = page.getByRole('button', { name: 'Abrir chatbot asistente' });
   await launcher.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog')).not.toHaveAttribute('aria-modal', 'true');
+  await expect(page.getByRole('dialog')).toHaveAttribute('aria-modal', 'true');
   await expect(page.locator('#chat-input')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(launcher).toBeFocused();
@@ -189,7 +189,7 @@ test('chat no modal, teclado, loading, respuesta extensa y error simulados', asy
   });
   await page.locator('#chat-input').fill('Pregunta de prueba');
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('status', { name: 'Escribiendo' })).toBeVisible();
+  await expect(page.locator('.chat-typing')).toBeVisible();
   await page.screenshot({ path: '.generated/design-review/states/chat-loading.png' });
   await expect(page.locator('.chat-bubble').last()).toContainText('Respuesta simulada');
   await page.screenshot({ path: '.generated/design-review/states/chat-long-answer.png' });

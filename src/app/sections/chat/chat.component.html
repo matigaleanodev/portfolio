@@ -8,7 +8,7 @@
   aria-label="Abrir chatbot asistente"
   aria-haspopup="dialog"
   [attr.aria-expanded]="isOpen()"
-  aria-controls="chat-widget"
+  [attr.aria-controls]="isOpen() ? 'chat-widget' : null"
 >
   <lucide-icon [img]="botIcon" size="22" aria-hidden="true" />
 </button>
@@ -20,6 +20,7 @@
     id="chat-widget"
     class="chat-widget fixed inset-0 flex flex-col overflow-hidden md:bottom-4 md:right-4 md:h-[575px] md:w-[400px] md:inset-auto md:rounded-2xl"
     role="dialog"
+    [attr.aria-modal]="isModal() ? 'true' : null"
     aria-labelledby="chat-title"
     aria-describedby="chat-description"
   >
@@ -54,6 +55,7 @@
         role="log"
         aria-live="polite"
         aria-label="Conversación"
+        tabindex="0"
         [attr.aria-busy]="sending()"
       >
         @for (message of messages(); track message.id) {
@@ -85,17 +87,14 @@
         @if (sending()) {
           <article
             class="chat-bubble chat-bubble--assistant self-start rounded-[0.9rem] px-[0.78rem] py-[0.72rem]"
+            aria-hidden="true"
           >
             <div class="chat-bubble__meta mb-1 flex items-center gap-[0.4rem]">
               <span class="chat-bubble__role text-[0.68rem] font-bold uppercase tracking-[0.06em]"
                 >Asistente</span
               >
             </div>
-            <div
-              class="chat-typing inline-flex h-4 items-center gap-[0.3rem]"
-              aria-label="Escribiendo"
-              role="status"
-            >
+            <div class="chat-typing inline-flex h-4 items-center gap-[0.3rem]">
               <span class="h-[0.35rem] w-[0.35rem] rounded-full"></span>
               <span class="h-[0.35rem] w-[0.35rem] rounded-full"></span>
               <span class="h-[0.35rem] w-[0.35rem] rounded-full"></span>
@@ -103,6 +102,10 @@
           </article>
         }
       </div>
+
+      <p id="chat-status" class="sr-only" role="status">
+        {{ sending() ? 'El asistente está escribiendo' : '' }}
+      </p>
 
       <div
         class="chat-suggestions flex flex-wrap gap-[0.45rem] pt-[0.1rem]"
@@ -159,7 +162,7 @@
           [value]="draft()"
           (input)="updateDraft($any($event.target).value)"
           (keydown)="onTextareaKeydown($event)"
-          [disabled]="sending()"
+          [readOnly]="sending()"
           [attr.aria-describedby]="apiError() ? 'chat-error' : 'chat-counter'"
           class="chat-input w-full resize-none rounded-[0.85rem] px-[0.85rem] py-[0.62rem] leading-[1.35] min-h-[5.1rem] md:h-[3.125rem] md:min-h-0 md:pb-[0.55rem] md:pt-[0.8rem] md:leading-[1.2]"
           [class.chat-input--has-text]="draft().trim().length > 0"
@@ -192,7 +195,7 @@
         </div>
 
         @if (apiError(); as error) {
-          <p id="chat-error" class="chat-error m-0 text-[0.78rem] leading-[1.25]" role="alert">
+          <p id="chat-error" class="chat-error m-0 text-[0.78rem] leading-[1.25]">
             {{ error }}
           </p>
         }

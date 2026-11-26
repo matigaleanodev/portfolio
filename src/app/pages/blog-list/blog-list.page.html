@@ -142,33 +142,35 @@
               placeholder="tu@email.com"
               autocomplete="email"
               required
-              [attr.aria-invalid]="!!subscriptionError()"
-              [attr.aria-describedby]="subscriptionError() ? 'blog-subscription-error' : null"
+              [readOnly]="isSubmittingSubscription()"
+              [attr.aria-invalid]="isSubscriptionInvalid() ? 'true' : 'false'"
+              [attr.aria-describedby]="
+                isSubscriptionInvalid() ? 'blog-subscription-feedback' : null
+              "
             />
             <button
               type="submit"
               class="blog-toolbar__subscribe-button"
-              [disabled]="isSubmittingSubscription()"
+              [attr.aria-disabled]="isSubmittingSubscription() ? 'true' : null"
             >
-              {{ isSubmittingSubscription() ? 'Enviando...' : 'Suscribirme' }}
+              {{ isSubmittingSubscription() ? 'Enviando…' : 'Suscribirme' }}
             </button>
           </div>
 
-          @if (subscriptionError()) {
-            <p
-              id="blog-subscription-error"
-              class="blog-toolbar__feedback blog-toolbar__feedback--error"
-              aria-live="polite"
-            >
-              {{ subscriptionError() }}
-            </p>
-          }
-
-          @if (subscriptionSuccessMessage()) {
-            <p class="blog-toolbar__feedback blog-toolbar__feedback--success" aria-live="polite">
-              {{ subscriptionSuccessMessage() }}
-            </p>
-          }
+          <p
+            id="blog-subscription-feedback"
+            class="blog-toolbar__feedback"
+            role="status"
+            aria-atomic="true"
+            [class.blog-toolbar__feedback--error]="
+              subscriptionState().status === 'invalid' || subscriptionState().status === 'error'
+            "
+            [class.blog-toolbar__feedback--success]="
+              subscriptionState().status === 'success' || subscriptionState().status === 'already'
+            "
+          >
+            {{ subscriptionState().message }}
+          </p>
         </form>
       </aside>
     </div>
