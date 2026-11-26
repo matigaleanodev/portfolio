@@ -327,7 +327,7 @@ export class ChatComponent {
 
   private isFocusInChat(): boolean {
     const active = document.activeElement;
-    return !active || active === document.body || this.host.contains(active);
+    return !!active && this.host.contains(active);
   }
 
   private isHiddenByPanel(element: HTMLElement): boolean {

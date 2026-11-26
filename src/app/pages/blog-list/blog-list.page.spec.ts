@@ -380,6 +380,42 @@ describe('BlogListPage', () => {
       expect(feedbackText()).toBe(MESSAGES.success);
     });
 
+    it.each([
+      ['nulo', null],
+      ['indefinido', undefined],
+      ['vacío', {}],
+      ['no objeto', 'ok'],
+    ])(
+      'deberia tratar un 200 con cuerpo %s como alta aceptada y permitir reenviar',
+      (_label, body) => {
+        subscribeToBlogMock.mockReturnValueOnce(of(body as unknown as SubscriptionResponseDto));
+        fixture = TestBed.createComponent(BlogListPage);
+        fixture.detectChanges();
+        const component = fixture.componentInstance;
+
+        component.subscriptionEmailControl.setValue('reader@example.com');
+        component.submitSubscription();
+        fixture.detectChanges();
+
+        expect(component.isSubmittingSubscription()).toBe(false);
+        expect(submitButton().getAttribute('aria-disabled')).not.toBe('true');
+        expect(emailInput().readOnly).toBe(false);
+        expect(feedbackText()).toBe(MESSAGES.success);
+        expect(trackEventMock).toHaveBeenCalledWith('blog_subscription_success', {
+          location: 'blog_index_subscription',
+        });
+        expect(trackEventMock).not.toHaveBeenCalledWith(
+          'blog_subscription_error',
+          expect.anything(),
+        );
+
+        subscribeToBlogMock.mockReturnValueOnce(of({ message: 'Subscribed successfully' }));
+        component.subscriptionEmailControl.setValue('other@example.com');
+        component.submitSubscription();
+        expect(subscribeToBlogMock).toHaveBeenCalledTimes(2);
+      },
+    );
+
     it('deberia volver a idle al editar el campo tras un error', () => {
       subscribeToBlogMock.mockReturnValueOnce(
         throwError(() => new HttpErrorResponse({ status: 503 })),

@@ -423,6 +423,36 @@ describe('ChatComponent', () => {
       expect(document.activeElement).toBe(button);
     });
 
+    it('en modo no modal Escape con el foco en el body no cierra el chat', async () => {
+      const { el } = mount(false);
+      await open(el);
+      (document.activeElement as HTMLElement | null)?.blur();
+      expect(document.activeElement).toBe(document.body);
+
+      const event = press('Escape');
+
+      expect(event.defaultPrevented).toBe(false);
+      expect(el.querySelector('#chat-widget')).toBeTruthy();
+      expect(trackEventMock).not.toHaveBeenCalledWith(
+        'chat_close',
+        expect.objectContaining({ reason: 'escape' }),
+      );
+    });
+
+    it('en modo no modal Escape con el foco dentro del panel lo cierra', async () => {
+      const { el } = mount(false);
+      await open(el);
+      el.querySelector<HTMLTextAreaElement>('#chat-input')!.focus();
+
+      press('Escape');
+
+      expect(el.querySelector('#chat-widget')).toBeNull();
+      expect(trackEventMock).toHaveBeenCalledWith(
+        'chat_close',
+        expect.objectContaining({ reason: 'escape' }),
+      );
+    });
+
     it('en modo no modal cede si un control enfocado queda totalmente tapado', async () => {
       const { el } = mount(false);
       await open(el);

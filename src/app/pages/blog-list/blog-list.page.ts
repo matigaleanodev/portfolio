@@ -168,7 +168,8 @@ export class BlogListPage {
 
     this.api.subscribeToBlog({ email }).subscribe({
       next: (response) => {
-        const alreadySubscribed = response.message === 'Already subscribed';
+        // Un 2xx es una alta aceptada: un cuerpo nulo o inesperado no debe dejar el formulario en `submitting`.
+        const alreadySubscribed = response?.message === 'Already subscribed';
         this.subscriptionState.set(
           alreadySubscribed
             ? { status: 'already', message: SUBSCRIPTION_MESSAGES.already }
