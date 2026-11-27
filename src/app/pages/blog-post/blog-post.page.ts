@@ -26,6 +26,7 @@ import { SeoService } from '../../services/seo.service';
 import { FragmentLinkDirective } from '../../ui/fragment-link.directive';
 import { EditorialContentDirective } from '../../ui/editorial-content.directive';
 import { copyCodeBlock } from '../../ui/code-copy';
+import { NotFoundStateComponent } from '../../ui/not-found-state/not-found-state.component';
 
 type MermaidModule = typeof import('mermaid').default;
 
@@ -37,6 +38,7 @@ type MermaidModule = typeof import('mermaid').default;
     FragmentLinkDirective,
     EditorialContentDirective,
     LucideAngularModule,
+    NotFoundStateComponent,
   ],
   templateUrl: './blog-post.page.html',
   styleUrl: './blog-post.page.css',
@@ -62,6 +64,9 @@ export class BlogPostPage {
   readonly post = signal<BlogPost | null>(null);
   readonly loadError = signal<'not-found' | 'failed' | null>(null);
   readonly isRetrying = signal(false);
+  /** Un artículo inexistente toma el foco si se llegó navegando o desde el reintento. */
+  protected readonly notFoundTakesFocus = signal(false);
+  private arrivedByNavigation = false;
   readonly tableOfContents = computed(() => {
     const current = this.post();
     const headings = current?.headings ?? [];
@@ -88,6 +93,7 @@ export class BlogPostPage {
           this.loadError.set(null);
           this.isRetrying.set(false);
           this.post.set(null);
+          this.arrivedByNavigation = this.router.navigated;
           // Al llegar navegando se empieza arriba; conservar el scroll anterior desplaza la carga.
           if (isPlatformBrowser(this.platformId) && this.router.navigated) {
             window.scrollTo({ top: 0, behavior: 'instant' });
@@ -151,9 +157,8 @@ export class BlogPostPage {
     // Hosting responde un slug ausente con 404 o con el HTML de la aplicación (200 ilegible).
     const status = (error as { status?: unknown } | null)?.status;
     const notFound = status === 404 || status === 200;
-    const lostRetry = notFound && this.isRetrying();
+    this.notFoundTakesFocus.set(this.arrivedByNavigation || this.isRetrying());
     this.loadError.set(notFound ? 'not-found' : 'failed');
-    if (lostRetry) this.focusTitle();
     this.seo.setPageSeo({
       title: `${notFound ? 'Artículo no encontrado' : 'No se pudo cargar el artículo'} | Matias Galeano`,
       description: 'Volvé al blog técnico de Matias Galeano para elegir otro artículo.',

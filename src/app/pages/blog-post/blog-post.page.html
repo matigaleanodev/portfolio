@@ -53,48 +53,43 @@
       }
       <div class="blog-post__content" [appEditorialContent]="currentPost"></div>
     </article>
-  } @else if (loadError(); as failure) {
+  } @else if (loadError() === 'not-found') {
+    <app-not-found-state
+      heading="No encontramos este artículo"
+      message="La dirección no corresponde a un artículo publicado. Elegí otro desde el blog."
+      [takeFocus]="notFoundTakesFocus()"
+    >
+      <a routerLink="/blog" class="link" aria-label="Volver al blog">
+        <lucide-icon [img]="backIcon" size="16" aria-hidden="true" />
+        Volver
+      </a>
+    </app-not-found-state>
+  } @else if (loadError() === 'failed') {
     <section class="blog-post-state">
-      <h1 #articleTitle tabindex="-1">
-        {{
-          failure === 'not-found' ? 'No encontramos este artículo' : 'No pudimos cargar el artículo'
-        }}
-      </h1>
-      <p class="feedback feedback--danger" role="alert">
-        @if (failure === 'not-found') {
-          La dirección no corresponde a un artículo publicado. Elegí otro desde el blog.
-        } @else {
-          Revisá tu conexión y volvé a intentar.
-        }
-      </p>
+      <h1 #articleTitle tabindex="-1">No pudimos cargar el artículo</h1>
+      <p class="feedback feedback--danger" role="alert">Revisá tu conexión y volvé a intentar.</p>
       <div class="blog-post-state__actions">
-        @if (failure === 'failed') {
-          <button
-            type="button"
-            class="btn btn--secondary"
-            [attr.aria-disabled]="isRetrying() ? 'true' : null"
-            [attr.aria-busy]="isRetrying() ? 'true' : null"
-            (click)="retry()"
-          >
-            <span class="btn__slot" aria-hidden="true">
-              @if (isRetrying()) {
-                <span class="btn__spinner"></span>
-              }
-            </span>
-            <span class="btn__label">
-              <span
-                [attr.data-idle]="!isRetrying()"
-                [attr.aria-hidden]="isRetrying() ? 'true' : null"
-                >Reintentar</span
-              >
-              <span
-                [attr.data-idle]="isRetrying()"
-                [attr.aria-hidden]="isRetrying() ? null : 'true'"
-                >Reintentando…</span
-              >
-            </span>
-          </button>
-        }
+        <button
+          type="button"
+          class="btn btn--secondary"
+          [attr.aria-disabled]="isRetrying() ? 'true' : null"
+          [attr.aria-busy]="isRetrying() ? 'true' : null"
+          (click)="retry()"
+        >
+          <span class="btn__slot" aria-hidden="true">
+            @if (isRetrying()) {
+              <span class="btn__spinner"></span>
+            }
+          </span>
+          <span class="btn__label">
+            <span [attr.data-idle]="!isRetrying()" [attr.aria-hidden]="isRetrying() ? 'true' : null"
+              >Reintentar</span
+            >
+            <span [attr.data-idle]="isRetrying()" [attr.aria-hidden]="isRetrying() ? null : 'true'"
+              >Reintentando…</span
+            >
+          </span>
+        </button>
         <a routerLink="/blog" class="link" aria-label="Volver al blog">
           <lucide-icon [img]="backIcon" size="16" aria-hidden="true" />
           Volver
