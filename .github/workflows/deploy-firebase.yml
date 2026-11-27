@@ -72,6 +72,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Verify AWS identity
+        id: identity
         shell: bash
         run: |
           set -euo pipefail
@@ -80,8 +81,12 @@ jobs:
           [[ "$AWS_REGION" == "us-east-1" ]] || exit 1
 
       - name: Invoke portfolio-cloud process-release
+        env:
+          # Un reintento del CLI solaparía dos publicaciones; la corrida siguiente retoma lo pendiente.
+          AWS_MAX_ATTEMPTS: '1'
         run: |
           aws lambda invoke \
+            --cli-read-timeout 70 \
             --function-name "${PROCESS_RELEASE_FUNCTION_NAME}" \
             --invocation-type RequestResponse \
             --cli-binary-format raw-in-base64-out \
@@ -93,6 +98,8 @@ jobs:
           node -e "const fs=require('node:fs'); const response=JSON.parse(fs.readFileSync('.generated/process-release-response.json','utf8')); if (response.statusCode !== 200) { console.error('process-release failed', response); process.exit(1); }"
 
       - name: Invoke portfolio-cloud publish-chat-knowledge
+        # Un aviso incompleto falla el job, pero no puede dejar vencer el conocimiento del chat.
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: |
           aws lambda invoke \
             --function-name "${PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME}" \
@@ -124,6 +131,7 @@ jobs:
           path: .generated/chat/knowledge-payload.json
 
       - name: Upload process-release response
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: process-release-response-${{ github.sha }}
@@ -132,6 +140,7 @@ jobs:
             .generated/process-release-response.json
 
       - name: Upload publish-chat-knowledge response
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: publish-chat-knowledge-response-${{ github.sha }}
