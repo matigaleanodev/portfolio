@@ -25,6 +25,7 @@ import { EditorialContentDirective } from '../../ui/editorial-content.directive'
 type MermaidModule = typeof import('mermaid').default;
 
 @Component({
+  host: { class: 'legacy-light' },
   selector: 'app-blog-post-page',
   imports: [RouterLink, DatePipe, FragmentLinkDirective, EditorialContentDirective],
   templateUrl: './blog-post.page.html',

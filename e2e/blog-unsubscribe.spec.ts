@@ -223,7 +223,7 @@ test('el doble click mantiene el foco y envía una sola baja mientras espera', a
     await expect(page.getByLabel('Email')).toHaveValue(normalizedEmail);
     const confirm = page.getByRole('button', { name: 'Confirmar baja' });
     await confirm.dblclick();
-    await expect(page.getByRole('status')).toHaveText('Confirmando la baja…');
+    await expect(page.locator('#main-content').getByRole('status')).toHaveText('Confirmando la baja…');
     await expect(confirm).toBeDisabled();
     await expect(confirm).toBeFocused();
     await confirm.press('Enter');

@@ -1,0 +1,127 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.featured {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+.featured p,
+.featured h2,
+.featured figure,
+.featured dl,
+.featured dd {
+  margin: 0;
+}
+.featured__main {
+  display: grid;
+  gap: var(--space-6);
+}
+.featured__text {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: var(--space-3);
+}
+.featured__label,
+.featured__figure figcaption {
+  color: var(--color-text-muted);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+.featured__title {
+  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+.featured__figure {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: var(--space-2);
+  text-align: center;
+}
+.featured__figure img {
+  width: min(100%, 10rem);
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: var(--radius-code);
+  object-fit: contain;
+}
+.featured__facts {
+  display: grid;
+  gap: var(--space-2);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.featured__facts dt {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.featured__excerpt {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.featured__actions {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+}
+.featured__actions .project-links {
+  justify-self: stretch;
+}
+.featured__details {
+  border-top: 1px solid var(--color-divider);
+}
+.featured__details summary {
+  width: fit-content;
+  min-height: 2.75rem;
+  padding-block: var(--space-2);
+  color: var(--color-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+.featured__details summary:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.featured__details p {
+  margin-block: var(--space-2);
+}
+.featured__stack {
+  color: var(--color-text-muted);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+@media (min-width: 640px) {
+  .featured__main {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.58fr);
+  }
+}
+
+/* Escritorio: rótulos en línea y menos aire para que se asomen los demás proyectos. */
+@media (min-width: 960px) {
+  .featured {
+    gap: var(--space-3);
+    padding-block: var(--space-4);
+  }
+  .featured__main {
+    column-gap: var(--space-4);
+  }
+  .featured__facts dt,
+  .featured__facts dd {
+    display: inline;
+  }
+  .featured__facts dt::after {
+    content: ': ';
+  }
+  .featured__actions {
+    gap: var(--space-2);
+  }
+}

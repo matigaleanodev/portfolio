@@ -1,13 +1,12 @@
 import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { ProjectCardComponent } from './project-card/project-card.component';
-import { NgStyle } from '@angular/common';
 import { ProjectContentService } from '../../services/project-content.service';
 import { Project } from '../../models/project.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-projects',
-  imports: [ProjectCardComponent, NgStyle],
+  imports: [ProjectCardComponent],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
 })
@@ -27,13 +26,17 @@ export class ProjectsComponent {
           this.projects.set(projects);
         },
         error: (error: unknown) => {
-          const message = error instanceof Error ? error.message : 'Unexpected error loading projects.';
+          const message =
+            error instanceof Error ? error.message : 'Unexpected error loading projects.';
           this.errorMessage.set(message);
         },
       });
   }
 
   readonly sortedProjects = computed(() =>
-    [...this.projects()].sort((a, b) => a.order - b.order),
+    // Se excluye solo el que muestra el destacado: el primero marcado según el orden.
+    [...this.projects()]
+      .sort((a, b) => a.order - b.order)
+      .filter((project, _, sorted) => project !== sorted.find((item) => item.featured)),
   );
 }

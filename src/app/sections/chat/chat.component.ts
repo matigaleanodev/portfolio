@@ -6,6 +6,7 @@ import {
   HostListener,
   Injector,
   afterNextRender,
+  afterRenderEffect,
   computed,
   effect,
   inject,
@@ -15,7 +16,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { Bot, LucideAngularModule, X } from 'lucide-angular';
+import { Bot, ChevronRight, LucideAngularModule, X } from 'lucide-angular';
 import { ApiService } from '../../services/api.service';
 import { ChatSource } from '../../models/chat.model';
 import { AnalyticsService } from '../../services/analytics.service';
@@ -50,9 +51,23 @@ export class ChatComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly hostRef = inject(ElementRef<HTMLElement>);
   private readonly idCounter = signal(0);
-  private suggestionPulseTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly messagesStorageKey = 'portfolio-chat-messages';
 
+  protected readonly moreIcon = ChevronRight;
+  private readonly suggestions = viewChild<ElementRef<HTMLDivElement>>('suggestions');
+  /** Quedan sugerencias fuera de la vista hacia la derecha. */
+  protected readonly moreSuggestions = signal(false);
+  private readonly watchSuggestions = afterRenderEffect((onCleanup) => {
+    const element = this.suggestions()?.nativeElement;
+    this.visibleSuggestions();
+    this.loadingStarters();
+    this.updateSuggestionsOverflow();
+    if (!element || typeof ResizeObserver === 'undefined') return;
+
+    const observer = new ResizeObserver(() => this.updateSuggestionsOverflow());
+    observer.observe(element);
+    onCleanup(() => observer.disconnect());
+  });
   protected readonly messagesViewport = viewChild<ElementRef<HTMLDivElement>>('messagesViewport');
   readonly modalChange = output<boolean>();
 
@@ -76,7 +91,6 @@ export class ChatComponent {
   protected readonly startersError = signal<string | null>(null);
   protected readonly sending = signal(false);
   protected readonly apiError = signal<string | null>(null);
-  protected readonly activeSuggestion = signal<string | null>(null);
 
   protected readonly canSend = computed(() => {
     const text = this.draft().trim();
@@ -98,7 +112,6 @@ export class ChatComponent {
     this.restoreMessagesFromStorage();
     this.syncMessageCounter();
     this.setupEffects();
-    this.registerCleanup();
     this.watchViewport();
     this.loadStarters();
   }
@@ -184,10 +197,6 @@ export class ChatComponent {
       length: question.length,
       has_conversation: this.hasConversation(),
     });
-    this.activeSuggestion.set(question);
-    if (this.suggestionPulseTimeout) clearTimeout(this.suggestionPulseTimeout);
-    this.suggestionPulseTimeout = setTimeout(() => this.activeSuggestion.set(null), 260);
-
     this.sendMessage(question);
     this.focusTextarea();
   }
@@ -380,15 +389,6 @@ export class ChatComponent {
     });
   }
 
-  private registerCleanup() {
-    this.destroyRef.onDestroy(() => {
-      if (this.suggestionPulseTimeout) {
-        clearTimeout(this.suggestionPulseTimeout);
-        this.suggestionPulseTimeout = null;
-      }
-    });
-  }
-
   private scrollMessagesToBottom() {
     const viewport = this.messagesViewport()?.nativeElement;
     if (!viewport) return;
@@ -506,5 +506,11 @@ export class ChatComponent {
       // El chat conserva una sesión en memoria cuando el navegador bloquea Storage.
     }
     return generated;
+  }
+  protected updateSuggestionsOverflow() {
+    const element = this.suggestions()?.nativeElement;
+    this.moreSuggestions.set(
+      !!element && element.scrollWidth - element.clientWidth - element.scrollLeft > 1,
+    );
   }
 }

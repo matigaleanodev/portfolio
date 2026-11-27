@@ -219,7 +219,7 @@ test('índice, listas, copiar código y fixtures editoriales sin overflow', asyn
   await page.goto('/blog/desplegar-apis-docker-ec2');
   await expect(page.locator('.code-copy').first()).toBeVisible();
   await page.locator('.code-copy').first().click();
-  await expect(page.getByRole('status')).toContainText('Código copiado');
+  await expect(page.locator('#main-content').getByRole('status')).toContainText('Código copiado');
   await page.evaluate(() =>
     Object.defineProperty(navigator.clipboard, 'writeText', {
       configurable: true,
@@ -227,7 +227,7 @@ test('índice, listas, copiar código y fixtures editoriales sin overflow', asyn
     }),
   );
   await page.locator('.code-copy').first().click();
-  await expect(page.getByRole('status')).toContainText('No se pudo copiar');
+  await expect(page.locator('#main-content').getByRole('status')).toContainText('No se pudo copiar');
   await page.goto('/blog/jerarquia-visual-importa-mas-de-lo-que-parece');
   await page.getByText('En este artículo', { exact: true }).click();
   const tocLink = page.locator('.blog-post-toc a').first();

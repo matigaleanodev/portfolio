@@ -76,7 +76,7 @@ describe('ProjectCardComponent', () => {
     const img = el.querySelector('img') as HTMLImageElement;
     expect(img).toBeTruthy();
     expect(img.getAttribute('src')).toBe('/assets/foodly.png');
-    expect(img.getAttribute('alt')).toBe('Foodly Notes');
+    expect(img.getAttribute('alt')).toBe('Ilustración del producto: Foodly Notes');
 
     expect(el.textContent).toContain('Una app para recetas.');
     expect(el.textContent).toContain('Disponible en Google Play.');
@@ -101,6 +101,7 @@ describe('ProjectCardComponent', () => {
     const links = Array.from(el.querySelectorAll('a'));
     expect(links.length).toBe(3);
     expect(links[0]?.textContent).toContain('Play Store');
+    expect(links[0]?.getAttribute('aria-label')).toContain('abre en una pestaña nueva');
 
     links[0]?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(analyticsMock.trackEvent).toHaveBeenCalledWith('click_project_link', {

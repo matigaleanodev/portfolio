@@ -566,4 +566,43 @@ describe('ChatComponent', () => {
       expect(el.querySelector('[role="log"]')!.textContent).toContain('No pude responder');
     });
   });
+
+  describe('estados del envío', () => {
+    const open = () => {
+      const el = fixture.nativeElement as HTMLElement;
+      el.querySelector<HTMLButtonElement>('.chat-fab')!.click();
+      fixture.detectChanges();
+      return el;
+    };
+
+    it('usa Loading en Enviar sin disabled nativo e ignora repeticiones', () => {
+      sendChatMessageMock.mockReturnValue(new Observable());
+      const el = open();
+      const input = el.querySelector<HTMLTextAreaElement>('#chat-input')!;
+      input.value = 'Hola';
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      const button = el.querySelector<HTMLButtonElement>('.chat-submit')!;
+
+      button.click();
+      fixture.detectChanges();
+      button.click();
+
+      expect(button.disabled).toBe(false);
+      expect(button.getAttribute('aria-disabled')).toBe('true');
+      expect(button.getAttribute('aria-busy')).toBe('true');
+      expect(button.textContent).toContain('Enviando…');
+      expect(sendChatMessageMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('anuncia los agregados del log sin marcarlo como ocupado', () => {
+      sendChatMessageMock.mockReturnValue(new Observable());
+      const el = open();
+      el.querySelector<HTMLButtonElement>('button.chat-chip')!.click();
+      fixture.detectChanges();
+
+      expect(el.querySelector('[role="log"]')!.hasAttribute('aria-busy')).toBe(false);
+      expect(el.querySelector<HTMLButtonElement>('button.chat-chip')?.disabled ?? true).toBe(true);
+    });
+  });
 });
