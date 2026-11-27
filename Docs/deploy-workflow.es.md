@@ -120,6 +120,36 @@ Una rama `release/vX.Y.Z` contiene la versión correspondiente del paquete y las
 
 El generador del conocimiento del chat resuelve los enlaces de proyectos contra el origen público del sitio. El generador del payload rechaza enlaces relativos, con protocolos distintos de HTTP(S) o con credenciales antes del paso de Firebase, evitando publicar un artifact que rechacen Cloud/API.
 
+## Validación continua
+
+`ci.yml` corre en pull requests y pushes hacia `dev` y `main`, sin secretos y separado del deploy. Usa Node 22, las dependencias de los lockfiles, caché de npm y cancela las ejecuciones reemplazadas de la misma rama.
+
+| Job       | Contenido                                                                                            |
+| --------- | ---------------------------------------------------------------------------------------------------- |
+| `quality` | formato, lint, TypeScript y tests unitarios                                                          |
+| `build`   | build de producción, manifiesto y payload de conocimiento                                            |
+| `browser` | sobre ese mismo build: HTML prerenderizado sin JavaScript, contrato de Hosting y Playwright Chromium |
+| `verify`  | exige que los tres anteriores terminen bien                                                          |
+
+El check a marcar como obligatorio en las reglas de `dev` y `main` es `verify`; el repositorio no lo configura solo. `sync-dev.yml` escribe directo en `dev`, así que al exigirlo hay que permitir que ese actor omita la regla.
+
+El build y los tests unitarios cargan `e2e/support/offline-build.cjs`, que rechaza conexiones no locales y responde la hoja de Google Fonts con `e2e/fixtures/google-fonts.css`; si cambian las fuentes hay que actualizar esa copia. Las pruebas de navegador usan el emulador de Firebase Hosting con el proyecto `demo-portfolio`, interceptan la API y no resuelven nombres externos.
+
+`.prettierignore` enumera los archivos anteriores al control de formato; se retiran de la lista a medida que se formatean.
+
+Reproducción local:
+
+```bash
+npm ci
+npm ci --prefix tools/firebase-cli --ignore-scripts
+npm run build:content
+npm run format:check && npm run lint && npm run typecheck && npm test -- --watch=false
+npm run build
+PORTFOLIO_E2E_BUILD=true npm run test:e2e
+```
+
+`npm run test:e2e` sin la variable levanta el servidor de desarrollo y omite las pruebas de HTML y Hosting.
+
 ## Revisión vigente, reintentos y rollback
 
 Solo la cabeza de `main` publica. `scripts/current-revision.mjs` la consulta en la API de GitHub al decidir el deploy y otra vez justo antes de Firebase, `process-release` y `publish-chat-knowledge`. Si la revisión quedó atrás o GitHub no la confirma, el job falla sin ejecutar ese efecto ni los que dependen de él. La comprobación no es atómica con el efecto; las publicaciones están serializadas, de modo que la corrida de la revisión nueva se ejecuta después.

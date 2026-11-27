@@ -120,6 +120,36 @@ A `release/vX.Y.Z` branch carries the matching package version and paired releas
 
 The chat knowledge generator resolves project links against the public site origin. The payload builder rejects relative, non-HTTP(S), or credential-bearing links before the Firebase deployment step, preventing publication of an artifact rejected by the Cloud/API consumers.
 
+## Continuous Validation
+
+`ci.yml` runs on pull requests and pushes to `dev` and `main`, without secrets and apart from deployment. It uses Node 22, lockfile dependencies, the npm cache, and cancels superseded runs of the same branch.
+
+| Job       | Contents                                                                                               |
+| --------- | ------------------------------------------------------------------------------------------------------ |
+| `quality` | formatting, lint, TypeScript and unit tests                                                            |
+| `build`   | production build, release manifest and knowledge payload                                               |
+| `browser` | against that same build: prerendered HTML without JavaScript, Hosting contract and Playwright Chromium |
+| `verify`  | requires the three previous jobs to succeed                                                            |
+
+The check to mark as required in the `dev` and `main` rules is `verify`; the repository does not configure it by itself. `sync-dev.yml` writes directly to `dev`, so requiring it also means letting that actor bypass the rule.
+
+The build and unit tests preload `e2e/support/offline-build.cjs`, which rejects non-local connections and answers the Google Fonts stylesheet with `e2e/fixtures/google-fonts.css`; update that copy when the fonts change. Browser tests use the Firebase Hosting emulator with the `demo-portfolio` project, intercept the API and resolve no external names.
+
+`.prettierignore` lists the files that predate the format check; remove each one from the list as it gets formatted.
+
+Local reproduction:
+
+```bash
+npm ci
+npm ci --prefix tools/firebase-cli --ignore-scripts
+npm run build:content
+npm run format:check && npm run lint && npm run typecheck && npm test -- --watch=false
+npm run build
+PORTFOLIO_E2E_BUILD=true npm run test:e2e
+```
+
+`npm run test:e2e` without the variable starts the development server and skips the HTML and Hosting tests.
+
 ## Current Revision, Retries and Rollback
 
 Only the head of `main` publishes. `scripts/current-revision.mjs` asks the GitHub API when deciding the deployment and again right before Firebase, `process-release` and `publish-chat-knowledge`. If the revision fell behind or GitHub cannot confirm it, the job fails without running that effect or the ones depending on it. The check is not atomic with the effect; publications are serialized, so the run for the newer revision executes afterwards.

@@ -1,0 +1,37 @@
+# Generados por el build o publicados con hash fijado.
+package-lock.json
+tools/firebase-cli/package-lock.json
+content/
+public/
+src/assets/blog/
+e2e/fixtures/
+
+# Archivos anteriores al control de formato. Sacar cada uno de la lista al formatearlo.
+.postcssrc.json
+angular.json
+eslint.config.js
+playwright.config.ts
+tsconfig.app.json
+README.md
+README.es.md
+Docs/blog-architecture.md
+Docs/blog-architecture.es.md
+Docs/product-architecture-evidence.md
+Docs/product-architecture-evidence.es.md
+scripts/build-chat-knowledge-payload.mjs
+scripts/build-diagrams.mjs
+scripts/build-release-manifest.mjs
+scripts/diagram-preview.mjs
+scripts/publish-diagrams.mjs
+src/app/app.config.ts
+src/app/app.config.server.ts
+src/app/services/api.service.ts
+src/app/services/blog-content.service.spec.ts
+src/assets/projects.json
+src/build-chat-knowledge-payload.spec.ts
+src/build-content.spec.ts
+src/build-release-manifest.spec.ts
+src/main.ts
+src/main.server.ts
+src/server.ts
+src/testing/content-pipeline-fixture.ts

@@ -85,7 +85,11 @@ Comandos útiles:
 - `npm run build:content`
 - `npm run build`
 - `npm run lint`
+- `npm run format:check`
+- `npm run typecheck`
 - `npm test`
+
+Las pruebas sobre el build necesitan además `npm ci --prefix tools/firebase-cli --ignore-scripts`; ver [validación continua](./Docs/deploy-workflow.es.md#validación-continua).
 
 ---
 
