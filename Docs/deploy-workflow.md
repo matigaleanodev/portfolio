@@ -116,7 +116,7 @@ The deploy workflow now expects these GitHub secrets or variables in `portfolio`
 
 The package version and notes in both languages (`Docs/releases/vX.Y.Z.es.md` and `Docs/releases/vX.Y.Z.md`) are prepared on a `release/vX.Y.Z` branch with a PR into `dev`. Promotion is a pull request from `dev` into `main` (see [pull request integration](#pull-request-integration)).
 
-The tag and GitHub release are created after production is validated, from the web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, title `Portfolio vX.Y.Z`, the notes from `Docs/releases/vX.Y.Z.es.md` and **Set as the latest release**. Under **Target**, pick the validated commit, the one `gitSha` reports in `publication-state.json`; `main` only works while it still points at that revision. If the web list does not offer it, create the release with `gh release create vX.Y.Z --target <validated-sha>`. Before publishing, check that `package.json` at that revision declares version `X.Y.Z` and that the tag does not exist. If validation fails, do not create it.
+The tag and GitHub release are created after production is validated, from the web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, title `Portfolio vX.Y.Z`, the notes from `Docs/releases/vX.Y.Z.es.md` and **Set as the latest release**. Under **Target**, pick the validated commit, the one `gitSha` reports in `publication-state.json`, not the `main` branch, which can move before publishing. If the web list does not offer it, create the release with `gh release create vX.Y.Z --target <validated-sha>`. Before publishing, check that `package.json` at that revision declares version `X.Y.Z` and that the tag does not exist. If validation fails, do not create it.
 
 `release.yml` only acts when a PR whose branch starts with `release/v` is merged into `main`, and it publishes the tag and release at that moment, without waiting for the deployment. This flow does not use it: do not open a PR into `main` from a `release/` branch. The Firebase deployment and the `dev` sync run independently on the push to `main`.
 
@@ -173,7 +173,7 @@ Cases that need an extra action:
 - Branch behind: **Update branch**. Auto-merge does not update the branch; if the target moves while it waits, the button has to be pressed.
 - `CodeRabbit` check missing or cancelled: comment `@coderabbitai full review` on the pull request.
 
-The `CodeRabbit` check means its review finished, not that it approved. It also passes when the review is skipped, paused or rate limited and, with the default configuration, when it fails. Findings opened as conversations block until resolved; those listed only in the review body do not: read them before merging.
+The `CodeRabbit` check means its review finished, not that it approved. It also passes when the review is skipped, paused or rate limited and, with the default configuration, when it fails. Findings opened as conversations block until resolved; those listed only in the review body do not. Read them before merging; auto-merge does not wait for that, so enable it only after reading the review of the current head, or merge manually.
 
 Merging into `main` deploys automatically: see [current pipeline](#current-pipeline).
 

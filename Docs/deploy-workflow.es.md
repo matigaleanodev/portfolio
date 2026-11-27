@@ -116,7 +116,7 @@ El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
 
 La versión del paquete y las notas en ambos idiomas (`Docs/releases/vX.Y.Z.es.md` y `Docs/releases/vX.Y.Z.md`) se preparan en una rama `release/vX.Y.Z` con un PR hacia `dev`. La promoción es un pull request de `dev` a `main` (ver [integración de pull requests](#integración-de-pull-requests)).
 
-El tag y la release de GitHub se crean después de validar producción, desde la web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, título `Portfolio vX.Y.Z`, las notas de `Docs/releases/vX.Y.Z.es.md` y **Set as the latest release**. En **Target** se elige el commit validado, el que informa `gitSha` en `publication-state.json`; `main` sirve solo si sigue en esa revisión. Si la lista de la web no lo ofrece, crear la release con `gh release create vX.Y.Z --target <sha-validado>`. Antes de publicar, comprobar que `package.json` en esa revisión declare la versión `X.Y.Z` y que el tag no exista. Si la validación falla, no se crea.
+El tag y la release de GitHub se crean después de validar producción, desde la web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, título `Portfolio vX.Y.Z`, las notas de `Docs/releases/vX.Y.Z.es.md` y **Set as the latest release**. En **Target** se elige el commit validado, el que informa `gitSha` en `publication-state.json`, y no la rama `main`, que puede avanzar antes de publicar. Si la lista de la web no lo ofrece, crear la release con `gh release create vX.Y.Z --target <sha-validado>`. Antes de publicar, comprobar que `package.json` en esa revisión declare la versión `X.Y.Z` y que el tag no exista. Si la validación falla, no se crea.
 
 `release.yml` solo actúa cuando se integra en `main` un PR cuya rama empieza con `release/v`, y publica el tag y la release en ese momento, sin esperar el deploy. Este flujo no lo usa: no abrir hacia `main` un PR desde una rama `release/`. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.
 
@@ -173,7 +173,7 @@ Casos que requieren una acción adicional:
 - Rama atrasada: **Update branch**. El auto-merge no actualiza la rama; si el destino avanza mientras espera, hay que pulsarlo.
 - Check `CodeRabbit` ausente o cancelado: comentar `@coderabbitai full review` en el pull request.
 
-El check `CodeRabbit` indica que su revisión terminó, no que aprobó. También pasa cuando la omite, cuando la pausa o alcanza su límite de uso y, con la configuración predeterminada, cuando falla. Las observaciones abiertas como conversación bloquean hasta resolverlas; las incluidas solo en el cuerpo de la revisión no bloquean: leerlas antes de integrar.
+El check `CodeRabbit` indica que su revisión terminó, no que aprobó. También pasa cuando la omite, cuando la pausa o alcanza su límite de uso y, con la configuración predeterminada, cuando falla. Las observaciones abiertas como conversación bloquean hasta resolverlas; las incluidas solo en el cuerpo de la revisión no bloquean. Leerlas antes de integrar; el auto-merge no espera esa lectura, así que activarlo solo después de leer la revisión del head vigente o usar el merge manual.
 
 Integrar en `main` despliega automáticamente: ver [pipeline actual](#pipeline-actual).
 
