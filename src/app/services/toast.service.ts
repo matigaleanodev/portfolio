@@ -36,7 +36,8 @@ export class ToastService {
 
   resume() {
     this.held = false;
-    if (!this._state().showing) return;
+    // `showing` llega en el frame siguiente: el plazo no puede depender de él.
+    if (!this._state().visible || this.hideAnimationTimeoutId) return;
 
     this.stopAutoHide();
     this.scheduleHide();

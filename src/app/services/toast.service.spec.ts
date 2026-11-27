@@ -88,6 +88,31 @@ describe('ToastService', () => {
     expect(service.state().showing).toBe(false);
   });
 
+  it('programa el ocultamiento si la pausa termina antes del frame de entrada', () => {
+    vi.mocked(globalThis.requestAnimationFrame).mockImplementation((cb) => {
+      setTimeout(() => cb(0), 16);
+      return 0;
+    });
+    service.show('hola');
+    service.pause();
+    service.resume();
+
+    vi.advanceTimersByTime(5000);
+
+    expect(service.state().showing).toBe(false);
+  });
+
+  it('reanudar durante la salida no reinicia el cierre', () => {
+    service.show('hola');
+    service.hide();
+
+    service.resume();
+    vi.advanceTimersByTime(300);
+
+    expect(service.state().visible).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it('hide debería poner showing=false y luego visible=false a los 300ms', () => {
     service.show('hola');
 
