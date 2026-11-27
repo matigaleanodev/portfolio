@@ -4,7 +4,7 @@ export interface BlogPostSummary {
   excerpt: string;
   date: string;
   tags: string[];
-  coverImage: string;
+  coverImage?: string;
   readingTimeMinutes: number;
 }
 

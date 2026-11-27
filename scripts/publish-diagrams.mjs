@@ -71,4 +71,11 @@ export async function publishDiagrams(rootDir, projects, posts) {
   }));
   await fs.writeFile(path.join(outputDir, 'index.json'), `${JSON.stringify(published, null, 2)}\n`);
   console.log(`Published ${published.length} static diagrams.`);
+  // Ancho y alto salen de la cabecera IHDR del PNG publicado.
+  return new Map(selected
+    .filter(({ preview }) => preview.length >= 24 && preview.toString('latin1', 12, 16) === 'IHDR')
+    .map(({ entry, preview }) => [
+      `/diagrams/${entry.preview}`,
+      { width: preview.readUInt32BE(16), height: preview.readUInt32BE(20) },
+    ]));
 }
