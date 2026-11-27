@@ -248,6 +248,37 @@ describe('ChatComponent', () => {
     );
   });
 
+  describe('carga de sugerencias', () => {
+    const globals = globalThis as { ngServerMode?: boolean };
+
+    afterEach(() => delete globals.ngServerMode);
+
+    it('no llama a la API durante el prerender', async () => {
+      fixture.destroy();
+      getChatStartersMock.mockClear();
+      globals.ngServerMode = true;
+
+      fixture = TestBed.createComponent(ChatComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(getChatStartersMock).not.toHaveBeenCalled();
+    });
+
+    it('las pide una sola vez en el navegador, despues del primer render', async () => {
+      fixture.destroy();
+      getChatStartersMock.mockClear();
+
+      fixture = TestBed.createComponent(ChatComponent);
+      expect(getChatStartersMock).not.toHaveBeenCalled();
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(getChatStartersMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('debería persistir y restaurar mensajes desde localStorage', async () => {
     fixture.destroy();
 
