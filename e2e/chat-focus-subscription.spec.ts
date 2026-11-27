@@ -199,12 +199,10 @@ const contrast = (
       for (let node: Element | null = element; node; node = node.parentElement) chain.unshift(node);
       // El borde y el contorno se comparan con el fondo que rodea al control.
       if (kind === 'outline' || kind === 'border') chain.pop();
-      // El panel usa un degradado: se toma su extremo más oscuro, el fondo del sitio.
       let background = rgba(getComputedStyle(document.body).backgroundColor).slice(0, 3);
       for (const node of chain) {
         const style = getComputedStyle(node);
-        if (node.id === 'chat-widget') background = rgba('#e5e7eb').slice(0, 3);
-        else background = over(rgba(style.backgroundColor), background);
+        background = over(rgba(style.backgroundColor), background);
       }
       const style = getComputedStyle(element, kind === 'placeholder' ? '::placeholder' : null);
       const raw = rgba(

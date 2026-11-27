@@ -18,6 +18,7 @@ import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 
 @Component({
+  host: { class: 'legacy-light' },
   selector: 'app-blog-unsubscribe-page',
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './blog-unsubscribe.page.html',
@@ -50,8 +51,7 @@ export class BlogUnsubscribePage {
   constructor() {
     this.seo.setPageSeo({
       title: 'Baja de suscripción | Blog de Matias Galeano',
-      description:
-        'Confirmación de baja para la suscripción del blog técnico de Matias Galeano.',
+      description: 'Confirmación de baja para la suscripción del blog técnico de Matias Galeano.',
       canonicalUrl: 'https://matiasgaleano.dev/blog/unsubscribe',
       ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
       type: 'website',

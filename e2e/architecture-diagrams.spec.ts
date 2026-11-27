@@ -15,7 +15,7 @@ test('los enlaces editoriales llevan a diagramas estáticos sin JavaScript', asy
     ['Modo Playa', 'modo-playa-ecosystem'],
     ['Foodly Notes', 'foodly-notes-ecosystem'],
   ]) {
-    await expect(page.getByRole('link', { name: `Explorar arquitectura de ${name}`, exact: true }))
+    await expect(page.getByRole('link', { name: `Explorar arquitectura de ${name} (abre en una pestaña nueva)`, exact: true }))
       .toHaveAttribute('href', `/diagrams/${slug}.html`);
   }
 

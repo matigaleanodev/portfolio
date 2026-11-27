@@ -26,4 +26,14 @@ describe('HeroComponent', () => {
 
     expect(el.querySelector('h1')?.textContent).toContain('Matias Galeano');
   });
+
+  it('presenta Banco Comafi antes del vínculo contractual con el texto aprobado', () => {
+    fixture.detectChanges();
+    const text = (fixture.nativeElement as HTMLElement).textContent!.replace(/\s+/g, ' ');
+
+    expect(text).toContain(
+      'Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos Comunes de Inversión.',
+    );
+    expect(text.match(/desarrollador full stack/gi)).toHaveLength(1);
+  });
 });

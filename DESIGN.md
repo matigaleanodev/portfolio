@@ -1,6 +1,6 @@
 ---
 name: Índigo de taller
-revision: 1
+revision: 2
 description: Visual system of matiasgaleano.dev, light and dark.
 colors:
   light-canvas: '#F3F4F7'
@@ -248,7 +248,7 @@ components:
 
 [Español](DESIGN.es.md)
 
-Revision 1. This repository is the source of the visual decisions of the ecosystem; other repositories adapt a numbered revision and do not redefine it. Any change to a token or a mandatory rule increases the revision. The token front matter lives in this file.
+Revision 2. This repository is the source of the visual decisions of the ecosystem; other repositories adapt a numbered revision and do not redefine it. Any change to a token or a mandatory rule increases the revision. The token front matter lives in this file.
 
 **MUST** rules are acceptance criteria. **SHOULD** rules are recommendations that may be deviated from with a recorded reason. Values marked _derived_ complete the base palette and identity; see Value origin.
 
@@ -438,7 +438,7 @@ IBM Plex Sans (400, 500, 600) with `Segoe UI`, Arial fallback; IBM Plex Mono (40
 - Spacing scale: 4, 8, 12, 16, 24, 32, 40, 48, 64, 80px. MUST use scale values for gaps and padding.
 - Containers (`box-sizing: border-box`, centered): page `72rem`, form `48rem`, article text `38rem`, article wide `46rem`. Inline padding 24px; 16px on articles below 640px. Container maximums include the padding except for the article columns.
 - Breakpoints: 640px, 960px (768px only for the chat panel). Mobile first.
-- Section rhythm: 48px below 768px, 80px from 768px. Inside a block: 8–16px; between blocks: 24–32px.
+- Section rhythm: 48px below 768px, 80px from 768px. Inside a block: 8–16px; between blocks: 24–32px. Exception, home page: from the presentation and featured project to the remaining projects the spacing is tighter (see Pages: home and projects).
 - MUST reflow at 320px with no page-level horizontal scroll; only code, tables and diagrams scroll, inside a focusable region.
 - DOM order MUST match visual order.
 - Full-height views SHOULD use `dvh` and safe-area insets.
@@ -452,7 +452,7 @@ IBM Plex Sans (400, 500, 600) with `Segoe UI`, Arial fallback; IBM Plex Mono (40
 
 ## Shapes
 
-- Radii: buttons and fields 5px; code blocks and figures 12px; cards 16px; tags pill; suggestion chips and the chat launcher are pill-shaped, the only approved exceptions to the 5px button radius; editorial rules and the featured panel 0.
+- Radii: buttons and fields 5px; code blocks and figures 12px; cards 16px; tags pill; suggestion chips and the chat launcher are pill-shaped, the only approved exceptions to the 5px button radius; editorial rules 0. The featured project panel uses the 16px card radius and keeps its leading identity rule.
 - Borders: 1px. Identity rule: 3px solid `accent`, used above the home presentation, and on the leading edge of the featured project panel; article quotes also use a 3px `accent` leading edge. Do not add it elsewhere.
 - Icons: Lucide, 16px inline and 20px in icon buttons, stroke 2, `currentColor`; existing brand SVGs for external profiles. Decorative icons `aria-hidden`; icon-only controls have an accessible name. No emoji as icons.
 - Monogram: the existing M vector, one color (`text`), 40px high in the header, beside the name. No tile, gradient, shadow or recoloring; clear space of 8px at least.
@@ -678,8 +678,12 @@ The panel layout at low viewport height and the launcher position are not fixed 
 Order: presentation and featured project, remaining projects, contact.
 
 - The first block sits on `canvas` (no full-bleed inverted band): identity rule, name (`display`, the only H1), role, professional presentation, then “Ver proyectos” (primary link) and “Contactarme” (text link).
-- MUST show this text on the home page, naming Banco Comafi first and Boreal IT as the contractual channel: «Actualmente trabajo como desarrollador full stack en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos Comunes de Inversión.»
-- Featured project: editorial composition of text, image and caption. A `surface` panel with the identity edge; text (label, title, the author’s contribution, link) in a `1fr` column and a `figure` with `figcaption` in a `0.58fr` column from 640px; stacked below, text first. From 960px the presentation and the panel are two columns `1.1fr 0.88fr` with 40px gap. Name, role and the start of the case SHOULD be visible together at 390×844.
+- MUST show this text on the home page, naming Banco Comafi first and Boreal IT as the contractual channel: «Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos Comunes de Inversión.»
+- Featured project: editorial composition of text, image and caption on a `surface` panel with the identity edge and the card radius. DOM and visual order: head (label, title, summary), `figure` with `figcaption`, facts (key decision, how it is used, own contribution), actions (primary link, then secondary links) and architecture and stack.
+- Below 640px the panel is one column in that order, so the illustration comes before the actions. From 640px the head (`1fr`) and the figure (`0.58fr`) are two columns; facts, actions and details span the full width below them.
+- Key decision, how it is used and own contribution MUST stay visible; only architecture and stack are collapsed, inside native `details`. From 960px each fact label SHOULD run in with its text, followed by a colon.
+- From 960px the presentation and the panel are two columns `1.1fr 0.88fr` with 40px gap. Name, role and the start of the case SHOULD be visible together at 390×844.
+- Home spacing: below 960px the first block has 32px above and 48px below; the projects section has 48px block padding below 768px, and 24px above and 80px below from 768px. From 960px the first block has 24px above and 16px below, the projects section starts with 16px and uses a 16px gap, and its heading and lead share a line when they fit. At 1440×900 the first project cards SHOULD start within the first screen.
 - The featured project MUST NOT be repeated in the list. All published cases and their links remain.
 - Each project shows, in this order: product type, title, summary, key decision, how it is used, own contribution, primary link, secondary links, and architecture and stack inside native `details`. A case without an image is valid.
 
@@ -730,16 +734,16 @@ Order: presentation and featured project, remaining projects, contact.
 
 ## Value origin
 
-| Group                                                         | Origin and reason                                                                                                                                                                                                   |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Colors                                                        | Per token in Colors.                                                                                                                                                                                                |
-| Typefaces and monogram                                        | Approved identity.                                                                                                                                                                                                  |
-| Type sizes, weights, line heights, tracking                   | Derived: one fluid hierarchy limited to three weights. Article reading column (38rem) and sizes (18px, 17px mobile) are approved.                                                                                   |
-| Spacing, containers, breakpoints                              | Derived from the existing scale and containers.                                                                                                                                                                     |
-| Radii                                                         | Approved: 5px for buttons and fields, with pill suggestion chips and chat launcher as explicit exceptions. Derived: cards 16px and code 12px, for continuity.                                                       |
-| Home composition                                              | Approved: two columns, identity rule, contact as a link, featured text, image and caption, featured case not repeated.                                                                                              |
-| Theme surfaces and feedback                                   | Approved: footer, list header and unsubscribe page on theme tokens; success-only toast of 5s or more; important confirmations also in context; errors in context; no resting shadows or load and scroll animations. |
-| Elevation, motion, component states, header and chat measures | Derived: accessibility, stable dimensions and a flat hierarchy.                                                                                                                                                     |
+| Group                                                         | Origin and reason                                                                                                                                                                                                     |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Colors                                                        | Per token in Colors.                                                                                                                                                                                                  |
+| Typefaces and monogram                                        | Approved identity.                                                                                                                                                                                                    |
+| Type sizes, weights, line heights, tracking                   | Derived: one fluid hierarchy limited to three weights. Article reading column (38rem) and sizes (18px, 17px mobile) are approved.                                                                                     |
+| Spacing, containers, breakpoints                              | Derived from the existing scale and containers.                                                                                                                                                                       |
+| Radii                                                         | Approved: 5px for buttons and fields, with pill suggestion chips and chat launcher as explicit exceptions, and the featured panel on the card radius. Derived: cards 16px and code 12px, for continuity.              |
+| Home composition                                              | Approved: two columns, identity rule, contact as a link, featured text, image and caption, featured case not repeated; revision 2: panel order, two columns from 640px, visible facts and tighter spacing on desktop. |
+| Theme surfaces and feedback                                   | Approved: footer, list header and unsubscribe page on theme tokens; success-only toast of 5s or more; important confirmations also in context; errors in context; no resting shadows or load and scroll animations.   |
+| Elevation, motion, component states, header and chat measures | Derived: accessibility, stable dimensions and a flat hierarchy.                                                                                                                                                       |
 
 ## Do's and Don'ts
 

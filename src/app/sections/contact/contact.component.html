@@ -1,9 +1,9 @@
-<section id="contact" tabindex="-1" class="py-14 md:py-20 bg-(--color-bg)">
-  <div class="max-w-3xl mx-auto px-6 space-y-8 md:space-y-10">
-    <header class="space-y-2">
+<section id="contact" tabindex="-1" class="contact">
+  <div class="contact__body">
+    <header class="contact__intro">
       <h2 id="contact-title" class="section-title">Contacto</h2>
 
-      <p id="contact-description" class="text-base opacity-70">
+      <p id="contact-description">
         Si te interesa mi perfil o querés charlar sobre algún proyecto, podés escribirme
         directamente.
       </p>
@@ -12,7 +12,8 @@
     <form
       [formGroup]="form"
       (ngSubmit)="submit()"
-      class="contact-form-panel space-y-6"
+      class="contact-form-panel"
+      novalidate
       [attr.aria-busy]="loading()"
       aria-labelledby="contact-title"
       aria-describedby="contact-description"
@@ -28,146 +29,142 @@
         />
       </div>
 
-      <!-- Nombre -->
-      <div class="space-y-2">
-        <label for="contact-name" class="contact-label">Nombre</label>
-
+      <div class="field">
+        <label for="contact-name" class="field__label">Nombre</label>
         <input
-          id="contact-name"
           type="text"
-          formControlName="name"
           autocomplete="name"
-          required
           maxlength="100"
-          [attr.aria-invalid]="form.get('name')?.touched && form.get('name')?.invalid ? 'true' : 'false'"
-          [attr.aria-describedby]="
-            form.get('name')?.touched && form.get('name')?.invalid ? 'contact-name-error' : null
+          id="contact-name"
+          formControlName="name"
+          required
+          [readOnly]="loading()"
+          [attr.aria-invalid]="
+            form.controls.name.touched && form.controls.name.invalid ? 'true' : 'false'
           "
-          class="contact-input w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
-          [ngClass]="{
-            'border-gray-300 focus:ring-(--color-accent)':
-              !form.get('name')?.touched || !form.get('name')?.invalid,
-            'border-rose-500 focus:ring-rose-500':
-              form.get('name')?.touched && form.get('name')?.invalid,
-          }"
+          [attr.aria-describedby]="
+            form.controls.name.touched && form.controls.name.invalid ? 'contact-name-error' : null
+          "
+          class="field__control"
         />
 
-        @if (form.get('name')?.touched && form.get('name')?.invalid) {
-          <p id="contact-name-error" class="text-sm text-rose-800 error-animate">
-            @if (form.get('name')?.errors?.['required']) {
+        @if (form.controls.name.touched && form.controls.name.invalid) {
+          <p id="contact-name-error" class="field__error">
+            <lucide-icon [img]="errorIcon" size="16" aria-hidden="true" />
+            @if (form.controls.name.errors?.['required']) {
               El nombre es obligatorio
             }
-            @if (form.get('name')?.errors?.['minlength']) {
+            @if (form.controls.name.errors?.['minlength']) {
               El nombre debe tener al menos 2 caracteres
             }
           </p>
         }
       </div>
 
-      <!-- Email -->
-      <div class="space-y-2">
-        <label for="contact-email" class="contact-label">Email</label>
-
+      <div class="field">
+        <label for="contact-email" class="field__label">Email</label>
         <input
-          id="contact-email"
           type="email"
-          formControlName="email"
           autocomplete="email"
           inputmode="email"
-          required
           maxlength="150"
+          id="contact-email"
+          formControlName="email"
+          required
+          [readOnly]="loading()"
           [attr.aria-invalid]="
-            form.get('email')?.touched && form.get('email')?.invalid ? 'true' : 'false'
+            form.controls.email.touched && form.controls.email.invalid ? 'true' : 'false'
           "
           [attr.aria-describedby]="
-            form.get('email')?.touched && form.get('email')?.invalid ? 'contact-email-error' : null
+            form.controls.email.touched && form.controls.email.invalid
+              ? 'contact-email-error'
+              : null
           "
-          class="contact-input w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
-          [ngClass]="{
-            'border-gray-300 focus:ring-(--color-accent)':
-              !form.get('email')?.touched || !form.get('email')?.invalid,
-            'border-rose-500 focus:ring-rose-500':
-              form.get('email')?.touched && form.get('email')?.invalid,
-          }"
+          class="field__control"
         />
 
-        @if (form.get('email')?.touched && form.get('email')?.invalid) {
-          <p id="contact-email-error" class="text-sm text-rose-800 error-animate">
-            @if (form.get('email')?.errors?.['required']) {
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <p id="contact-email-error" class="field__error">
+            <lucide-icon [img]="errorIcon" size="16" aria-hidden="true" />
+            @if (form.controls.email.errors?.['required']) {
               El email es obligatorio
             }
-            @if (form.get('email')?.errors?.['email']) {
+            @if (form.controls.email.errors?.['email']) {
               Ingresá un email válido
             }
           </p>
         }
       </div>
 
-      <!-- Mensaje -->
-      <div class="space-y-2">
-        <label for="contact-message" class="contact-label">Mensaje</label>
-
+      <div class="field">
+        <label for="contact-message" class="field__label">Mensaje</label>
         <textarea
-          id="contact-message"
           rows="5"
-          formControlName="message"
           autocomplete="off"
-          required
           maxlength="2000"
+          id="contact-message"
+          formControlName="message"
+          required
+          [readOnly]="loading()"
           [attr.aria-invalid]="
-            form.get('message')?.touched && form.get('message')?.invalid ? 'true' : 'false'
+            form.controls.message.touched && form.controls.message.invalid ? 'true' : 'false'
           "
           [attr.aria-describedby]="
-            form.get('message')?.touched && form.get('message')?.invalid
+            form.controls.message.touched && form.controls.message.invalid
               ? 'contact-message-error'
               : null
           "
-          class="contact-input contact-input--textarea w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
-          [ngClass]="{
-            'border-gray-300 focus:ring-(--color-accent)':
-              !form.get('message')?.touched || !form.get('message')?.invalid,
-            'border-rose-500 focus:ring-rose-500':
-              form.get('message')?.touched && form.get('message')?.invalid,
-          }"
+          class="field__control"
         ></textarea>
 
-        @if (form.get('message')?.touched && form.get('message')?.invalid) {
-          <p id="contact-message-error" class="text-sm text-rose-800 error-animate">
-            @if (form.get('message')?.errors?.['required']) {
+        @if (form.controls.message.touched && form.controls.message.invalid) {
+          <p id="contact-message-error" class="field__error">
+            <lucide-icon [img]="errorIcon" size="16" aria-hidden="true" />
+            @if (form.controls.message.errors?.['required']) {
               El mensaje es obligatorio
             }
-            @if (form.get('message')?.errors?.['minlength']) {
+            @if (form.controls.message.errors?.['minlength']) {
               El mensaje debe tener al menos 10 caracteres
             }
           </p>
         }
       </div>
 
-      <!-- Botón -->
       <button
         type="submit"
-        [disabled]="loading() || form.invalid"
-        [attr.aria-disabled]="loading() || form.invalid"
-        class="contact-submit inline-flex items-center gap-3 px-6 py-3 bg-(--color-accent) text-white rounded-md disabled:opacity-50 transition-all duration-200"
+        class="btn btn--primary contact-submit"
+        [attr.aria-disabled]="loading() ? 'true' : null"
+        [attr.aria-busy]="loading() ? 'true' : null"
       >
-        @if (loading()) {
-          <span
-            class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
-          ></span>
-        }
-
-        Enviar mensaje
+        <span class="btn__slot" aria-hidden="true">
+          @if (loading()) {
+            <span class="btn__spinner"></span>
+          }
+        </span>
+        <span class="btn__label">
+          <span [attr.data-idle]="!loading()" [attr.aria-hidden]="loading() ? 'true' : null"
+            >Enviar mensaje</span
+          >
+          <span [attr.data-idle]="loading()" [attr.aria-hidden]="loading() ? null : 'true'"
+            >Enviando…</span
+          >
+        </span>
       </button>
 
-      <div class="space-y-2" aria-live="polite">
-        @if (loading()) {
-          <p class="text-sm opacity-70">Enviando mensaje...</p>
+      <div class="contact-status">
+        <div role="status">
+          @if (loading()) {
+            <p class="contact-progress">Enviando mensaje…</p>
+          }
+        </div>
+
+        <!-- Queda en contexto; el anuncio lo hace el aviso global, una sola vez. -->
+        @if (submitSucceeded() && !loading()) {
+          <p class="feedback feedback--success">Mensaje enviado. Te respondo a la brevedad.</p>
         }
 
         @if (submitError()) {
-          <p class="text-sm text-rose-800 error-animate" role="alert">{{ submitError() }}</p>
-        } @else if (submitSucceeded()) {
-          <p class="text-sm text-emerald-700/90">Mensaje enviado. Te respondo a la brevedad.</p>
+          <p class="feedback feedback--danger" role="alert">{{ submitError() }}</p>
         }
       </div>
     </form>

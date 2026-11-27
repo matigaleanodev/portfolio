@@ -35,6 +35,7 @@ const SUBSCRIPTION_MESSAGES = {
 } as const;
 
 @Component({
+  host: { class: 'legacy-light' },
   selector: 'app-blog-list-page',
   imports: [RouterLink, DatePipe, ReactiveFormsModule],
   templateUrl: './blog-list.page.html',

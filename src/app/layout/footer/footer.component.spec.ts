@@ -36,6 +36,13 @@ describe('FooterComponent', () => {
     vi.restoreAllMocks();
   });
 
+  it('usa el mismo cargo que la presentación', () => {
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Desarrollador full stack');
+    expect(fixture.nativeElement.textContent).not.toContain('Fullstack Product Developer');
+  });
+
   it('debería crearse', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
@@ -45,13 +52,13 @@ describe('FooterComponent', () => {
     const el = fixture.nativeElement as HTMLElement;
 
     const github = el.querySelector(
-      'a[aria-label="GitHub de Matias Galeano"]',
+      'a[aria-label="GitHub de Matias Galeano (abre en una pestaña nueva)"]',
     ) as HTMLAnchorElement;
     const linkedin = el.querySelector(
-      'a[aria-label="LinkedIn de Matias Galeano"]',
+      'a[aria-label="LinkedIn de Matias Galeano (abre en una pestaña nueva)"]',
     ) as HTMLAnchorElement;
     const notion = el.querySelector(
-      'a[aria-label="Notion de Matias Galeano"]',
+      'a[aria-label="Notion de Matias Galeano (abre en una pestaña nueva)"]',
     ) as HTMLAnchorElement;
 
     expect(github).toBeTruthy();
