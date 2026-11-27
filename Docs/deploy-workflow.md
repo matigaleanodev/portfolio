@@ -126,7 +126,7 @@ git push origin refs/tags/vX.Y.Z
 gh release create vX.Y.Z --verify-tag --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest
 ```
 
-If validation fails, the tag is not created.
+If validation fails, the tag is not created. Before creating it, check that `package.json` at that revision declares version `X.Y.Z` and that `vX.Y.Z` exists neither locally nor on `origin`. Run the commands one at a time and stop on any error.
 
 `release.yml` only acts when a PR whose branch starts with `release/v` is merged into `main`, and it publishes the tag and release at that moment, without waiting for the deployment. This flow does not use it: do not open a PR into `main` from a `release/` branch. Firebase deployment and `dev` synchronization run independently on the `main` push.
 
@@ -159,6 +159,7 @@ npm ci --prefix tools/firebase-cli --ignore-scripts
 npm run build:content
 npm run format:check && npm run lint && npm run typecheck && npm test -- --watch=false
 npm run build
+npx playwright install --with-deps chromium
 PORTFOLIO_E2E_BUILD=true npm run test:e2e
 ```
 
