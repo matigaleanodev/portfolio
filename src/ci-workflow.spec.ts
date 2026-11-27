@@ -27,6 +27,12 @@ describe('workflow de validación', () => {
     expect(workflow).toContain('npm run test:e2e -- --project=chromium');
   });
 
+  it('entrega al navegador los catálogos regenerados por el build', () => {
+    expect(workflow).toContain(
+      '            src/assets/blog\n            src/assets/projects.json\n',
+    );
+  });
+
   it('expone un único check que exige todos los demás', () => {
     expect(workflow).toContain('needs: [quality, build, browser]');
     expect(workflow).toContain('[[ "$RESULTS" == "success success success" ]]');
