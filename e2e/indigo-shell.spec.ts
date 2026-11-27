@@ -154,3 +154,16 @@ for (const width of [390, 1440]) {
     expect(new Set(seen).size).toBe(total);
   });
 }
+
+test('los mensajes del chat conservan los saltos de línea', async ({ page }) => {
+  await page.route('**/api/chat', (route) =>
+    route.fulfill({ json: { answer: 'Uno\n\nDos', source: 'faq', suggestedQuestions: [] } }),
+  );
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Abrir chatbot asistente' }).click();
+  await page.locator('#chat-input').fill('Hola');
+  await page.getByRole('button', { name: 'Enviar', exact: true }).click();
+  const text = page.locator('.chat-bubble__text').last();
+  await expect(text).toContainText('Dos');
+  expect(await text.evaluate((el: HTMLElement) => el.innerText)).toBe('Uno\n\nDos');
+});

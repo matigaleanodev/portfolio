@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
 import { inject, Injectable, makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
-import { defer, from, of, tap } from 'rxjs';
+import { defer, from, of, shareReplay, tap } from 'rxjs';
 import { Project } from '../models/project.model';
 
 const PROJECTS_KEY = makeStateKey<Project[]>('projects');
@@ -15,6 +15,11 @@ export class ProjectContentService {
 
   private readonly transferState = inject(TransferState);
 
+  // El destacado y la lista comparten la carga; tras un error se vuelve a pedir.
+  private readonly request$ = this.http
+    .get<Project[]>('/assets/projects.json')
+    .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+
   getProjects() {
     if (isPlatformServer(this.platformId)) {
       return defer(() => from(this.readProjectsFile())).pipe(
@@ -26,7 +31,7 @@ export class ProjectContentService {
     const transferred = this.transferState.get(PROJECTS_KEY, null);
     if (transferred) return of(transferred);
 
-    return this.http.get<Project[]>('/assets/projects.json');
+    return this.request$;
   }
 
   private async readProjectsFile(): Promise<Project[]> {

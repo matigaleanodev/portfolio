@@ -64,6 +64,30 @@ describe('ToastService', () => {
     expect(service.state().showing).toBe(false);
   });
 
+  it('reemplazar el mensaje conserva la pausa hasta que se libere', () => {
+    service.show('hola');
+    service.pause();
+
+    service.show('chau');
+    vi.advanceTimersByTime(20000);
+    expect(service.state().showing).toBe(true);
+
+    service.resume();
+    vi.advanceTimersByTime(5000);
+    expect(service.state().showing).toBe(false);
+  });
+
+  it('hide libera la pausa para la confirmación siguiente', () => {
+    service.show('hola');
+    service.pause();
+    service.hide();
+
+    service.show('chau');
+    vi.advanceTimersByTime(5000);
+
+    expect(service.state().showing).toBe(false);
+  });
+
   it('hide debería poner showing=false y luego visible=false a los 300ms', () => {
     service.show('hola');
 

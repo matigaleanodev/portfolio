@@ -11,6 +11,7 @@ const EXIT_MS = 300;
 export class ToastService {
   private autoHideTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private hideAnimationTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private held = false;
 
   private readonly _state = signal<ToastState>({ message: '', visible: false, showing: false });
 
@@ -24,22 +25,25 @@ export class ToastService {
       this._state.update((s) => ({ ...s, showing: true }));
     });
 
-    this.scheduleHide();
+    // Un mensaje nuevo no vence mientras el puntero o el foco sigan en el aviso.
+    if (!this.held) this.scheduleHide();
   }
 
   pause() {
-    if (this.autoHideTimeoutId) clearTimeout(this.autoHideTimeoutId);
-    this.autoHideTimeoutId = null;
+    this.held = true;
+    this.stopAutoHide();
   }
 
   resume() {
+    this.held = false;
     if (!this._state().showing) return;
 
-    this.pause();
+    this.stopAutoHide();
     this.scheduleHide();
   }
 
   hide() {
+    this.held = false;
     this.clearTimers();
     this._state.update((s) => ({ ...s, showing: false }));
 
@@ -53,8 +57,13 @@ export class ToastService {
     this.autoHideTimeoutId = setTimeout(() => this.hide(), VISIBLE_MS);
   }
 
+  private stopAutoHide() {
+    if (this.autoHideTimeoutId) clearTimeout(this.autoHideTimeoutId);
+    this.autoHideTimeoutId = null;
+  }
+
   private clearTimers() {
-    this.pause();
+    this.stopAutoHide();
     if (this.hideAnimationTimeoutId) clearTimeout(this.hideAnimationTimeoutId);
     this.hideAnimationTimeoutId = null;
   }

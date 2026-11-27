@@ -34,4 +34,29 @@ describe('ProjectContentService: estado transferido', () => {
 
     expect(await result).toEqual([]);
   });
+
+  it('comparte una sola carga entre el destacado y la lista', () => {
+    const service = TestBed.inject(ProjectContentService);
+    const received: Project[][] = [];
+
+    service.getProjects().subscribe((value) => received.push(value));
+    service.getProjects().subscribe((value) => received.push(value));
+    TestBed.inject(HttpTestingController).expectOne('/assets/projects.json').flush([]);
+
+    expect(received).toHaveLength(2);
+  });
+
+  it('tras un error informa a ambos y vuelve a pedir el JSON', () => {
+    const service = TestBed.inject(ProjectContentService);
+    const http = TestBed.inject(HttpTestingController);
+    let errors = 0;
+
+    service.getProjects().subscribe({ error: () => errors++ });
+    service.getProjects().subscribe({ error: () => errors++ });
+    http.expectOne('/assets/projects.json').flush('', { status: 500, statusText: 'Error' });
+    service.getProjects().subscribe();
+
+    expect(errors).toBe(2);
+    http.expectOne('/assets/projects.json');
+  });
 });
