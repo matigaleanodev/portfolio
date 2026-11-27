@@ -6,15 +6,42 @@
 
     <script>
       (() => {
-        const isLegacyUnsubscribe = (url) =>
-          /^\/blog\/unsubscribe(?:\.html|\/(?:index(?:\.html)?)?)?$/.test(url.pathname) &&
-          url.searchParams.has('email');
+        // Quita `email` de la consulta, del fragmento y de la ruta; devuelve el valor retirado.
+        const takeEmail = (url) => {
+          let email;
+          // En el fragmento exige un valor: `#email` puede ser un ancla.
+          const strip = (params, requireValue) => {
+            let found = false;
+            for (const [key, value] of [...params]) {
+              if (key.toLowerCase() !== 'email' || (requireValue && !value)) continue;
+              email ??= value;
+              params.delete(key);
+              found = true;
+            }
+            return found;
+          };
+          strip(url.searchParams, false);
+          const fragment = new URLSearchParams(url.hash.slice(1));
+          if (strip(fragment, true)) url.hash = fragment.toString();
+          url.pathname = url.pathname.replace(/;email=([^/;]*)/gi, (_, value) => {
+            try {
+              email ??= decodeURIComponent(value);
+            } catch {
+              // Mal codificada: se retira igual, sin precompletar.
+              email ??= '';
+            }
+            return '';
+          });
+          return email;
+        };
 
         const url = new URL(location.href);
-        if (isLegacyUnsubscribe(url)) {
-          // Hand the prefill to Angular once, without putting it in storage or history state.
-          document.portfolioUnsubscribeEmail = url.searchParams.get('email');
-          url.searchParams.delete('email');
+        const email = takeEmail(url);
+        if (email !== undefined) {
+          if (/^\/+blog\/unsubscribe(?:\.html|\/(?:index(?:\.html)?)?)?$/.test(url.pathname)) {
+            // Hand the prefill to Angular once, without putting it in storage or history state.
+            document.portfolioUnsubscribeEmail = email;
+          }
           try {
             history.replaceState(history.state, '', url.href);
           } catch {
@@ -22,7 +49,7 @@
           }
           return;
         }
-        if (document.referrer && isLegacyUnsubscribe(new URL(document.referrer))) {
+        if (document.referrer && takeEmail(new URL(document.referrer)) !== undefined) {
           return;
         }
 
