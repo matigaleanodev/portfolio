@@ -114,19 +114,9 @@ El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
 
 ## Releases versionadas
 
-La versión del paquete y las notas en ambos idiomas (`Docs/releases/vX.Y.Z.es.md` y `Docs/releases/vX.Y.Z.md`) se preparan en una rama `release/vX.Y.Z` con un PR hacia `dev`. La promoción es un pull request de `dev` a `main`, sin auto-merge, integrado con **merge commit**.
+La versión del paquete y las notas en ambos idiomas (`Docs/releases/vX.Y.Z.es.md` y `Docs/releases/vX.Y.Z.md`) se preparan en una rama `release/vX.Y.Z` con un PR hacia `dev`. La promoción es un pull request de `dev` a `main` (ver [integración de pull requests](#integración-de-pull-requests)).
 
-El tag y la release de GitHub se crean después de validar producción, sobre la revisión validada: la que informa `gitSha` en `publication-state.json`, normalmente el merge commit de la promoción. Con el árbol de trabajo limpio, las notas se leen de esa misma revisión:
-
-```bash
-git fetch origin
-git switch --detach <sha-validado>
-git tag -a vX.Y.Z <sha-validado> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
-git push origin refs/tags/vX.Y.Z
-gh release create vX.Y.Z --verify-tag --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest
-```
-
-Si la validación falla, no se crea el tag. Antes de crearlo, comprobar que `package.json` en esa revisión declare la versión `X.Y.Z` y que `vX.Y.Z` no exista en el repositorio local ni en `origin`. Ejecutar los comandos de a uno y detenerse ante cualquier error.
+El tag y la release de GitHub se crean después de validar producción, desde la web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, título `Portfolio vX.Y.Z`, las notas de `Docs/releases/vX.Y.Z.es.md` y **Set as the latest release**. En **Target** se elige `main`, que debe seguir en la revisión validada: la que informa `gitSha` en `publication-state.json`. Si `main` avanzó, validar la revisión nueva antes de crear el tag. Antes de publicar, comprobar que `package.json` en esa revisión declare la versión `X.Y.Z` y que el tag no exista. Si la validación falla, no se crea.
 
 `release.yml` solo actúa cuando se integra en `main` un PR cuya rama empieza con `release/v`, y publica el tag y la release en ese momento, sin esperar el deploy. Este flujo no lo usa: no abrir hacia `main` un PR desde una rama `release/`. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.
 
@@ -145,7 +135,7 @@ El generador del conocimiento del chat resuelve los enlaces de proyectos contra 
 | `browser` | sobre ese mismo build: HTML prerenderizado sin JavaScript, contrato de Hosting y Playwright Chromium |
 | `verify`  | exige que los tres anteriores terminen bien                                                          |
 
-El check obligatorio en las reglas de `dev` y `main` es `verify`; el repositorio no lo configura solo. Ver [integración de pull requests](#integración-de-pull-requests).
+Las reglas de `dev` y `main` exigen `verify` y el check `CodeRabbit`; se configuran en GitHub, no en el repositorio. Ver [integración de pull requests](#integración-de-pull-requests).
 
 El build y los tests unitarios cargan `e2e/support/offline-build.cjs`, que rechaza conexiones no locales y responde la hoja de Google Fonts con `e2e/fixtures/google-fonts.css`; si cambian las fuentes hay que actualizar esa copia. Las pruebas de navegador usan el emulador de Firebase Hosting con el proyecto `demo-portfolio`, interceptan la API y no resuelven nombres externos.
 
@@ -167,27 +157,31 @@ PORTFOLIO_E2E_BUILD=true npm run test:e2e
 
 ## Integración de pull requests
 
-`dev` y `main` reciben cambios solo por pull request, con el botón de merge de GitHub. Configuración requerida del repositorio, igual para las dos ramas:
+Para integrar un pull request: revisarlo, comprobar que GitHub habilita **Merge pull request** y pulsarlo. No hacen falta comandos ni ejecutar workflows.
 
-- `verify` aprobado sobre una rama actualizada respecto del destino.
+Reglas de `dev` y `main`, sin bypass para nadie:
+
+- Solo pull requests: sin push directo, force push ni borrado.
+- `verify` (GitHub Actions) y `CodeRabbit` aprobados sobre una rama actualizada respecto del destino.
 - Conversaciones de revisión resueltas. No se exige aprobación de otra persona.
-- Sin push directo, force push ni borrado, tampoco para el propietario.
-- Solo el propietario integra: una regla de actualización restringida con exención para su cuenta.
-- Auto-merge disponible; se activa a mano en cada pull request.
+- Único método de integración: merge commit.
 
-Las ramas de trabajo se integran con merge commit, squash o rebase. Las promociones de `dev` a `main` usan merge commit.
+El auto-merge es el nativo de GitHub y es opcional: se activa en cada pull request con **Enable auto-merge** y GitHub integra cuando se cumplen todas las reglas. Hacia `main` solo se activa con autorización expresa del propietario; GitHub no impone esa restricción. Integra el head que exista en ese momento, incluidos commits agregados después de activarlo.
 
-El auto-merge integra el head que exista cuando se cumplan las condiciones, incluidos commits agregados después de activarlo. Para integrar exactamente la revisión mirada:
+Casos que requieren una acción adicional:
 
-```bash
-gh pr merge <numero> --merge --match-head-commit <sha-revisado>
-```
+- Rama atrasada: **Update branch**. El auto-merge no actualiza la rama; si el destino avanza mientras espera, hay que pulsarlo.
+- Check `CodeRabbit` ausente o cancelado: comentar `@coderabbitai review` en el pull request.
+
+El check `CodeRabbit` indica que su revisión terminó, no que aprobó. También pasa cuando la omite y, con la configuración predeterminada, cuando falla o alcanza su límite de uso. Sus observaciones bloquean mientras sus conversaciones sigan sin resolver.
+
+Integrar en `main` despliega automáticamente: ver [pipeline actual](#pipeline-actual).
 
 ### Sincronización de `main` hacia `dev`
 
-Después de cada push a `main`, `sync-dev.yml` abre un pull request desde `fix/sync-main-<sha>` hacia `dev` si `dev` no contiene esa revisión. No integra nada. Usa `DEV_SYNC_PAT`, que necesita escritura de contenido y de pull requests.
+Después de cada push a `main`, `sync-dev.yml` abre un pull request desde `fix/sync-main-<sha>` hacia `dev` si `dev` no contiene esa revisión. No integra nada. Usa `DEV_SYNC_PAT`, que necesita escritura de contenido y de pull requests: con `GITHUB_TOKEN` el pull request no dispararía la CI.
 
-Ese pull request se integra con **merge commit**: squash o rebase no conservan la ascendencia. Si está atrasado o tiene conflictos, **Update branch** o **Resolve conflicts** actualizan la rama de sincronización. Mientras `dev` no contenga `main`, un pull request de `dev` a `main` queda desactualizado y no se puede integrar.
+Ese pull request se integra con el mismo botón. Si está atrasado o tiene conflictos, **Update branch** o **Resolve conflicts** actualizan la rama de sincronización. Mientras `dev` no contenga `main`, un pull request de `dev` a `main` queda desactualizado y no se puede integrar.
 
 ## Revisión vigente, reintentos y rollback
 
