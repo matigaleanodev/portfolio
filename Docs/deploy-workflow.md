@@ -116,11 +116,12 @@ The deploy workflow now expects these GitHub secrets or variables in `portfolio`
 
 The package version and paired release notes (`Docs/releases/vX.Y.Z.es.md` and `Docs/releases/vX.Y.Z.md`) are prepared on a `release/vX.Y.Z` branch with a PR into `dev`. Promotion is a pull request from `dev` to `main`, without auto-merge, integrated with a **merge commit**.
 
-The tag and the GitHub release are created after production has been validated. From a checkout that contains the notes, on the promotion merge commit:
+The tag and the GitHub release are created after production has been validated, on the validated revision: the one reported as `gitSha` in `publication-state.json`, normally the promotion merge commit. With a clean working tree, the notes are read from that same revision:
 
 ```bash
 git fetch origin
-git tag -a vX.Y.Z <merge-sha> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
+git switch --detach <validated-sha>
+git tag -a vX.Y.Z <validated-sha> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
 git push origin refs/tags/vX.Y.Z
 gh release create vX.Y.Z --verify-tag --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest
 ```

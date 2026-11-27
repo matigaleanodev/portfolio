@@ -116,11 +116,12 @@ El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
 
 La versión del paquete y las notas en ambos idiomas (`Docs/releases/vX.Y.Z.es.md` y `Docs/releases/vX.Y.Z.md`) se preparan en una rama `release/vX.Y.Z` con un PR hacia `dev`. La promoción es un pull request de `dev` a `main`, sin auto-merge, integrado con **merge commit**.
 
-El tag y la release de GitHub se crean después de validar producción. Desde un checkout que contenga las notas, sobre el merge commit de la promoción:
+El tag y la release de GitHub se crean después de validar producción, sobre la revisión validada: la que informa `gitSha` en `publication-state.json`, normalmente el merge commit de la promoción. Con el árbol de trabajo limpio, las notas se leen de esa misma revisión:
 
 ```bash
 git fetch origin
-git tag -a vX.Y.Z <sha-del-merge> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
+git switch --detach <sha-validado>
+git tag -a vX.Y.Z <sha-validado> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
 git push origin refs/tags/vX.Y.Z
 gh release create vX.Y.Z --verify-tag --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest
 ```
