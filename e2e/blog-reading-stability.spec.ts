@@ -234,7 +234,10 @@ test('error de JSON en navegación de cliente muestra el error', async ({ page }
   await page.goto('/blog');
   await page.waitForLoadState('networkidle');
   await page.locator(`.blog-card__link[href="/blog/${first}"]`).click();
-  await expect(page.getByText('No se pudo cargar el post.')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('No pudimos cargar el artículo');
+  await expect(
+    page.locator('#main-content').getByRole('link', { name: 'Volver al blog' }),
+  ).toBeVisible();
   await expect(page.locator('.blog-post__content')).toHaveCount(0);
 });
 

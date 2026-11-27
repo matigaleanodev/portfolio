@@ -37,9 +37,9 @@ test('en el blog con tema oscuro la selección sigue legible', async ({ page }) 
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/blog');
   const background = await page
-    .locator('.legacy-light h1')
+    .locator('.blog-page h1')
     .evaluate((el) => getComputedStyle(el, '::selection').backgroundColor);
-  expect(background).toBe('rgb(228, 229, 241)');
+  expect(background).toBe('rgb(46, 49, 82)');
 });
 
 test('con poca altura y 320px el campo del chat ocupa todo el ancho', async ({ page }) => {
