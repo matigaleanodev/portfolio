@@ -107,6 +107,7 @@
       <div
         id="chat-suggestions"
         class="chat-suggestions"
+        [class.chat-suggestions--full]="suggestionView() === 'questions'"
         role="group"
         aria-label="Preguntas sugeridas"
         [attr.aria-busy]="loadingStarters() && !hasConversation()"
@@ -122,13 +123,12 @@
                 type="button"
                 class="btn btn--suggestion chat-chip"
                 (click)="useSuggestion(item.question)"
-                [attr.title]="item.question"
                 [attr.aria-label]="
                   item.label === item.question ? item.question : item.label + '. ' + item.question
                 "
                 [disabled]="sending()"
               >
-                <span>{{ item.label }}</span>
+                <span>{{ suggestionView() === 'questions' ? item.question : item.label }}</span>
               </button>
             }
           }
@@ -155,6 +155,17 @@
 
           <div class="chat-composer__actions">
             <div id="chat-counter" class="chat-counter">{{ draft().trim().length }}/500</div>
+            @if (suggestionsExpanded() && visibleSuggestions().length) {
+              <button
+                type="button"
+                class="btn btn--text chat-disclosure"
+                aria-controls="chat-suggestions"
+                [attr.aria-pressed]="suggestionView() === 'questions'"
+                (click)="toggleFullQuestions()"
+              >
+                Preguntas completas
+              </button>
+            }
             <button
               type="submit"
               [disabled]="!sending() && !canSend()"

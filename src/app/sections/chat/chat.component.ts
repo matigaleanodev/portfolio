@@ -61,7 +61,8 @@ export class ChatComponent {
   private readonly messagesStorageKey = 'portfolio-chat-messages';
 
   protected readonly disclosureIcon = ChevronDown;
-  protected readonly suggestionsExpanded = signal(false);
+  protected readonly suggestionView = signal<'closed' | 'labels' | 'questions'>('closed');
+  protected readonly suggestionsExpanded = computed(() => this.suggestionView() !== 'closed');
   protected readonly messagesViewport = viewChild<ElementRef<HTMLDivElement>>('messagesViewport');
   readonly modalChange = output<boolean>();
 
@@ -146,7 +147,9 @@ export class ChatComponent {
   protected openChat() {
     if (this.isOpen()) return;
 
-    this.suggestionsExpanded.set(!this.hasConversation() && window.innerHeight >= 600);
+    this.suggestionView.set(
+      !this.hasConversation() && window.innerHeight >= 600 ? 'labels' : 'closed',
+    );
     this.isOpen.set(true);
     this.shouldAutoScroll = true;
     this.lastOpenTimestamp = Date.now();
@@ -174,7 +177,11 @@ export class ChatComponent {
   }
 
   protected toggleSuggestions() {
-    this.suggestionsExpanded.update((expanded) => !expanded);
+    this.suggestionView.set(this.suggestionsExpanded() ? 'closed' : 'labels');
+  }
+
+  protected toggleFullQuestions() {
+    this.suggestionView.update((view) => (view === 'questions' ? 'labels' : 'questions'));
   }
 
   protected updateDraft(value: string) {
@@ -253,7 +260,7 @@ export class ChatComponent {
       via: this.draft().trim() ? 'manual' : 'suggestion',
     });
     this.appendMessage({ role: 'user', text: message });
-    this.suggestionsExpanded.set(false);
+    this.suggestionView.set('closed');
     this.draft.set('');
     this.apiError.set(null);
     this.sending.set(true);

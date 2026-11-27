@@ -82,7 +82,7 @@
 }
 .chat-messages {
   display: grid;
-  min-height: 0;
+  min-height: 5rem;
   flex: 1 1 0;
   align-content: start;
   justify-items: start;
@@ -180,6 +180,24 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.chat-suggestions--full {
+  display: grid;
+  max-height: min(8rem, 30dvh);
+  overflow-y: auto;
+  padding: var(--space-1);
+}
+.chat-suggestions--full .chat-chip {
+  max-width: 100%;
+  justify-content: flex-start;
+}
+.chat-suggestions--full .chat-chip span {
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.chat-disclosure[aria-pressed='true'] {
+  background: var(--color-accent-subtle);
 }
 .chat-chip--loading {
   width: 8rem;

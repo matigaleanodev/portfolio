@@ -420,12 +420,12 @@ describe('ChatComponent', () => {
       const { el } = mount(true);
       await open(el);
       const first = el.querySelector<HTMLElement>('.chat-disclosure')!;
-      const input = el.querySelector<HTMLTextAreaElement>('#chat-input')!;
-      input.focus();
+      const last = el.querySelector<HTMLButtonElement>('button[aria-pressed]')!;
+      last.focus();
       expect(press('Tab').defaultPrevented).toBe(true);
       expect(document.activeElement).toBe(first);
       expect(press('Tab', true).defaultPrevented).toBe(true);
-      expect(document.activeElement).toBe(input);
+      expect(document.activeElement).toBe(last);
     });
 
     it('en modo no modal no intercepta Tab', async () => {
