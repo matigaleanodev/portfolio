@@ -249,7 +249,7 @@ El estado se resuelve por capas:
 - Señales además del color: subrayado, o borde interior de 1px en variantes sólo con icono (hover), anillo (foco), desplazamiento de 1px (active), borde discontinuo (disabled), spinner y texto (loading), check y borde interior (selected). Con movimiento reducido, el desplazamiento de active se reemplaza por un borde interior de 3px en `currentColor` (4px en `accent` si además está seleccionado).
 - Foco: anillo sólido de 3px, separación 4px (2px en barras de código), token `focus` (`code-focus` sobre código). Nunca `outline: none` sin este anillo.
 - Transiciones: fondo, color y borde 150ms `cubic-bezier(0.2, 0, 0, 1)`; transform 100ms; el anillo aparece al instante.
-- Tamaños: alto mínimo 48px en principal y secundario, 44px en el resto, 56px el lanzador; relleno horizontal 16–24px; separación 8px; rótulo con estilo `button-label`.
+- Tamaños: alto mínimo 48px en principal y secundario, 44px en el resto, 56px el lanzador; relleno horizontal 16–24px; separación 8px; rótulo con estilo `button-label`. Excepción, sólo icono: icono de 20×20px, borde de 1px y relleno de 11px por lado, para un total de 44×44px.
 - Colores forzados: apoyarse en los colores del sistema. Las sombras desaparecen, así que los indicadores interiores de botones (hover, active, selected) DEBEN redibujarse con el borde de un pseudo-elemento interior en `ButtonText` o `Highlight`, sin cambiar dimensiones ni competir con el contorno de foco; disabled usa `GrayText`. Los campos no admiten pseudo-elementos: ver Campos.
 
 #### Principal

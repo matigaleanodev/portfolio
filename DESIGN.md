@@ -495,7 +495,7 @@ State is resolved in layers:
 - Non-color cues: underline, or a 1px inset border on icon-only variants (hover), ring (focus), 1px offset (active), dashed border (disabled), spinner and text (loading), check and inset border (selected). With reduced motion the active offset is replaced by a 3px inset border in `currentColor` (4px in `accent` when also selected).
 - Focus: 3px solid ring, offset 4px (2px inside code toolbars), `focus` token (`code-focus` on code). Never `outline: none` without this ring.
 - Transitions: background, color and border 150ms `cubic-bezier(0.2, 0, 0, 1)`; transform 100ms; the focus ring appears instantly.
-- Sizes: minimum height 48px for primary and secondary, 44px for the rest, 56px launcher; horizontal padding 16–24px; gap 8px; label style `button-label`.
+- Sizes: minimum height 48px for primary and secondary, 44px for the rest, 56px launcher; horizontal padding 16–24px; gap 8px; label style `button-label`. Exception, icon only: 20×20px icon, 1px border and 11px padding on every side, for a final 44×44px.
 - Forced colors: rely on system colors. Shadows disappear, so button inset indicators (hover, active, selected) MUST be redrawn with an inner pseudo-element border in `ButtonText` or `Highlight`, without changing dimensions or competing with the focus outline; disabled uses `GrayText`. Fields take no pseudo-elements: see Fields.
 
 #### Primary
