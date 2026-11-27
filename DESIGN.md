@@ -1,6 +1,6 @@
 ---
 name: Índigo de taller
-revision: 3
+revision: 4
 description: Visual system of matiasgaleano.dev, light and dark.
 colors:
   light-canvas: '#F3F4F7'
@@ -248,7 +248,7 @@ components:
 
 [Español](DESIGN.es.md)
 
-Revision 3. This repository is the source of the visual decisions of the ecosystem; other repositories adapt a numbered revision and do not redefine it. Any change to a token or a mandatory rule increases the revision. The token front matter lives in this file.
+Revision 4. This repository is the source of the visual decisions of the ecosystem; other repositories adapt a numbered revision and do not redefine it. Any change to a token or a mandatory rule increases the revision. The token front matter lives in this file.
 
 **MUST** rules are acceptance criteria. **SHOULD** rules are recommendations that may be deviated from with a recorded reason. Values marked _derived_ complete the base palette and identity; see Value origin.
 
@@ -437,7 +437,7 @@ IBM Plex Sans (400, 500, 600) with `Segoe UI`, Arial fallback; IBM Plex Mono (40
 - Spacing scale: 4, 8, 12, 16, 24, 32, 40, 48, 64, 80px. MUST use scale values for gaps and padding.
 - Containers (`box-sizing: border-box`, centered): page `75rem`, form `48rem`, article text `50rem`, article wide `60rem`. Inline padding 24px; 16px on articles below 640px. Container maximums include the padding except for the article columns.
 - Breakpoints: 640px, 960px (768px for the chat panel and project grid). Mobile first.
-- Section rhythm: 48px below 768px, 80px from 768px. Inside a block: 8–16px; between blocks: 24–32px. Exception, home page: from the presentation to the projects the spacing is tighter (see Pages: home and projects).
+- Section rhythm: 48px below 768px, 80px from 768px. Inside a block: 8–16px; between blocks: 24–32px. The Projects section uses 32px vertical padding on mobile, 48px on tablet and 64px on desktop.
 - MUST reflow at 320px with no page-level horizontal scroll; only code, tables and diagrams scroll, inside a focusable region.
 - DOM order MUST match visual order.
 - Full-height views SHOULD use `dvh` and safe-area insets.
@@ -479,9 +479,9 @@ State is resolved in layers:
 | Disabled + Focus-visible  | Native `disabled` is not focusable. If a control must stay discoverable, use `aria-disabled="true"` with a described reason; it shows Disabled plus the ring.                                                                                                                |
 | Loading + Hover / Active  | No change; repeat activation ignored.                                                                                                                                                                                                                                        |
 | Loading + Focus-visible   | Loading plus ring; the state itself does not move focus (a flow rule such as the chat’s may).                                                                                                                                                                                |
-| Selected + Hover          | `accent-subtle` background, `text` border and label underline; check stays in `accent`.                                                                                                                                                                                      |
+| Selected + Hover          | `accent-subtle` background, `text` border and label underline; the text and inset border keep `accent`.                                                                                                                                                                      |
 | Selected + Active         | Same colors as Selected, plus translateY(1px).                                                                                                                                                                                                                               |
-| Selected + Disabled       | Disabled colors; check and 2px inset border stay in `disabled-text`; `aria-pressed` or `checked` is preserved.                                                                                                                                                               |
+| Selected + Disabled       | Disabled colors; the 2px inset border uses `disabled-text`; `aria-pressed` or `checked` is preserved.                                                                                                                                                                        |
 | Selected + Loading        | n/a: the only selectable variant has no Loading.                                                                                                                                                                                                                             |
 | Selected + Focus-visible  | Selected plus outer ring; the ring sits outside the 2px inset border.                                                                                                                                                                                                        |
 
@@ -489,9 +489,9 @@ State is resolved in layers:
 
 - Semantics: actions are `<button type>`; navigation is `<a>` and is not a button variant, even when it looks like one (it follows the link rules; a link styled as primary or secondary borrows the colors of Default, Hover, Focus-visible and Active and has no Disabled, Loading or Selected). Exclusive choices are native radios in a `fieldset`; independent toggles use `aria-pressed`. `aria-expanded` is disclosure, not selection.
 - Toggle keyboard: an `aria-pressed` button activates with Enter or Space; a radio group is one Tab stop, arrows move and select, Space selects. The group has a `legend`; if the input is visually hidden, draw the ring on its segment (`input:focus-visible + label`).
-- Stable dimensions: 1px border in every variant and state (transparent when invisible); selection uses an inset shadow; the check uses a reserved 16px slot. No weight or size change between states.
+- Stable dimensions: 1px border in every variant and state (transparent when invisible); selection uses an inset border. No weight or size change between states.
 - Loading: the spinner replaces the icon in icon-only buttons and appears in the side padding of text buttons; the label may change to the progress text (such as “Enviando…”) with the width of the longest label reserved, and the accessible name matches the visible label. Progress and result are written as text (such as “Enviando…”) in a polite status region outside the button that exists before it is updated and, inside a modal, lives within the dialog. With reduced motion the spinner is static and that text MUST be visible.
-- Non-color cues: underline, or a 1px inset border on icon-only variants (hover), ring (focus), 1px offset (active), dashed border (disabled), spinner and text (loading), check and inset border (selected). With reduced motion the active offset is replaced by a 3px inset border in `currentColor` (4px in `accent` when also selected).
+- Non-color cues: underline, or a 1px inset border on icon-only variants (hover), ring (focus), 1px offset (active), dashed border (disabled), spinner and text (loading), inset border (selected). With reduced motion the active offset is replaced by a 3px inset border in `currentColor` (4px in `accent` when also selected).
 - Focus: 3px solid ring, offset 4px (2px inside code toolbars), `focus` token (`code-focus` on code). Never `outline: none` without this ring.
 - Transitions: background, color and border 150ms `cubic-bezier(0.2, 0, 0, 1)`; transform 100ms; the focus ring appears instantly.
 - Sizes: minimum height 48px for primary and secondary, 44px for the rest, 56px launcher; horizontal padding 16–24px; gap 8px; label style `button-label`. Exception, icon only: 20×20px icon, 1px border and 11px padding on every side, for a final 44×44px.
@@ -585,15 +585,15 @@ Sends a suggested chat question. Size: 44px. Focus ring: `focus`. Transitions: s
 
 Persistent choice: aria-pressed button, or native radio for exclusive groups. Size: 44px. Focus ring: `focus`. Transitions: shared.
 
-| State         | Background       | Text            | Border           | Icon            | Light bg / text / border / icon       | Dark bg / text / border / icon        | Behavior and focus                                                                                                 |
-| ------------- | ---------------- | --------------- | ---------------- | --------------- | ------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Default       | `surface`        | `text`          | `control-border` | `text`          | #FCFCFE / #1F2937 / #6B7280 / #1F2937 | #1F2937 / #EAECF2 / #7F899E / #EAECF2 | Unselected; activation selects (or toggles). Ring: adds if focused.                                                |
-| Hover         | `surface-sunken` | `text`          | `text`           | `text`          | #E8EAF0 / #1F2937 / #1F2937 / #1F2937 | #273244 / #EAECF2 / #EAECF2 / #EAECF2 | Pointer only; label underlined. Ring: adds if focused.                                                             |
-| Focus-visible | `surface`        | `text`          | `control-border` | `text`          | #FCFCFE / #1F2937 / #6B7280 / #1F2937 | #1F2937 / #EAECF2 / #7F899E / #EAECF2 | Adds the focus ring to the underlying state; no activation. Ring: `focus`.                                         |
-| Active        | `accent-subtle`  | `text`          | `accent`         | `text`          | #E4E5F1 / #1F2937 / #5B5F8F / #1F2937 | #2E3152 / #EAECF2 / #B7B8EE / #EAECF2 | Pressed; translateY(1px). Keys follow the toggle keyboard rule. Ring: adds if focused.                             |
-| Disabled      | `disabled-bg`    | `disabled-text` | `disabled-text`  | `disabled-text` | #E3E5EB / #596070 / #596070 / #596070 | #263041 / #98A2B6 / #98A2B6 / #98A2B6 | Native disabled; no activation; not-allowed cursor; dashed border. Ring: not focusable.                            |
-| Loading       | n/a              | n/a             | n/a              | n/a             | n/a                                   | n/a                                   | Selection applies synchronously on the client. A future async toggle needs this row approved first.                |
-| Selected      | `accent-subtle`  | `text`          | `accent`         | `accent`        | #E4E5F1 / #1F2937 / #5B5F8F / #5B5F8F | #2E3152 / #EAECF2 / #B7B8EE / #B7B8EE | Check icon in a reserved slot + 2px inset border in accent; aria-pressed="true" or checked. Ring: adds if focused. |
+| State         | Background       | Text            | Border           | Icon            | Light bg / text / border / icon       | Dark bg / text / border / icon        | Behavior and focus                                                                                  |
+| ------------- | ---------------- | --------------- | ---------------- | --------------- | ------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Default       | `surface`        | `text`          | `control-border` | `text`          | #FCFCFE / #1F2937 / #6B7280 / #1F2937 | #1F2937 / #EAECF2 / #7F899E / #EAECF2 | Unselected; activation selects (or toggles). Ring: adds if focused.                                 |
+| Hover         | `surface-sunken` | `text`          | `text`           | `text`          | #E8EAF0 / #1F2937 / #1F2937 / #1F2937 | #273244 / #EAECF2 / #EAECF2 / #EAECF2 | Pointer only; label underlined. Ring: adds if focused.                                              |
+| Focus-visible | `surface`        | `text`          | `control-border` | `text`          | #FCFCFE / #1F2937 / #6B7280 / #1F2937 | #1F2937 / #EAECF2 / #7F899E / #EAECF2 | Adds the focus ring to the underlying state; no activation. Ring: `focus`.                          |
+| Active        | `accent-subtle`  | `text`          | `accent`         | `text`          | #E4E5F1 / #1F2937 / #5B5F8F / #1F2937 | #2E3152 / #EAECF2 / #B7B8EE / #EAECF2 | Pressed; translateY(1px). Keys follow the toggle keyboard rule. Ring: adds if focused.              |
+| Disabled      | `disabled-bg`    | `disabled-text` | `disabled-text`  | `disabled-text` | #E3E5EB / #596070 / #596070 / #596070 | #263041 / #98A2B6 / #98A2B6 / #98A2B6 | Native disabled; no activation; not-allowed cursor; dashed border. Ring: not focusable.             |
+| Loading       | n/a              | n/a             | n/a              | n/a             | n/a                                   | n/a                                   | Selection applies synchronously on the client. A future async toggle needs this row approved first. |
+| Selected      | `accent-subtle`  | `accent`        | `accent`         | —               | #E4E5F1 / #5B5F8F / #5B5F8F / —       | #2E3152 / #B7B8EE / #B7B8EE / —       | 2px inset border in accent; aria-pressed="true" or checked. Ring: adds if focused.                  |
 
 #### Code action
 
@@ -677,12 +677,14 @@ Placeholders are examples in `text-muted`, never the label. Counters use `meta`.
 
 The page opens with the professional introduction, followed by “Proyectos” and contact.
 
-- The hero spans the viewport and uses a contrasting background in both themes. Its vertical padding is 64px on mobile and 80px from 768px. It places the name between the first short gradient rule and the professional role, with the technologies immediately below the role. “Ver proyectos” is filled and “Contactarme” is outlined. The second short gradient rule follows the actions.
+- The full-width hero uses the contrasting theme band. From 1024px, the header and hero fill the small viewport using the measured header height. The hero can grow when the content needs more room. The introduction is left aligned and vertically centered. The shield is on the right from 768px and scales to fit the available width and height. The down arrow links to Projects.
+- Two matching 1px gradient rules frame the hero. The upper rule starts at the left edge of the content container and fades right. The lower rule starts at the right edge and fades left. They are up to 480px long and shorten together on narrow screens. “Ver proyectos” is filled and “Contactarme” is outlined.
 - MUST show this text on the home page, naming Banco Comafi first and Boreal IT as the contractual channel: «Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos Comunes de Inversión.»
 - The introduction is its own section. The 1200px container aligns with the header, blog and footer and has 24px inline padding.
 - All published projects, including Modo Playa, share one grid with one column below 768px, two from 768px and three from 960px.
 - Each card displays the image, category, name, excerpt, up to three technologies in content order and a “Ver proyecto” link.
-- The project detail at `/projects/:slug` displays the key decision, usage, contribution, architecture, full stack and project links.
+- Each prerendered project detail opens with a full-width hero on the same contrasting band as Home. Desktop places the introduction and main actions on the left and the original project logo with subtle guides on the right. On narrow screens the logo sits between the title and the description and actions.
+- The technical decision follows the hero as a heading separated by a divider. Usage and contribution form equal columns on desktop and stack on mobile. The architecture section uses a bordered surface, the same technology chips as the project cards, and the remaining links. Every editorial link appears once, with the primary link and the first additional repository in the hero when available.
 - “Enviar mensaje” sits below the contact form, with centered text and symmetric horizontal padding. The label sets the width and the visible loading indicator uses the padding without changing button dimensions.
 
 ### Pages: blog list
@@ -691,6 +693,8 @@ The page opens with the professional introduction, followed by “Proyectos” a
 - Card order: date and reading time, title (H2), excerpt, tags, “Leer post”. Equal weight for every card; full titles and excerpts.
 - One column below 960px, two from 960px, 24px gap; cards in a row stretch and align the last line.
 - Search and order precede results, with a polite result count; zero, one and many results are designed states. Subscription follows the list.
+
+- The sort options are centered radio labels with the same height and no icon slot. Their widths follow their labels and stay stable on selection. The selected option uses the accent background, text and border treatments. Reordering moves the existing cards individually over 300ms and continues from their visible positions on interruption. Reduced motion applies the order immediately.
 
 ### Pages: article
 

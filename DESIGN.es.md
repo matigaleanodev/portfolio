@@ -2,7 +2,7 @@
 
 [English](DESIGN.md)
 
-Revisión 3. Este repositorio es la fuente de las decisiones visuales del ecosistema; los demás repositorios adaptan una revisión numerada y no la redefinen. Todo cambio de token o de regla obligatoria incrementa la revisión. Los tokens en formato legible por herramientas están en el encabezado de [DESIGN.md](DESIGN.md).
+Revisión 4. Este repositorio es la fuente de las decisiones visuales del ecosistema; los demás repositorios adaptan una revisión numerada y no la redefinen. Todo cambio de token o de regla obligatoria incrementa la revisión. Los tokens en formato legible por herramientas están en el encabezado de [DESIGN.md](DESIGN.md).
 
 Las reglas **DEBE** son criterios de aceptación. Las reglas **CONVIENE** son recomendaciones que admiten desvíos con motivo registrado. Los valores _derivados_ completan la paleta base y la identidad; ver Origen de los valores.
 
@@ -191,7 +191,7 @@ IBM Plex Sans (400, 500, 600) con respaldo `Segoe UI`, Arial; IBM Plex Mono (400
 - Escala de espaciado: 4, 8, 12, 16, 24, 32, 40, 48, 64, 80px. DEBE usar valores de la escala en separaciones y rellenos.
 - Contenedores (`box-sizing: border-box`, centrados): página `75rem`, formulario `48rem`, texto de artículo `50rem`, artículo ancho `60rem`. Relleno lateral 24px; 16px en artículos bajo 640px. Los máximos incluyen el relleno, salvo en las columnas de artículo.
 - Cortes: 640px y 960px (768px para el panel de chat y la grilla de proyectos). Mobile first.
-- Ritmo de secciones: 48px bajo 768px, 80px desde 768px. Dentro de un bloque: 8–16px; entre bloques: 24–32px. Excepción, portada: entre la presentación y los proyectos la separación es menor (ver Páginas: portada y proyectos).
+- Ritmo de secciones: 48px bajo 768px, 80px desde 768px. Dentro de un bloque: 8–16px; entre bloques: 24–32px. Proyectos usa 32px de relleno vertical en móvil, 48px en tablet y 64px en escritorio.
 - DEBE reacomodarse a 320px sin desplazamiento horizontal de página; sólo código, tablas y diagramas se desplazan, dentro de una región enfocable.
 - El orden del DOM DEBE coincidir con el visual.
 - Las vistas a pantalla completa CONVIENE que usen `dvh` y safe areas.
@@ -233,9 +233,9 @@ El estado se resuelve por capas:
 | Disabled + Focus-visible  | `disabled` nativo no es enfocable. Si el control debe poder descubrirse, usar `aria-disabled="true"` con motivo descrito; muestra Disabled más el anillo.                                                                                                                     |
 | Loading + Hover / Active  | Sin cambios; se ignoran activaciones repetidas.                                                                                                                                                                                                                               |
 | Loading + Focus-visible   | Loading más anillo; el estado en sí no mueve el foco (una regla de flujo, como la del chat, puede hacerlo).                                                                                                                                                                   |
-| Selected + Hover          | Fondo `accent-subtle`, borde `text` y rótulo subrayado; el check permanece en `accent`.                                                                                                                                                                                       |
+| Selected + Hover          | Fondo `accent-subtle`, borde `text` y rótulo subrayado; el texto y el borde interior conservan `accent`.                                                                                                                                                                      |
 | Selected + Active         | Colores de Selected más translateY(1px).                                                                                                                                                                                                                                      |
-| Selected + Disabled       | Colores de Disabled; check y borde interior de 2px permanecen en `disabled-text`; se conserva `aria-pressed` o `checked`.                                                                                                                                                     |
+| Selected + Disabled       | Colores de Disabled; el borde interior de 2px usa `disabled-text`; se conserva `aria-pressed` o `checked`.                                                                                                                                                                    |
 | Selected + Loading        | n/a: la única variante seleccionable no tiene Loading.                                                                                                                                                                                                                        |
 | Selected + Focus-visible  | Selected más anillo exterior; el anillo queda fuera del borde interior de 2px.                                                                                                                                                                                                |
 
@@ -243,9 +243,9 @@ El estado se resuelve por capas:
 
 - Semántica: las acciones son `<button type>`; navegar es `<a>` y no es una variante de botón aunque lo parezca (sigue las reglas de enlaces; un enlace con aspecto principal o secundario toma los colores de Default, Hover, Focus-visible y Active y no tiene Disabled, Loading ni Selected). Las elecciones excluyentes son radios nativos en un `fieldset`; los conmutadores independientes usan `aria-pressed`. `aria-expanded` es despliegue, no selección.
 - Teclado de conmutables: un botón `aria-pressed` se activa con Enter o Espacio; un grupo de radios es una sola parada de Tab, las flechas mueven y seleccionan, Espacio selecciona. El grupo lleva `legend`; si el input se oculta visualmente, el anillo va sobre su segmento (`input:focus-visible + label`).
-- Dimensiones estables: borde de 1px en toda variante y estado (transparente si no se ve); la selección usa sombra interior; el check ocupa un espacio reservado de 16px. Sin cambios de peso ni tamaño entre estados.
+- Dimensiones estables: borde de 1px en toda variante y estado (transparente si no se ve); la selección usa un borde interior. Sin cambios de peso ni tamaño entre estados.
 - Loading: el spinner reemplaza al icono en los botones de sólo icono y aparece en el relleno lateral de los botones de texto; el rótulo puede cambiar al texto de progreso (por ejemplo, “Enviando…”) con el ancho del rótulo más largo reservado, y el nombre accesible coincide con el rótulo visible. Progreso y resultado se escriben como texto (por ejemplo, “Enviando…”) en una región de estado `polite` fuera del botón, que existe antes de actualizarse y, en un modal, vive dentro del diálogo. Con movimiento reducido el spinner queda quieto y ese texto DEBE ser visible.
-- Señales además del color: subrayado, o borde interior de 1px en variantes sólo con icono (hover), anillo (foco), desplazamiento de 1px (active), borde discontinuo (disabled), spinner y texto (loading), check y borde interior (selected). Con movimiento reducido, el desplazamiento de active se reemplaza por un borde interior de 3px en `currentColor` (4px en `accent` si además está seleccionado).
+- Señales además del color: subrayado, o borde interior de 1px en variantes sólo con icono (hover), anillo (foco), desplazamiento de 1px (active), borde discontinuo (disabled), spinner y texto (loading), borde interior (selected). Con movimiento reducido, el desplazamiento de active se reemplaza por un borde interior de 3px en `currentColor` (4px en `accent` si además está seleccionado).
 - Foco: anillo sólido de 3px, separación 4px (2px en barras de código), token `focus` (`code-focus` sobre código). Nunca `outline: none` sin este anillo.
 - Transiciones: fondo, color y borde 150ms `cubic-bezier(0.2, 0, 0, 1)`; transform 100ms; el anillo aparece al instante.
 - Tamaños: alto mínimo 48px en principal y secundario, 44px en el resto, 56px el lanzador; relleno horizontal 16–24px; separación 8px; rótulo con estilo `button-label`. Excepción, sólo icono: icono de 20×20px, borde de 1px y relleno de 11px por lado, para un total de 44×44px.
@@ -339,15 +339,15 @@ Envía una pregunta sugerida del chat. Tamaño: 44px. Anillo de foco: `focus`. T
 
 Elección persistente: botón con aria-pressed o radio nativo en grupos excluyentes. Tamaño: 44px. Anillo de foco: `focus`. Transiciones: comunes.
 
-| Estado        | Fondo            | Texto           | Borde            | Icono           | Claro fondo / texto / borde / icono   | Oscuro fondo / texto / borde / icono  | Comportamiento y foco                                                                                                        |
-| ------------- | ---------------- | --------------- | ---------------- | --------------- | ------------------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Default       | `surface`        | `text`          | `control-border` | `text`          | #FCFCFE / #1F2937 / #6B7280 / #1F2937 | #1F2937 / #EAECF2 / #7F899E / #EAECF2 | No seleccionada; al activar selecciona (o conmuta). Anillo: se suma con foco.                                                |
-| Hover         | `surface-sunken` | `text`          | `text`           | `text`          | #E8EAF0 / #1F2937 / #1F2937 / #1F2937 | #273244 / #EAECF2 / #EAECF2 / #EAECF2 | Solo puntero; rótulo subrayado. Anillo: se suma con foco.                                                                    |
-| Focus-visible | `surface`        | `text`          | `control-border` | `text`          | #FCFCFE / #1F2937 / #6B7280 / #1F2937 | #1F2937 / #EAECF2 / #7F899E / #EAECF2 | Agrega el anillo al estado subyacente; no activa. Anillo: `focus`.                                                           |
-| Active        | `accent-subtle`  | `text`          | `accent`         | `text`          | #E4E5F1 / #1F2937 / #5B5F8F / #1F2937 | #2E3152 / #EAECF2 / #B7B8EE / #EAECF2 | Presionado; translateY(1px). Teclas según la regla de teclado de conmutables. Anillo: se suma con foco.                      |
-| Disabled      | `disabled-bg`    | `disabled-text` | `disabled-text`  | `disabled-text` | #E3E5EB / #596070 / #596070 / #596070 | #263041 / #98A2B6 / #98A2B6 / #98A2B6 | disabled nativo; no activa; cursor not-allowed; borde discontinuo. Anillo: no enfocable.                                     |
-| Loading       | n/a              | n/a             | n/a              | n/a             | n/a                                   | n/a                                   | La selección se aplica de forma síncrona en el cliente. Un conmutador asíncrono requiere aprobar antes esta fila.            |
-| Selected      | `accent-subtle`  | `text`          | `accent`         | `accent`        | #E4E5F1 / #1F2937 / #5B5F8F / #5B5F8F | #2E3152 / #EAECF2 / #B7B8EE / #B7B8EE | Icono check en espacio reservado + borde interior de 2px en accent; aria-pressed="true" o checked. Anillo: se suma con foco. |
+| Estado        | Fondo            | Texto           | Borde            | Icono           | Claro fondo / texto / borde / icono   | Oscuro fondo / texto / borde / icono  | Comportamiento y foco                                                                                             |
+| ------------- | ---------------- | --------------- | ---------------- | --------------- | ------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Default       | `surface`        | `text`          | `control-border` | `text`          | #FCFCFE / #1F2937 / #6B7280 / #1F2937 | #1F2937 / #EAECF2 / #7F899E / #EAECF2 | No seleccionada; al activar selecciona (o conmuta). Anillo: se suma con foco.                                     |
+| Hover         | `surface-sunken` | `text`          | `text`           | `text`          | #E8EAF0 / #1F2937 / #1F2937 / #1F2937 | #273244 / #EAECF2 / #EAECF2 / #EAECF2 | Solo puntero; rótulo subrayado. Anillo: se suma con foco.                                                         |
+| Focus-visible | `surface`        | `text`          | `control-border` | `text`          | #FCFCFE / #1F2937 / #6B7280 / #1F2937 | #1F2937 / #EAECF2 / #7F899E / #EAECF2 | Agrega el anillo al estado subyacente; no activa. Anillo: `focus`.                                                |
+| Active        | `accent-subtle`  | `text`          | `accent`         | `text`          | #E4E5F1 / #1F2937 / #5B5F8F / #1F2937 | #2E3152 / #EAECF2 / #B7B8EE / #EAECF2 | Presionado; translateY(1px). Teclas según la regla de teclado de conmutables. Anillo: se suma con foco.           |
+| Disabled      | `disabled-bg`    | `disabled-text` | `disabled-text`  | `disabled-text` | #E3E5EB / #596070 / #596070 / #596070 | #263041 / #98A2B6 / #98A2B6 / #98A2B6 | disabled nativo; no activa; cursor not-allowed; borde discontinuo. Anillo: no enfocable.                          |
+| Loading       | n/a              | n/a             | n/a              | n/a             | n/a                                   | n/a                                   | La selección se aplica de forma síncrona en el cliente. Un conmutador asíncrono requiere aprobar antes esta fila. |
+| Selected      | `accent-subtle`  | `accent`        | `accent`         | —               | #E4E5F1 / #5B5F8F / #5B5F8F / —       | #2E3152 / #B7B8EE / #B7B8EE / —       | Borde interior de 2px en accent; aria-pressed="true" o checked. Anillo: se suma con foco.                         |
 
 #### Acción de código
 
@@ -431,12 +431,14 @@ Los placeholders son ejemplos en `text-muted`, nunca el rótulo. Los contadores 
 
 El orden es presentación profesional, Proyectos y contacto.
 
-- El hero ocupa todo el ancho y usa un fondo de contraste en ambos temas. Tiene 64px de relleno vertical en móvil y 80px desde 768px. El nombre va entre la primera línea corta degradada y el rol profesional, con las tecnologías justo debajo del rol. «Ver proyectos» va relleno y «Contactarme» tiene borde. La segunda línea corta degradada queda después de las acciones.
+- El hero de ancho completo usa la banda de contraste del tema. Desde 1024px, el encabezado y el hero completan el viewport pequeño usando la altura medida del encabezado. El hero puede crecer si el contenido necesita más espacio. La presentación se alinea a la izquierda y se centra en vertical. El escudo queda a la derecha desde 768px y se ajusta al ancho y alto disponibles. La flecha lleva a Proyectos.
+- Dos líneas degradadas de 1px enmarcan el hero. La superior parte del borde izquierdo del contenedor y se desvanece hacia la derecha. La inferior parte del borde derecho y se desvanece hacia la izquierda. Miden hasta 480px y se acortan por igual en pantallas angostas. «Ver proyectos» va relleno y «Contactarme» tiene borde.
 - DEBE mostrar en la portada este texto, con Banco Comafi primero y Boreal IT como vínculo contractual: «Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos Comunes de Inversión.»
 - La presentación ocupa su propia sección. El contenedor de 1200px comparte el eje del encabezado, blog y pie, con 24px de margen interior a cada lado.
 - Todos los casos publicados, incluido Modo Playa, comparten una grilla de una columna bajo 768px, dos desde 768px y tres desde 960px.
 - Cada tarjeta muestra la imagen, la categoría, el nombre, el resumen, hasta tres tecnologías en el orden del contenido y un enlace «Ver proyecto».
-- La ficha del proyecto en `/projects/:slug` muestra la decisión principal, el uso, el aporte, la arquitectura, el stack completo y los enlaces del caso.
+- Cada ficha prerenderizada abre con un hero de ancho completo sobre la misma banda de contraste que Inicio. En escritorio, la presentación y las acciones principales quedan a la izquierda y el logo original con guías sutiles a la derecha. En pantallas angostas, el logo va entre el título y la descripción con sus acciones.
+- Después del hero, la decisión técnica se presenta como título separado por un divisor. Uso y aporte forman columnas iguales en escritorio y se apilan en móvil. Arquitectura usa una superficie con borde, los mismos chips de las tarjetas y los enlaces restantes. Cada enlace editorial aparece una vez. El principal y el primer repositorio adicional van en el hero cuando existen.
 - «Enviar mensaje» queda debajo del formulario, con texto centrado y relleno lateral simétrico. El rótulo fija el ancho y el indicador visible de carga usa el relleno sin cambiar las dimensiones del botón.
 
 ### Páginas: listado del blog
@@ -445,6 +447,8 @@ El orden es presentación profesional, Proyectos y contacto.
 - Orden de la tarjeta: fecha y tiempo de lectura, título (H2), resumen, etiquetas, “Leer post”. Mismo peso en todas; títulos y resúmenes completos.
 - Una columna bajo 960px, dos desde 960px, separación de 24px; las tarjetas de una fila se estiran y alinean la última línea.
 - Búsqueda y orden preceden a los resultados, con recuento anunciado de forma `polite`; cero, uno y varios resultados son estados diseñados. La suscripción va después del listado.
+
+- Las opciones de orden son radios con rótulos centrados, el mismo alto y sin espacio para iconos. Cada ancho se ajusta al rótulo y se mantiene al seleccionar. La selección se distingue por el fondo, el texto y el borde de acento. El orden anima cada tarjeta existente durante 300ms y continúa desde la posición visible si se invierte. Con movimiento reducido, el orden se aplica de inmediato.
 
 ### Páginas: artículo
 
