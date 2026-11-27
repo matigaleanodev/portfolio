@@ -114,7 +114,21 @@ The deploy workflow now expects these GitHub secrets or variables in `portfolio`
 
 ## Versioned Releases
 
-A `release/vX.Y.Z` branch carries the matching package version and paired release notes in `Docs/releases/`. Merge its PR to `main` using squash. After the merge, `release.yml` validates the branch/version match, creates an annotated `vX.Y.Z` tag on the merged commit, and publishes the GitHub release from the Spanish notes. An existing draft release is published automatically. Existing tags are accepted only when they already point to that same commit. Firebase deployment and `dev` synchronization run independently on the `main` push.
+The package version and paired release notes (`Docs/releases/vX.Y.Z.es.md` and `Docs/releases/vX.Y.Z.md`) are prepared on a `release/vX.Y.Z` branch with a PR into `dev`. Promotion is a pull request from `dev` to `main`, without auto-merge, integrated with a **merge commit**.
+
+The tag and the GitHub release are created after production has been validated, on the validated revision: the one reported as `gitSha` in `publication-state.json`, normally the promotion merge commit. With a clean working tree, the notes are read from that same revision:
+
+```bash
+git fetch origin
+git switch --detach <validated-sha>
+git tag -a vX.Y.Z <validated-sha> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
+git push origin refs/tags/vX.Y.Z
+gh release create vX.Y.Z --verify-tag --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest
+```
+
+If validation fails, the tag is not created. Before creating it, check that `package.json` at that revision declares version `X.Y.Z` and that `vX.Y.Z` exists neither locally nor on `origin`. Run the commands one at a time and stop on any error.
+
+`release.yml` only acts when a PR whose branch starts with `release/v` is merged into `main`, and it publishes the tag and release at that moment, without waiting for the deployment. This flow does not use it: do not open a PR into `main` from a `release/` branch. Firebase deployment and `dev` synchronization run independently on the `main` push.
 
 ## Pre-deployment contract and browser checks
 
@@ -145,6 +159,7 @@ npm ci --prefix tools/firebase-cli --ignore-scripts
 npm run build:content
 npm run format:check && npm run lint && npm run typecheck && npm test -- --watch=false
 npm run build
+npx playwright install --with-deps chromium
 PORTFOLIO_E2E_BUILD=true npm run test:e2e
 ```
 
@@ -160,7 +175,7 @@ PORTFOLIO_E2E_BUILD=true npm run test:e2e
 - Only the owner merges: a restrict-updates rule with an exemption for that account.
 - Auto-merge is available; it is enabled by hand on each pull request.
 
-Work branches are merged with a merge commit, squash or rebase. Releases into `main` use squash.
+Work branches are merged with a merge commit, squash or rebase. Promotions from `dev` to `main` use a merge commit.
 
 Auto-merge integrates whatever head exists once the conditions are met, including commits added after enabling it. To merge exactly the reviewed revision:
 
