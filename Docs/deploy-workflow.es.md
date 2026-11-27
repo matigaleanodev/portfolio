@@ -131,7 +131,7 @@ El generador del conocimiento del chat resuelve los enlaces de proyectos contra 
 | `browser` | sobre ese mismo build: HTML prerenderizado sin JavaScript, contrato de Hosting y Playwright Chromium |
 | `verify`  | exige que los tres anteriores terminen bien                                                          |
 
-El check a marcar como obligatorio en las reglas de `dev` y `main` es `verify`; el repositorio no lo configura solo. `sync-dev.yml` escribe directo en `dev`, así que al exigirlo hay que permitir que ese actor omita la regla.
+El check obligatorio en las reglas de `dev` y `main` es `verify`; el repositorio no lo configura solo. Ver [integración de pull requests](#integración-de-pull-requests).
 
 El build y los tests unitarios cargan `e2e/support/offline-build.cjs`, que rechaza conexiones no locales y responde la hoja de Google Fonts con `e2e/fixtures/google-fonts.css`; si cambian las fuentes hay que actualizar esa copia. Las pruebas de navegador usan el emulador de Firebase Hosting con el proyecto `demo-portfolio`, interceptan la API y no resuelven nombres externos.
 
@@ -149,6 +149,30 @@ PORTFOLIO_E2E_BUILD=true npm run test:e2e
 ```
 
 `npm run test:e2e` sin la variable levanta el servidor de desarrollo y omite las pruebas de HTML y Hosting.
+
+## Integración de pull requests
+
+`dev` y `main` reciben cambios solo por pull request, con el botón de merge de GitHub. Configuración requerida del repositorio, igual para las dos ramas:
+
+- `verify` aprobado sobre una rama actualizada respecto del destino.
+- Conversaciones de revisión resueltas. No se exige aprobación de otra persona.
+- Sin push directo, force push ni borrado, tampoco para el propietario.
+- Solo el propietario integra: una regla de actualización restringida con exención para su cuenta.
+- Auto-merge disponible; se activa a mano en cada pull request.
+
+Las ramas de trabajo se integran con merge commit, squash o rebase. Las releases a `main` usan squash.
+
+El auto-merge integra el head que exista cuando se cumplan las condiciones, incluidos commits agregados después de activarlo. Para integrar exactamente la revisión mirada:
+
+```bash
+gh pr merge <numero> --merge --match-head-commit <sha-revisado>
+```
+
+### Sincronización de `main` hacia `dev`
+
+Después de cada push a `main`, `sync-dev.yml` abre un pull request desde `fix/sync-main-<sha>` hacia `dev` si `dev` no contiene esa revisión. No integra nada. Usa `DEV_SYNC_PAT`, que necesita escritura de contenido y de pull requests.
+
+Ese pull request se integra con **merge commit**: squash o rebase no conservan la ascendencia. Si está atrasado o tiene conflictos, **Update branch** o **Resolve conflicts** actualizan la rama de sincronización. Mientras `dev` no contenga `main`, un pull request de `dev` a `main` queda desactualizado y no se puede integrar.
 
 ## Revisión vigente, reintentos y rollback
 

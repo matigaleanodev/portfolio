@@ -131,7 +131,7 @@ The chat knowledge generator resolves project links against the public site orig
 | `browser` | against that same build: prerendered HTML without JavaScript, Hosting contract and Playwright Chromium |
 | `verify`  | requires the three previous jobs to succeed                                                            |
 
-The check to mark as required in the `dev` and `main` rules is `verify`; the repository does not configure it by itself. `sync-dev.yml` writes directly to `dev`, so requiring it also means letting that actor bypass the rule.
+The required check in the `dev` and `main` rules is `verify`; the repository does not configure it by itself. See [pull request integration](#pull-request-integration).
 
 The build and unit tests preload `e2e/support/offline-build.cjs`, which rejects non-local connections and answers the Google Fonts stylesheet with `e2e/fixtures/google-fonts.css`; update that copy when the fonts change. Browser tests use the Firebase Hosting emulator with the `demo-portfolio` project, intercept the API and resolve no external names.
 
@@ -149,6 +149,30 @@ PORTFOLIO_E2E_BUILD=true npm run test:e2e
 ```
 
 `npm run test:e2e` without the variable starts the development server and skips the HTML and Hosting tests.
+
+## Pull Request Integration
+
+`dev` and `main` receive changes only through pull requests, with the GitHub merge button. Required repository configuration, the same for both branches:
+
+- `verify` passing on a branch that is up to date with the target.
+- Resolved review conversations. No approval from another person is required.
+- No direct push, force push or deletion, for the owner either.
+- Only the owner merges: a restrict-updates rule with an exemption for that account.
+- Auto-merge is available; it is enabled by hand on each pull request.
+
+Work branches are merged with a merge commit, squash or rebase. Releases into `main` use squash.
+
+Auto-merge integrates whatever head exists once the conditions are met, including commits added after enabling it. To merge exactly the reviewed revision:
+
+```bash
+gh pr merge <number> --merge --match-head-commit <reviewed-sha>
+```
+
+### Synchronizing `main` into `dev`
+
+After each push to `main`, `sync-dev.yml` opens a pull request from `fix/sync-main-<sha>` into `dev` when `dev` does not contain that revision. It merges nothing. It uses `DEV_SYNC_PAT`, which needs contents and pull requests write access.
+
+Merge that pull request with a **merge commit**: squash or rebase do not preserve ancestry. If it is behind or has conflicts, **Update branch** or **Resolve conflicts** update the sync branch. While `dev` does not contain `main`, a pull request from `dev` to `main` stays out of date and cannot be merged.
 
 ## Current Revision, Retries and Rollback
 
