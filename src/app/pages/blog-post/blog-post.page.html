@@ -1,19 +1,13 @@
 <main class="blog-post-page">
   @if (post(); as currentPost) {
-    <section class="blog-post-hero bg-(--color-text) text-(--color-bg) py-8 md:py-12">
-      <div class="max-w-4xl mx-auto px-6 blog-post-hero__shell hero-shell">
-        <div class="hero-accent inline-flex items-center" aria-hidden="true">
-          <span class="hero-accent__line" aria-hidden="true"></span>
-        </div>
-
-        <a routerLink="/blog" class="blog-post-back" aria-label="Volver al listado del blog">
-          Volver al blog
+    <article class="blog-post">
+      <header class="blog-post__header">
+        <a routerLink="/blog" class="link blog-post-back" aria-label="Volver al listado del blog">
+          <lucide-icon [img]="backIcon" size="16" aria-hidden="true" />
+          Volver
         </a>
 
-        <p class="blog-post__eyebrow">Post Técnico</p>
-        <h1 class="blog-post__title">{{ currentPost.title }}</h1>
-
-        <div class="blog-post__meta">
+        <p class="blog-post__meta">
           <time [attr.datetime]="currentPost.date">
             {{ currentPost.date | date: 'd MMM y' : '' : 'es-AR' }}
           </time>
@@ -21,69 +15,93 @@
           @if (currentPost.updatedAt) {
             <span>Actualizado {{ currentPost.updatedAt | date: 'd MMM y' : '' : 'es-AR' }}</span>
           }
-        </div>
+        </p>
+
+        <h1 #articleTitle class="blog-post__title" tabindex="-1">{{ currentPost.title }}</h1>
 
         <p class="blog-post__excerpt">{{ currentPost.excerpt }}</p>
 
-        <ul class="blog-post__tags" aria-label="Etiquetas del post">
+        <ul class="tags" aria-label="Etiquetas del post">
           @for (tag of currentPost.tags; track tag) {
             <li>{{ tag }}</li>
           }
         </ul>
-      </div>
-    </section>
+      </header>
 
-    <section class="blog-post-body py-12 md:py-14">
-      <div class="max-w-4xl mx-auto px-6">
-        <article class="blog-post">
-          @if (tableOfContents().length) {
-            <nav class="blog-post-toc" aria-label="Índice del artículo">
-              <details>
-                <summary>En este artículo</summary>
-                <ul>
-                  @for (heading of tableOfContents(); track heading.id) {
-                    <li>
-                      <a [appFragmentLink]="heading.id">{{ heading.title }}</a>
-                      @if (heading.children.length) {
-                        <ul>
-                          @for (child of heading.children; track child.id) {
-                            <li>
-                              <a [appFragmentLink]="child.id">{{ child.title }}</a>
-                            </li>
-                          }
-                        </ul>
+      @if (tableOfContents().length) {
+        <nav class="blog-post-toc" aria-label="Índice del artículo">
+          <details>
+            <summary>En este artículo</summary>
+            <ul>
+              @for (heading of tableOfContents(); track heading.id) {
+                <li>
+                  <a [appFragmentLink]="heading.id">{{ heading.title }}</a>
+                  @if (heading.children.length) {
+                    <ul>
+                      @for (child of heading.children; track child.id) {
+                        <li>
+                          <a [appFragmentLink]="child.id">{{ child.title }}</a>
+                        </li>
                       }
-                    </li>
+                    </ul>
                   }
-                </ul>
-              </details>
-            </nav>
-          }
-          <div
-            class="blog-post__content prose-terminal"
-            [appEditorialContent]="currentPost"
-          ></div>
-          <p
-            class="blog-post__copy-feedback"
-            [class.blog-post__copy-feedback--visible]="!!copyFeedback()"
-            role="status"
-            aria-atomic="true"
-          >
-            {{ copyFeedback() }}
-          </p>
-        </article>
+                </li>
+              }
+            </ul>
+          </details>
+        </nav>
+      }
+      <div class="blog-post__content" [appEditorialContent]="currentPost"></div>
+    </article>
+  } @else if (loadError() === 'not-found') {
+    <app-not-found-state
+      heading="No encontramos este artículo"
+      message="La dirección no corresponde a un artículo publicado. Elegí otro desde el blog."
+      [takeFocus]="notFoundTakesFocus()"
+    >
+      <a routerLink="/blog" class="link" aria-label="Volver al blog">
+        <lucide-icon [img]="backIcon" size="16" aria-hidden="true" />
+        Volver
+      </a>
+    </app-not-found-state>
+  } @else if (loadError() === 'failed') {
+    <section class="blog-post-state">
+      <h1 #articleTitle tabindex="-1">No pudimos cargar el artículo</h1>
+      <p class="feedback feedback--danger" role="alert">Revisá tu conexión y volvé a intentar.</p>
+      <div class="blog-post-state__actions">
+        <button
+          type="button"
+          class="btn btn--secondary"
+          [attr.aria-disabled]="isRetrying() ? 'true' : null"
+          [attr.aria-busy]="isRetrying() ? 'true' : null"
+          (click)="retry()"
+        >
+          <span class="btn__slot" aria-hidden="true">
+            @if (isRetrying()) {
+              <span class="btn__spinner"></span>
+            }
+          </span>
+          <span class="btn__label">
+            <span [attr.data-idle]="!isRetrying()" [attr.aria-hidden]="isRetrying() ? 'true' : null"
+              >Reintentar</span
+            >
+            <span [attr.data-idle]="isRetrying()" [attr.aria-hidden]="isRetrying() ? null : 'true'"
+              >Reintentando…</span
+            >
+          </span>
+        </button>
+        <a routerLink="/blog" class="link" aria-label="Volver al blog">
+          <lucide-icon [img]="backIcon" size="16" aria-hidden="true" />
+          Volver
+        </a>
       </div>
-    </section>
-  } @else if (errorMessage()) {
-    <section class="max-w-4xl mx-auto px-6 py-14 md:py-20">
-      <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-        No se pudo cargar el post.
-        <span class="block opacity-80">{{ errorMessage() }}</span>
-      </div>
+      <p class="blog-post-state__progress" role="status">
+        {{ isRetrying() ? 'Reintentando…' : '' }}
+      </p>
     </section>
   } @else {
-    <section class="max-w-4xl mx-auto px-6 py-14 md:py-20">
-      <div class="blog-post-loading" aria-live="polite">Cargando post...</div>
+    <section class="blog-post-state">
+      <p class="blog-post-loading" role="status">Cargando post...</p>
     </section>
   }
 </main>

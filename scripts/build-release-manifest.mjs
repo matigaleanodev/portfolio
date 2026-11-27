@@ -43,6 +43,8 @@ const manifest = {
       date: typeof post?.date === 'string' ? post.date : '',
       canonicalPath:
         typeof post?.slug === 'string' && post.slug ? `/blog/${post.slug}` : '',
+      // Opcional en el contrato: el aviso por correo lo usa como resumen.
+      ...(typeof post?.excerpt === 'string' && post.excerpt ? { excerpt: post.excerpt } : {}),
     })),
     projects: projects.map((project) => ({
       slug: typeof project?.slug === 'string' ? project.slug : '',

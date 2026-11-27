@@ -1,23 +1,25 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContactDto } from '../../models/contact.model';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 import { finalize } from 'rxjs';
-import { NgClass } from '@angular/common';
 import { AnalyticsService } from '../../services/analytics.service';
+import { CircleAlert, LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-contact',
-  imports: [ReactiveFormsModule, NgClass],
+  imports: [ReactiveFormsModule, LucideAngularModule],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css',
 })
 export class ContactComponent {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   private readonly analytics = inject(AnalyticsService);
 
+  protected readonly errorIcon = CircleAlert;
   private readonly _loading = signal(false);
   readonly loading = computed(() => this._loading());
   readonly submitError = signal('');
@@ -41,34 +43,13 @@ export class ContactComponent {
     }),
   });
 
-  private getErrorMessage(err: unknown): string {
-    if (typeof err === 'object' && err !== null) {
-      const error = err as {
-        status?: unknown;
-        message?: unknown;
-        error?: { message?: unknown } | string | unknown;
-      };
+  /** Nunca muestra el texto técnico del backend: traduce por estado HTTP. */
+  private getErrorMessage(status: number | undefined): string {
+    if (status === 429) return 'Hay demasiados intentos. Esperá un momento y volvé a probar.';
+    if (status === 400) return 'No pudimos aceptar los datos. Revisalos y volvé a enviar.';
+    if (status === 0) return 'No se pudo conectar. Revisá tu conexión y volvé a probar.';
 
-      if (typeof error.error === 'object' && error.error !== null) {
-        const nested = error.error as { message?: unknown };
-        if (typeof nested.message === 'string' && nested.message.trim()) return nested.message;
-        if (Array.isArray(nested.message) && typeof nested.message[0] === 'string') {
-          return nested.message[0];
-        }
-      }
-
-      if (typeof error.error === 'string' && error.error.trim()) {
-        return error.error;
-      }
-
-      if (typeof error.message === 'string' && error.message.trim()) return error.message;
-      if (Array.isArray(error.message) && typeof error.message[0] === 'string') {
-        return error.message[0];
-      }
-      if (error.status === 429) return 'Hay demasiados intentos. Esperá un momento y volvé a probar.';
-    }
-
-    return 'No se pudo enviar el mensaje. Intentalo nuevamente.';
+    return 'No se pudo enviar el mensaje. Intentalo nuevamente en unos minutos.';
   }
 
   submit() {
@@ -76,6 +57,7 @@ export class ContactComponent {
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.focusFirstInvalid();
       return;
     }
 
@@ -95,21 +77,22 @@ export class ContactComponent {
         next: () => {
           this.analytics.trackEvent('contact_submit_success');
           this.submitSucceeded.set(true);
-          this.toast.show('Mensaje enviado correctamente', 'success');
+          this.toast.show('Mensaje enviado correctamente');
           this.form.reset();
         },
-        error: (err) => {
-          const message = this.getErrorMessage(err);
-          this.submitError.set(message);
-          this.submitSucceeded.set(false);
-          this.analytics.trackEvent('contact_submit_error', {
-            status:
-              typeof (err as { status?: unknown })?.status === 'number'
-                ? (err as { status: number }).status
-                : undefined,
-          });
-          this.toast.show(message, 'error');
+        error: (err: unknown) => {
+          const rawStatus = (err as { status?: unknown } | null)?.status;
+          const status = typeof rawStatus === 'number' ? rawStatus : undefined;
+          this.submitError.set(this.getErrorMessage(status));
+          this.analytics.trackEvent('contact_submit_error', { status });
         },
       });
+  }
+
+  private focusFirstInvalid() {
+    const name = (['name', 'email', 'message'] as const).find(
+      (key) => this.form.controls[key].invalid,
+    );
+    if (name) this.host.nativeElement.querySelector<HTMLElement>(`#contact-${name}`)?.focus();
   }
 }

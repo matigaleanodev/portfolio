@@ -9,18 +9,33 @@ import {
   computed,
   effect,
   inject,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { Bot, LucideAngularModule, X } from 'lucide-angular';
+import { ArrowUp, Bot, ChevronDown, LucideAngularModule, X } from 'lucide-angular';
 import { ApiService } from '../../services/api.service';
 import { ChatSource } from '../../models/chat.model';
 import { AnalyticsService } from '../../services/analytics.service';
 import { buildChatRequest } from './chat-history';
 
 type ChatRole = 'user' | 'assistant';
+type CloseReason = 'button' | 'overlay' | 'escape' | 'focus_obscured';
+
+/** Por debajo de este ancho el chat cubre la pantalla y se comporta como diálogo modal. */
+const MODAL_MEDIA_QUERY = '(max-width: 767.98px)';
+const SUGGESTION_LABELS = new Map([
+  ['¿Quién sos y a qué te dedicás?', 'Sobre mí'],
+  ['¿Qué tecnologías usás?', 'Tecnologías'],
+  ['¿Cuál es tu experiencia laboral?', 'Experiencia laboral'],
+  ['¿Qué proyecto destacás?', 'Proyectos'],
+  ['¿Tenés experiencia con NestJS?', 'NestJS'],
+  ['¿Cómo te puedo contactar?', 'Contacto'],
+]);
+const FOCUSABLE_SELECTOR =
+  'button:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 interface ChatMessage {
   id: number;
@@ -43,14 +58,21 @@ export class ChatComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly hostRef = inject(ElementRef<HTMLElement>);
   private readonly idCounter = signal(0);
-  private suggestionPulseTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly messagesStorageKey = 'portfolio-chat-messages';
 
+  protected readonly disclosureIcon = ChevronDown;
+  protected readonly suggestionView = signal<'closed' | 'labels' | 'questions'>('closed');
+  protected readonly suggestionsExpanded = computed(() => this.suggestionView() !== 'closed');
   protected readonly messagesViewport = viewChild<ElementRef<HTMLDivElement>>('messagesViewport');
+  readonly modalChange = output<boolean>();
+
   protected readonly botIcon = Bot;
+  protected readonly sendIcon = ArrowUp;
   protected readonly closeIcon = X;
 
   protected readonly isOpen = signal(false);
+  private readonly coversViewport = signal(false);
+  protected readonly isModal = computed(() => this.isOpen() && this.coversViewport());
   protected readonly draft = signal('');
   protected readonly messages = signal<ChatMessage[]>([
     {
@@ -62,10 +84,8 @@ export class ChatComponent {
   protected readonly starters = signal<string[]>([]);
   protected readonly suggestedQuestions = signal<string[]>([]);
   protected readonly loadingStarters = signal(true);
-  protected readonly startersError = signal<string | null>(null);
   protected readonly sending = signal(false);
   protected readonly apiError = signal<string | null>(null);
-  protected readonly activeSuggestion = signal<string | null>(null);
 
   protected readonly canSend = computed(() => {
     const text = this.draft().trim();
@@ -75,8 +95,12 @@ export class ChatComponent {
   protected readonly hasConversation = computed(() => this.messages().length > 1);
 
   protected readonly visibleSuggestions = computed(() => {
-    const source = this.hasConversation() ? this.suggestedQuestions() : this.starters();
-    return source.slice(0, 4);
+    const followUps = this.suggestedQuestions();
+    const source = followUps.length ? followUps : this.starters();
+    return source.slice(0, 4).map((question) => ({
+      question,
+      label: SUGGESTION_LABELS.get(question) ?? question,
+    }));
   });
 
   private shouldAutoScroll = false;
@@ -87,21 +111,45 @@ export class ChatComponent {
     this.restoreMessagesFromStorage();
     this.syncMessageCounter();
     this.setupEffects();
-    this.registerCleanup();
-    this.loadStarters();
+    this.watchViewport();
+    // Solo en el navegador: el prerender no depende de la API ni la consulta.
+    afterNextRender(() => this.loadStarters());
   }
 
   @HostListener('document:keydown', ['$event'])
   protected onDocumentKeydown(event: KeyboardEvent) {
-    if (event.key !== 'Escape' || !this.isOpen()) return;
+    if (!this.isOpen() || event.defaultPrevented) return;
+
+    if (event.key === 'Tab' && this.isModal()) {
+      this.keepTabInside(event);
+      return;
+    }
+
+    if (event.key !== 'Escape' || event.isComposing) return;
+    if (!this.isModal() && !this.isFocusInChat()) return;
 
     event.preventDefault();
     this.closeChat('escape');
   }
 
+  @HostListener('document:focusin', ['$event'])
+  protected onDocumentFocusIn(event: FocusEvent) {
+    if (!this.isOpen() || this.isModal()) return;
+
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || this.host.contains(target)) return;
+    if (!this.isHiddenByPanel(target)) return;
+
+    // El navegador ya desplazó lo necesario; cerrar revela el control sin mover la página.
+    this.closeChat('focus_obscured');
+  }
+
   protected openChat() {
     if (this.isOpen()) return;
 
+    this.suggestionView.set(
+      !this.hasConversation() && window.innerHeight >= 600 ? 'labels' : 'closed',
+    );
     this.isOpen.set(true);
     this.shouldAutoScroll = true;
     this.lastOpenTimestamp = Date.now();
@@ -112,7 +160,7 @@ export class ChatComponent {
     });
   }
 
-  protected closeChat(reason: 'button' | 'overlay' | 'escape' = 'button') {
+  protected closeChat(reason: CloseReason = 'button') {
     if (!this.isOpen()) return;
 
     this.isOpen.set(false);
@@ -125,12 +173,15 @@ export class ChatComponent {
           : undefined,
     });
     this.lastOpenTimestamp = null;
-    this.scheduleDomTask(() => this.focusFabButton());
+    if (reason !== 'focus_obscured') this.scheduleDomTask(() => this.focusFabButton());
   }
 
-  protected toggleChat() {
-    this.isOpen.update((current) => !current);
-    if (this.isOpen()) this.shouldAutoScroll = true;
+  protected toggleSuggestions() {
+    this.suggestionView.set(this.suggestionsExpanded() ? 'closed' : 'labels');
+  }
+
+  protected toggleFullQuestions() {
+    this.suggestionView.update((view) => (view === 'questions' ? 'labels' : 'questions'));
   }
 
   protected updateDraft(value: string) {
@@ -142,6 +193,7 @@ export class ChatComponent {
     if (!this.canSend()) return;
 
     this.sendMessage(this.draft().trim());
+    this.focusTextarea();
   }
 
   protected useSuggestion(question: string) {
@@ -151,11 +203,8 @@ export class ChatComponent {
       length: question.length,
       has_conversation: this.hasConversation(),
     });
-    this.activeSuggestion.set(question);
-    if (this.suggestionPulseTimeout) clearTimeout(this.suggestionPulseTimeout);
-    this.suggestionPulseTimeout = setTimeout(() => this.activeSuggestion.set(null), 260);
-
     this.sendMessage(question);
+    this.focusTextarea();
   }
 
   protected onTextareaKeydown(event: KeyboardEvent) {
@@ -177,7 +226,6 @@ export class ChatComponent {
 
   private loadStarters() {
     this.loadingStarters.set(true);
-    this.startersError.set(null);
 
     this.api
       .getChatStarters()
@@ -192,9 +240,6 @@ export class ChatComponent {
         },
         error: (error: unknown) => {
           this.starters.set(this.getFallbackStarters());
-          this.startersError.set(
-            'No pude cargar las sugerencias ahora. Podés reintentar o escribir directo.',
-          );
           this.analytics.trackEvent('chat_starters_error', {
             status: this.getErrorStatus(error),
           });
@@ -215,6 +260,7 @@ export class ChatComponent {
       via: this.draft().trim() ? 'manual' : 'suggestion',
     });
     this.appendMessage({ role: 'user', text: message });
+    this.suggestionView.set('closed');
     this.draft.set('');
     this.apiError.set(null);
     this.sending.set(true);
@@ -254,14 +300,66 @@ export class ChatComponent {
     this.shouldAutoScroll = true;
   }
 
-  protected retryStarters() {
-    if (this.loadingStarters()) return;
+  private get host(): HTMLElement {
+    return this.hostRef.nativeElement;
+  }
 
-    this.analytics.trackEvent('chat_retry_starters');
-    this.loadStarters();
+  private watchViewport() {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+
+    const query = window.matchMedia(MODAL_MEDIA_QUERY);
+    const update = () => this.coversViewport.set(query.matches);
+    update();
+    query.addEventListener('change', update);
+    this.destroyRef.onDestroy(() => query.removeEventListener('change', update));
+  }
+
+  private keepTabInside(event: KeyboardEvent) {
+    const items = Array.from(
+      this.host.querySelectorAll<HTMLElement>(`#chat-widget :is(${FOCUSABLE_SELECTOR})`),
+    );
+    if (items.length === 0) return;
+
+    const index = items.indexOf(document.activeElement as HTMLElement);
+    const leavesStart = event.shiftKey && index <= 0;
+    const leavesEnd = !event.shiftKey && (index === -1 || index === items.length - 1);
+    if (!leavesStart && !leavesEnd) return;
+
+    event.preventDefault();
+    items[event.shiftKey ? items.length - 1 : 0].focus();
+  }
+
+  private isFocusInChat(): boolean {
+    const active = document.activeElement;
+    return !!active && this.host.contains(active);
+  }
+
+  private isHiddenByPanel(element: HTMLElement): boolean {
+    const panel = this.host.querySelector('#chat-widget')?.getBoundingClientRect();
+    const target = element.getBoundingClientRect();
+    if (!panel || target.width === 0 || target.height === 0) return false;
+
+    return (
+      target.left >= panel.left &&
+      target.right <= panel.right &&
+      target.top >= panel.top &&
+      target.bottom <= panel.bottom
+    );
   }
 
   private setupEffects() {
+    effect(() => this.modalChange.emit(this.isModal()));
+
+    effect(() => {
+      if (!this.isModal()) return;
+
+      this.scheduleDomTask(() => {
+        if (!this.host.querySelector('#chat-widget')?.contains(document.activeElement)) {
+          this.focusTextarea();
+        }
+      });
+    });
+
     effect(() => {
       const messages = this.messages();
       this.persistMessages(messages);
@@ -283,15 +381,6 @@ export class ChatComponent {
           this.scrollMessagesToBottom();
         }
       });
-    });
-  }
-
-  private registerCleanup() {
-    this.destroyRef.onDestroy(() => {
-      if (this.suggestionPulseTimeout) {
-        clearTimeout(this.suggestionPulseTimeout);
-        this.suggestionPulseTimeout = null;
-      }
     });
   }
 

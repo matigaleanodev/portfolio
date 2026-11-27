@@ -28,11 +28,10 @@ describe('ToastService', () => {
   });
 
   it('show debería setear visible=true y luego showing=true en el frame', () => {
-    service.show('hola', 'success');
+    service.show('hola');
 
     const stateAfterShow = service.state();
     expect(stateAfterShow.message).toBe('hola');
-    expect(stateAfterShow.type).toBe('success');
     expect(stateAfterShow.visible).toBe(true);
 
     // requestAnimationFrame lo ejecutamos sync en el mock
@@ -40,20 +39,78 @@ describe('ToastService', () => {
     expect(stateAfterRaf.showing).toBe(true);
   });
 
-  it('show debería auto-ocultarse a los 3000ms', () => {
+  it('show debería auto-ocultarse recién a los 5000ms', () => {
     service.show('hola');
 
-    // a los 3000ms llama hide()
-    vi.advanceTimersByTime(3000);
+    vi.advanceTimersByTime(4999);
+    expect(service.state().showing).toBe(true);
 
-    const stateAfterHideCall = service.state();
-    expect(stateAfterHideCall.showing).toBe(false);
+    vi.advanceTimersByTime(1);
+    expect(service.state().showing).toBe(false);
 
-    // y 300ms después visible=false
+    vi.advanceTimersByTime(300);
+    expect(service.state().visible).toBe(false);
+  });
+
+  it('pause detiene el ocultamiento y resume reinicia el plazo', () => {
+    service.show('hola');
+
+    service.pause();
+    vi.advanceTimersByTime(20000);
+    expect(service.state().showing).toBe(true);
+
+    service.resume();
+    vi.advanceTimersByTime(5000);
+    expect(service.state().showing).toBe(false);
+  });
+
+  it('reemplazar el mensaje conserva la pausa hasta que se libere', () => {
+    service.show('hola');
+    service.pause();
+
+    service.show('chau');
+    vi.advanceTimersByTime(20000);
+    expect(service.state().showing).toBe(true);
+
+    service.resume();
+    vi.advanceTimersByTime(5000);
+    expect(service.state().showing).toBe(false);
+  });
+
+  it('hide libera la pausa para la confirmación siguiente', () => {
+    service.show('hola');
+    service.pause();
+    service.hide();
+
+    service.show('chau');
+    vi.advanceTimersByTime(5000);
+
+    expect(service.state().showing).toBe(false);
+  });
+
+  it('programa el ocultamiento si la pausa termina antes del frame de entrada', () => {
+    vi.mocked(globalThis.requestAnimationFrame).mockImplementation((cb) => {
+      setTimeout(() => cb(0), 16);
+      return 0;
+    });
+    service.show('hola');
+    service.pause();
+    service.resume();
+
+    vi.advanceTimersByTime(5000);
+
+    expect(service.state().showing).toBe(false);
+  });
+
+  it('reanudar durante la salida no reinicia el cierre', () => {
+    service.show('hola');
+    service.hide();
+
+    service.resume();
     vi.advanceTimersByTime(300);
 
-    const finalState = service.state();
-    expect(finalState.visible).toBe(false);
+    expect(service.state().visible).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
   });
 
   it('hide debería poner showing=false y luego visible=false a los 300ms', () => {

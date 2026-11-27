@@ -8,7 +8,6 @@ import { SeoService } from '../../services/seo.service';
   selector: 'app-home-page',
   imports: [HeroComponent, ProjectsComponent, ContactComponent],
   templateUrl: './home.page.html',
-  styleUrl: './home.page.css',
 })
 export class HomePage {
   private readonly seo = inject(SeoService);
@@ -19,7 +18,6 @@ export class HomePage {
       description:
         'Portfolio de Matias Galeano, desarrollador full stack. Aplicaciones con Angular y TypeScript, servicios en AWS y un blog sobre decisiones técnicas.',
       canonicalUrl: 'https://matiasgaleano.dev/',
-      ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
       type: 'website',
     });
   }

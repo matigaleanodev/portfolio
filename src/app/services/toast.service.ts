@@ -1,65 +1,71 @@
 import { Injectable, signal } from '@angular/core';
-import { ToastState, ToastType } from '../models/toast.model';
+import { ToastState } from '../models/toast.model';
 
+const VISIBLE_MS = 5000;
+const EXIT_MS = 300;
+
+/** Confirmaciones breves de éxito. Los errores se muestran en contexto. */
 @Injectable({
   providedIn: 'root',
 })
 export class ToastService {
   private autoHideTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private hideAnimationTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private held = false;
 
-  private readonly _state = signal<ToastState>({
-    message: '',
-    type: 'success',
-    visible: false,
-    showing: false,
-  });
+  private readonly _state = signal<ToastState>({ message: '', visible: false, showing: false });
 
   readonly state = this._state.asReadonly();
 
-  show(message: string, type: ToastType = 'success') {
+  show(message: string) {
     this.clearTimers();
-
-    this._state.set({
-      message,
-      type,
-      visible: true,
-      showing: false,
-    });
+    this._state.set({ message, visible: true, showing: false });
 
     requestAnimationFrame(() => {
       this._state.update((s) => ({ ...s, showing: true }));
     });
 
-    this.autoHideTimeoutId = setTimeout(() => this.hide(), 3000);
+    // Un mensaje nuevo no vence mientras el puntero o el foco sigan en el aviso.
+    if (!this.held) this.scheduleHide();
+  }
+
+  pause() {
+    this.held = true;
+    this.stopAutoHide();
+  }
+
+  resume() {
+    this.held = false;
+    // `showing` llega en el frame siguiente: el plazo no puede depender de él.
+    if (!this._state().visible || this.hideAnimationTimeoutId) return;
+
+    this.stopAutoHide();
+    this.scheduleHide();
   }
 
   hide() {
-    if (this.autoHideTimeoutId) {
-      clearTimeout(this.autoHideTimeoutId);
-      this.autoHideTimeoutId = null;
-    }
-    if (this.hideAnimationTimeoutId) {
-      clearTimeout(this.hideAnimationTimeoutId);
-      this.hideAnimationTimeoutId = null;
-    }
-
+    this.held = false;
+    this.clearTimers();
     this._state.update((s) => ({ ...s, showing: false }));
 
     this.hideAnimationTimeoutId = setTimeout(() => {
       this._state.update((s) => ({ ...s, visible: false }));
       this.hideAnimationTimeoutId = null;
-    }, 300);
+    }, EXIT_MS);
+  }
+
+  private scheduleHide() {
+    this.autoHideTimeoutId = setTimeout(() => this.hide(), VISIBLE_MS);
+  }
+
+  private stopAutoHide() {
+    if (this.autoHideTimeoutId) clearTimeout(this.autoHideTimeoutId);
+    this.autoHideTimeoutId = null;
   }
 
   private clearTimers() {
-    if (this.autoHideTimeoutId) {
-      clearTimeout(this.autoHideTimeoutId);
-      this.autoHideTimeoutId = null;
-    }
-    if (this.hideAnimationTimeoutId) {
-      clearTimeout(this.hideAnimationTimeoutId);
-      this.hideAnimationTimeoutId = null;
-    }
+    this.stopAutoHide();
+    if (this.hideAnimationTimeoutId) clearTimeout(this.hideAnimationTimeoutId);
+    this.hideAnimationTimeoutId = null;
   }
 }

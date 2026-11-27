@@ -1,17 +1,17 @@
-<footer class="footer-shell bg-(--color-text) text-(--color-bg) py-12 md:py-24">
-  <div class="max-w-6xl mx-auto px-6 grid gap-12 md:grid-cols-3 md:items-center">
+<footer class="footer-shell site-band py-12 md:py-24">
+  <div class="page-container grid gap-12 md:grid-cols-3 md:items-center">
     <div class="text-center md:text-left space-y-2">
       <p class="text-lg font-medium">Matias Galeano</p>
-      <p class="text-sm opacity-70">Fullstack Product Developer</p>
+      <p class="text-sm opacity-70">Desarrollador full stack</p>
     </div>
 
-    <div class="flex justify-center gap-3 text-(--color-bg)">
+    <div class="flex justify-center gap-3">
       <a
         [href]="github"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="GitHub de Matias Galeano"
-        class="footer-icon-link hover:text-(--color-accent) transition"
+        aria-label="GitHub de Matias Galeano (abre en una pestaña nueva)"
+        class="footer-icon-link"
       >
         <i class="inline-flex w-6 h-6">
           <svg
@@ -33,8 +33,8 @@
         [href]="linkedin"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="LinkedIn de Matias Galeano"
-        class="footer-icon-link hover:text-(--color-accent) transition"
+        aria-label="LinkedIn de Matias Galeano (abre en una pestaña nueva)"
+        class="footer-icon-link"
       >
         <i class="inline-flex w-6 h-6">
           <svg
@@ -65,8 +65,8 @@
         [href]="notion"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Notion de Matias Galeano"
-        class="footer-icon-link hover:text-(--color-accent) transition"
+        aria-label="Notion de Matias Galeano (abre en una pestaña nueva)"
+        class="footer-icon-link"
       >
         <i class="inline-flex w-6 h-6">
           <svg
@@ -89,7 +89,7 @@
       <button
         type="button"
         (click)="backToTop()"
-        class="footer-top-btn flex items-center gap-2 text-sm text-(--color-bg) hover:text-(--color-accent) transition cursor-pointer"
+        class="footer-top-btn flex items-center gap-2 text-sm cursor-pointer"
         aria-label="Volver al inicio de la página"
       >
         <lucide-icon [img]="arrowUpIcon" size="16" aria-hidden="true" />

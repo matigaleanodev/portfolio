@@ -1,18 +1,23 @@
-@if (state().visible) {
-  <div class="fixed top-6 right-6 z-50">
-    <div
-      role="status"
-      [attr.aria-live]="state().type === 'error' ? 'assertive' : 'polite'"
-      aria-atomic="true"
-      class="px-6 py-4 rounded-md shadow-lg text-white transition-all duration-300 ease-out"
-      [ngClass]="{
-        'bg-emerald-600/75': state().type === 'success',
-        'bg-rose-600/75': state().type === 'error',
-        'opacity-0 -translate-y-4 scale-95': !state().showing,
-        'opacity-100 translate-y-0 scale-100': state().showing,
-      }"
-    >
-      {{ state().message }}
-    </div>
+<div class="toast-region">
+  <div
+    class="toast-slot"
+    [class.toast]="toast.state().visible"
+    [class.toast--showing]="toast.state().showing"
+    (mouseenter)="hold('hover', true)"
+    (mouseleave)="hold('hover', false)"
+    (focusin)="focusEntered($event)"
+    (focusout)="hold('focus', false)"
+  >
+    @if (toast.state().visible) {
+      <lucide-icon [img]="checkIcon" size="16" aria-hidden="true" />
+    }
+    <p class="toast__text" role="status">
+      {{ toast.state().visible ? toast.state().message : '' }}
+    </p>
+    @if (toast.state().visible) {
+      <button type="button" class="btn btn--icon" aria-label="Cerrar aviso" (click)="close()">
+        <lucide-icon [img]="closeIcon" size="20" aria-hidden="true" />
+      </button>
+    }
   </div>
-}
+</div>

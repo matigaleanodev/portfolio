@@ -2,13 +2,20 @@
   <section class="unsubscribe-surface">
     <div class="max-w-4xl mx-auto px-6">
       <div class="unsubscribe-card">
-        <p class="unsubscribe-card__kicker">Suscripción del blog</p>
-
-        @if (viewState() === 'success') {
+        @if (viewState() !== 'idle') {
           <div class="unsubscribe-card__success">
-            <h1>Tu suscripción fue dada de baja.</h1>
-            <p>{{ submitSuccessMessage() }} Podés cerrar esta pestaña cuando quieras.</p>
-            <a routerLink="/blog" class="unsubscribe-card__secondary-link">Volver al blog</a>
+            <h1 #successHeading tabindex="-1">
+              @if (viewState() === 'already-unsubscribed') {
+                Tu email ya estaba dado de baja.
+              } @else {
+                Tu suscripción fue dada de baja.
+              }
+            </h1>
+            <p class="feedback feedback--success unsubscribe-card__result">
+              <lucide-icon [img]="successIcon" size="16" aria-hidden="true" />
+              <span>No vas a recibir nuevas publicaciones en ese correo.</span>
+            </p>
+            <a routerLink="/blog" class="link">Volver al blog</a>
           </div>
         } @else {
           <div class="unsubscribe-card__copy">
@@ -22,30 +29,75 @@
             </p>
           </div>
 
-          <form class="unsubscribe-form" (ngSubmit)="submit()">
-            <div class="unsubscribe-form__field">
-              <label for="unsubscribe-email">Email</label>
-              <input
-                id="unsubscribe-email"
-                type="email"
-                [formControl]="emailControl"
-                placeholder="tu@email.com"
-                autocomplete="email"
-              />
-            </div>
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <fieldset class="unsubscribe-form" [disabled]="!isReady()">
+              <div class="field">
+                <label class="field__label" for="unsubscribe-email">Email</label>
+                <input
+                  #emailInput
+                  id="unsubscribe-email"
+                  class="field__control"
+                  type="email"
+                  formControlName="email"
+                  placeholder="tu@email.com"
+                  autocomplete="email"
+                  required
+                  [readOnly]="isSubmitting()"
+                  [attr.aria-invalid]="emailError() ? 'true' : null"
+                  [attr.aria-describedby]="emailError() ? 'unsubscribe-email-error' : null"
+                  (input)="emailError.set('')"
+                />
+                @if (emailError()) {
+                  <p id="unsubscribe-email-error" class="field__error" role="alert">
+                    <lucide-icon [img]="errorIcon" size="16" aria-hidden="true" />
+                    {{ emailError() }}
+                  </p>
+                }
+              </div>
 
-            @if (submitError()) {
-              <p class="unsubscribe-form__feedback unsubscribe-form__feedback--error" aria-live="polite">
-                {{ submitError() }}
+              @if (submitError()) {
+                <p
+                  #errorFeedback
+                  class="feedback feedback--danger unsubscribe-form__error"
+                  role="alert"
+                  tabindex="-1"
+                >
+                  <lucide-icon [img]="errorIcon" size="16" aria-hidden="true" />
+                  {{ submitError() }}
+                </p>
+              }
+
+              <div class="unsubscribe-form__actions">
+                <button
+                  type="submit"
+                  class="btn btn--primary"
+                  [attr.aria-disabled]="isSubmitting() ? 'true' : null"
+                  [attr.aria-busy]="isSubmitting() ? 'true' : null"
+                >
+                  <span class="btn__slot" aria-hidden="true">
+                    @if (isSubmitting()) {
+                      <span class="btn__spinner"></span>
+                    }
+                  </span>
+                  <span class="btn__label">
+                    <span
+                      [attr.data-idle]="!isSubmitting()"
+                      [attr.aria-hidden]="isSubmitting() ? 'true' : null"
+                      >Confirmar baja</span
+                    >
+                    <span
+                      [attr.data-idle]="isSubmitting()"
+                      [attr.aria-hidden]="isSubmitting() ? null : 'true'"
+                      >Confirmando…</span
+                    >
+                  </span>
+                </button>
+                <a routerLink="/blog" class="link">Cancelar</a>
+              </div>
+              <p class="unsubscribe-form__progress" role="status">
+                {{ isSubmitting() ? 'Confirmando la baja…' : '' }}
               </p>
-            }
-
-            <div class="unsubscribe-form__actions">
-              <button type="submit" [disabled]="isSubmitting()">
-                {{ isSubmitting() ? 'Confirmando...' : 'Confirmar baja' }}
-              </button>
-              <a routerLink="/blog" class="unsubscribe-card__secondary-link">Cancelar</a>
-            </div>
+            </fieldset>
           </form>
         }
       </div>

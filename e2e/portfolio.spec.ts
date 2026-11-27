@@ -7,16 +7,28 @@ test.beforeEach(async ({ page }) => {
 
 test('diagrama real y separación de texto sin overflow', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
-  for (const route of ['/', '/blog', '/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion']) {
+  for (const route of [
+    '/',
+    '/blog',
+    '/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion',
+  ]) {
     await page.goto(route);
     await expect(page.locator('h1')).toBeVisible();
     if (route.includes('docker-logs')) {
       const preview = page.getByRole('img', { name: 'De los logs de Docker a Grafana' });
       await expect(preview).toBeVisible();
-      await expect(preview.locator('..')).toHaveAttribute('href', '/diagrams/docker-observability.html');
+      await expect(preview.locator('..')).toHaveAttribute(
+        'href',
+        '/diagrams/docker-observability.html',
+      );
     }
-    await page.addStyleTag({ content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-bottom: 2em !important; }' });
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.addStyleTag({
+      content:
+        '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-bottom: 2em !important; }',
+    });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
   }
 });
 
@@ -34,16 +46,20 @@ test('contenido y destinos editoriales disponibles sin JavaScript', async ({
   await link.click();
   expect(new URL(page.url()).hash).toBe('#' + href?.split('#')[1]);
   await page.goto('/');
-  await page.getByRole('link', { name: 'Ver proyectos' }).hover();
-  await page.locator('.project-card__architecture summary').first().click();
-  await expect(page.locator('.project-card__architecture p').first()).toBeVisible();
+  await page.getByRole('link', { name: 'Ver proyecto Modo Playa', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Modo Playa', level: 1 })).toBeVisible();
+  await expect(page.getByText('Decisión principal', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Arquitectura y tecnologías' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Repositorio de la API/ })).toBeVisible();
   await context.close();
 });
 
 test('el chat funciona cuando el navegador bloquea el almacenamiento', async ({ page }) => {
   await page.addInitScript(() => {
     for (const method of ['getItem', 'setItem'] as const) {
-      Storage.prototype[method] = () => { throw new DOMException('Storage bloqueado', 'SecurityError'); };
+      Storage.prototype[method] = () => {
+        throw new DOMException('Storage bloqueado', 'SecurityError');
+      };
     }
   });
   const errors: string[] = [];
@@ -51,9 +67,11 @@ test('el chat funciona cuando el navegador bloquea el almacenamiento', async ({ 
   await page.goto('/');
   await page.locator('.chat-fab').click();
   await expect(page.locator('.chat-widget')).toBeVisible();
-  await page.route('**/api/chat', (route) => route.fulfill({
-    json: { answer: 'Respuesta sin almacenamiento', suggestedQuestions: [], source: 'ai' },
-  }));
+  await page.route('**/api/chat', (route) =>
+    route.fulfill({
+      json: { answer: 'Respuesta sin almacenamiento', suggestedQuestions: [], source: 'ai' },
+    }),
+  );
   await page.locator('#chat-input').fill('¿Qué hace Modo Playa?');
   await page.locator('#chat-input').press('Enter');
   await expect(page.getByText('Respuesta sin almacenamiento', { exact: true })).toBeVisible();
@@ -135,8 +153,11 @@ test('búsqueda normalizada, orden exclusivo y estado vacío', async ({ page }) 
 
 test('contacto y suscripción con errores asociados sin efectos externos', async ({ page }) => {
   let requests = 0;
-  await page.route('**/api/contact', (route) => {
+  let release!: () => void;
+  const response = new Promise<void>((resolve) => (release = resolve));
+  await page.route('**/api/contact', async (route) => {
     requests++;
+    await response;
     return route.fulfill({ status: 500, json: { message: 'Error simulado' } });
   });
   await page.goto('/');
@@ -153,23 +174,43 @@ test('contacto y suscripción con errores asociados sin efectos externos', async
   await page
     .locator('#contact-message')
     .fill('Mensaje simulado para verificar el estado de error del formulario.');
-  await page.locator('.contact-submit').click();
-  await expect.poll(() => requests).toBe(1);
+  const submit = page.getByRole('button', { name: 'Enviar mensaje' });
+  await page.evaluate(() => document.fonts.ready);
+  const idleLayout = await submit.evaluate((button) => {
+    const label = button.querySelector('.btn__label')!.getBoundingClientRect();
+    const { x, width, height } = button.getBoundingClientRect();
+    return { width, height, left: label.left - x, right: x + width - label.right };
+  });
+  try {
+    expect(idleLayout.left).toBeCloseTo(idleLayout.right);
+    await submit.click();
+    await expect.poll(() => requests).toBe(1);
+    const loading = page.getByRole('button', { name: 'Enviando…' });
+    await expect(loading).toHaveAttribute('aria-busy', 'true');
+    expect(await loading.boundingBox()).toMatchObject({
+      width: idleLayout.width,
+      height: idleLayout.height,
+    });
+  } finally {
+    release();
+  }
   await expect(page.getByRole('alert').first()).toBeVisible();
   await page.screenshot({ path: '.generated/design-review/states/contact-error.png' });
   await page.goto('/blog');
   await page.getByRole('button', { name: 'Suscribirme' }).click();
   await expect(page.locator('#blog-subscription-email')).toHaveAttribute('aria-invalid', 'true');
-  await expect(page.locator('#blog-subscription-error')).toBeVisible();
+  await expect(page.locator('#blog-subscription-feedback')).toBeVisible();
 });
 
-test('chat no modal, teclado, loading, respuesta extensa y error simulados', async ({ page }) => {
+test('chat modal en móvil, teclado, loading, respuesta extensa y error simulados', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   const launcher = page.getByRole('button', { name: 'Abrir chatbot asistente' });
   await launcher.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog')).not.toHaveAttribute('aria-modal', 'true');
+  await expect(page.getByRole('dialog')).toHaveAttribute('aria-modal', 'true');
   await expect(page.locator('#chat-input')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(launcher).toBeFocused();
@@ -189,7 +230,7 @@ test('chat no modal, teclado, loading, respuesta extensa y error simulados', asy
   });
   await page.locator('#chat-input').fill('Pregunta de prueba');
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('status', { name: 'Escribiendo' })).toBeVisible();
+  await expect(page.locator('.chat-typing')).toBeVisible();
   await page.screenshot({ path: '.generated/design-review/states/chat-loading.png' });
   await expect(page.locator('.chat-bubble').last()).toContainText('Respuesta simulada');
   await page.screenshot({ path: '.generated/design-review/states/chat-long-answer.png' });
@@ -219,7 +260,8 @@ test('índice, listas, copiar código y fixtures editoriales sin overflow', asyn
   await page.goto('/blog/desplegar-apis-docker-ec2');
   await expect(page.locator('.code-copy').first()).toBeVisible();
   await page.locator('.code-copy').first().click();
-  await expect(page.getByRole('status')).toContainText('Código copiado');
+  const copyStatus = page.locator('.code-block').first().getByRole('status');
+  await expect(copyStatus).toContainText('Código copiado');
   await page.evaluate(() =>
     Object.defineProperty(navigator.clipboard, 'writeText', {
       configurable: true,
@@ -227,7 +269,7 @@ test('índice, listas, copiar código y fixtures editoriales sin overflow', asyn
     }),
   );
   await page.locator('.code-copy').first().click();
-  await expect(page.getByRole('status')).toContainText('No se pudo copiar');
+  await expect(copyStatus).toContainText('No se pudo copiar');
   await page.goto('/blog/jerarquia-visual-importa-mas-de-lo-que-parece');
   await page.getByText('En este artículo', { exact: true }).click();
   const tocLink = page.locator('.blog-post-toc a').first();

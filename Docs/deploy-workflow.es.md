@@ -30,15 +30,16 @@ Esas piezas siguen siendo responsabilidad de `portfolio-cloud` y `portfolio-api`
 
 El flujo actual de GitHub Actions es:
 
-1. `npm ci`
-2. `npm run build:content`
-3. `npm run build`
-4. `npm run build:release-manifest`
-5. `npm run build:chat-knowledge-payload`
-6. deploy de `dist/portfolio/browser` a Firebase Hosting
-7. invocacion de `portfolio-cloud-<stage>-process-release` con `.generated/release-manifest.json`
-8. invocacion de `portfolio-cloud-<stage>-publish-chat-knowledge` con `.generated/chat/knowledge-payload.json`
-9. subida del release manifest, del artifact de conocimiento editorial, del payload de invocacion y de las respuestas de Lambdas como artifacts del workflow
+1. `npm ci` y `npm run build:content`
+2. confirmar que la revisión es la cabeza de `main` y decidir si Firebase necesita un deploy
+3. `npm run build:app` (build de Angular y `404.html`) y marca de publicación
+4. `npm run build:release-manifest` y `npm run build:chat-knowledge-payload`
+5. instalar la CLI de Firebase fijada en `tools/firebase-cli` y desplegar `dist/portfolio/browser`
+6. invocación de `portfolio-cloud-<stage>-process-release` con `.generated/release-manifest.json`
+7. invocación de `portfolio-cloud-<stage>-publish-chat-knowledge` con `.generated/chat/knowledge-payload.json`
+8. subida del release manifest, del artifact de conocimiento editorial, del payload de invocación y de las respuestas de Lambdas como artifacts del workflow
+
+La versión de `firebase-tools` es exacta y se resuelve con el lockfile de `tools/firebase-cli`, separado del de la aplicación. Para actualizarla se cambian la versión y el lockfile en un PR; el CI la usa como emulador de Hosting.
 
 ## Estrategia de Firebase Hosting
 
@@ -50,7 +51,10 @@ Reglas principales:
 - los assets XML no hasheados (`rss.xml`, `sitemap.xml`, `sitemap-blog.xml`) mantienen una política de cache sensible a cambios
 - los índices JSON generados mantienen un cache corto
 - el JS/CSS hasheado y las imágenes estáticas siguen siendo inmutables
-- el rewrite global a `/index.html` queda solo como fallback del router cliente; los archivos prerenderizados siguen teniendo prioridad cuando existen
+- no hay rewrite global: cada ruta publicable tiene su HTML prerenderizado y el resto responde HTTP 404 con `404.html` (`noindex`, sin canónica). Una ruta nueva debe agregarse a `app.routes.server.ts` o Hosting la responderá como inexistente
+- `404.html` sale de la ruta `404`, prerenderizada y movida por `scripts/build-not-found.mjs`
+- el único rewrite sirve la confirmación de baja para el enlace con parámetro de matriz (`/blog/unsubscribe;email=`)
+- `index.html` declara el feed RSS con `rel="alternate"` y `robots.txt` declara `sitemap.xml` y `sitemap-blog.xml`
 
 Esto permite desplegar páginas estáticas del blog sin reintroducir fetch dinámico de contenido contra el backend.
 
@@ -82,7 +86,7 @@ Su objetivo es dejar un artefacto de handoff estable para `portfolio-cloud` con:
 
 - SHA y ref de git
 - metadatos del target de deploy
-- slugs de posts del blog
+- slug, título, fecha, ruta canónica y extracto (opcional para el consumidor) de cada post
 - slugs de proyectos
 - paths de archivos SEO
 
@@ -110,14 +114,93 @@ El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
 
 ## Releases versionadas
 
-Una rama `release/vX.Y.Z` contiene la versión correspondiente del paquete y las notas en ambos idiomas en `Docs/releases/`. Su PR a `main` se integra mediante squash. Después del merge, `release.yml` valida la correspondencia entre rama y versión, crea un tag anotado `vX.Y.Z` sobre el commit integrado y publica la release de GitHub con las notas en español. Si existe un borrador, se publica automáticamente. Solo se aceptan tags existentes cuando ya apuntan a ese mismo commit. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.
+La versión del paquete y las notas en ambos idiomas (`Docs/releases/vX.Y.Z.es.md` y `Docs/releases/vX.Y.Z.md`) se preparan en una rama `release/vX.Y.Z` con un PR hacia `dev`. La promoción es un pull request de `dev` a `main`, sin auto-merge, integrado con **merge commit**.
+
+El tag y la release de GitHub se crean después de validar producción, sobre la revisión validada: la que informa `gitSha` en `publication-state.json`, normalmente el merge commit de la promoción. Con el árbol de trabajo limpio, las notas se leen de esa misma revisión:
+
+```bash
+git fetch origin
+git switch --detach <sha-validado>
+git tag -a vX.Y.Z <sha-validado> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
+git push origin refs/tags/vX.Y.Z
+gh release create vX.Y.Z --verify-tag --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest
+```
+
+Si la validación falla, no se crea el tag. Antes de crearlo, comprobar que `package.json` en esa revisión declare la versión `X.Y.Z` y que `vX.Y.Z` no exista en el repositorio local ni en `origin`. Ejecutar los comandos de a uno y detenerse ante cualquier error.
+
+`release.yml` solo actúa cuando se integra en `main` un PR cuya rama empieza con `release/v`, y publica el tag y la release en ese momento, sin esperar el deploy. Este flujo no lo usa: no abrir hacia `main` un PR desde una rama `release/`. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.
 
 ## Contrato y pruebas de navegador antes del deploy
 
 El generador del conocimiento del chat resuelve los enlaces de proyectos contra el origen público del sitio. El generador del payload rechaza enlaces relativos, con protocolos distintos de HTTP(S) o con credenciales antes del paso de Firebase, evitando publicar un artifact que rechacen Cloud/API.
 
-El CI de pull requests construye el sitio, instala Chromium y ejecuta Playwright contra la salida estática compilada (`PORTFOLIO_E2E_BUILD=true`). El comando local `npm run test:e2e` sigue levantando el servidor de desarrollo; usar la variable después de `npm run build` permite reproducir el CI desde WSL. El servidor estático de pruebas usa Python 3 disponible en el runner Ubuntu. Los tests fallidos suben las trazas retenidas.
+## Validación continua
+
+`ci.yml` corre en pull requests y pushes hacia `dev` y `main`, sin secretos y separado del deploy. Usa Node 22, las dependencias de los lockfiles, caché de npm y cancela las ejecuciones reemplazadas de la misma rama.
+
+| Job       | Contenido                                                                                            |
+| --------- | ---------------------------------------------------------------------------------------------------- |
+| `quality` | formato, lint, TypeScript y tests unitarios                                                          |
+| `build`   | build de producción, manifiesto y payload de conocimiento                                            |
+| `browser` | sobre ese mismo build: HTML prerenderizado sin JavaScript, contrato de Hosting y Playwright Chromium |
+| `verify`  | exige que los tres anteriores terminen bien                                                          |
+
+El check obligatorio en las reglas de `dev` y `main` es `verify`; el repositorio no lo configura solo. Ver [integración de pull requests](#integración-de-pull-requests).
+
+El build y los tests unitarios cargan `e2e/support/offline-build.cjs`, que rechaza conexiones no locales y responde la hoja de Google Fonts con `e2e/fixtures/google-fonts.css`; si cambian las fuentes hay que actualizar esa copia. Las pruebas de navegador usan el emulador de Firebase Hosting con el proyecto `demo-portfolio`, interceptan la API y no resuelven nombres externos.
+
+`.prettierignore` enumera los archivos anteriores al control de formato; se retiran de la lista a medida que se formatean.
+
+Reproducción local:
+
+```bash
+npm ci
+npm ci --prefix tools/firebase-cli --ignore-scripts
+npm run build:content
+npm run format:check && npm run lint && npm run typecheck && npm test -- --watch=false
+npm run build
+npx playwright install --with-deps chromium
+PORTFOLIO_E2E_BUILD=true npm run test:e2e
+```
+
+`npm run test:e2e` sin la variable levanta el servidor de desarrollo y omite las pruebas de HTML y Hosting.
+
+## Integración de pull requests
+
+`dev` y `main` reciben cambios solo por pull request, con el botón de merge de GitHub. Configuración requerida del repositorio, igual para las dos ramas:
+
+- `verify` aprobado sobre una rama actualizada respecto del destino.
+- Conversaciones de revisión resueltas. No se exige aprobación de otra persona.
+- Sin push directo, force push ni borrado, tampoco para el propietario.
+- Solo el propietario integra: una regla de actualización restringida con exención para su cuenta.
+- Auto-merge disponible; se activa a mano en cada pull request.
+
+Las ramas de trabajo se integran con merge commit, squash o rebase. Las promociones de `dev` a `main` usan merge commit.
+
+El auto-merge integra el head que exista cuando se cumplan las condiciones, incluidos commits agregados después de activarlo. Para integrar exactamente la revisión mirada:
+
+```bash
+gh pr merge <numero> --merge --match-head-commit <sha-revisado>
+```
+
+### Sincronización de `main` hacia `dev`
+
+Después de cada push a `main`, `sync-dev.yml` abre un pull request desde `fix/sync-main-<sha>` hacia `dev` si `dev` no contiene esa revisión. No integra nada. Usa `DEV_SYNC_PAT`, que necesita escritura de contenido y de pull requests.
+
+Ese pull request se integra con **merge commit**: squash o rebase no conservan la ascendencia. Si está atrasado o tiene conflictos, **Update branch** o **Resolve conflicts** actualizan la rama de sincronización. Mientras `dev` no contenga `main`, un pull request de `dev` a `main` queda desactualizado y no se puede integrar.
+
+## Revisión vigente, reintentos y rollback
+
+Solo la cabeza de `main` publica. `scripts/current-revision.mjs` la consulta en la API de GitHub al decidir el deploy y otra vez justo antes de Firebase, `process-release` y `publish-chat-knowledge`. Si la revisión quedó atrás o GitHub no la confirma, el job falla sin ejecutar ese efecto ni los que dependen de él. La comprobación no es atómica con el efecto; las publicaciones están serializadas, de modo que la corrida de la revisión nueva se ejecuta después.
+
+Para reintentar: usar **Run workflow** sobre `main`, o volver a ejecutar la corrida de la cabeza actual. Una corrida anterior falla a propósito. Si `main` avanzó durante una corrida, la siguiente completa lo pendiente.
+
+Para volver atrás:
+
+1. Revertir el cambio en `main` mediante un PR. El revert es una cabeza nueva y se publica por el camino normal.
+2. No revertir el soporte de `#email=` en la baja (`src/index.html` y la página de baja): los avisos ya enviados usan ese enlace.
+3. El rollback desde la consola de Firebase es solo una medida de emergencia para el sitio: restaura también la marca de publicación y la ejecución programada volverá a desplegar `main`. Completar el revert antes de esa ejecución o deshabilitar el workflow mientras tanto. No revierte avisos ni conocimiento del chat, y no debe elegir una versión sin soporte de `#email=`.
 
 ## Destino de producción verificado el 2026-10-09
 
-El sitio público usa únicamente el stage `prod`. `dev` queda reservado para pruebas. AWS y los tres repositorios usan `us-east-1`; la consola del navegador puede abrir otra región y no debe tomarse como evidencia de la región desplegada. Las variables existentes del frontend en GitHub ya apuntan a `portfolio-cloud-prod-process-release` y `portfolio-cloud-prod-publish-chat-knowledge`; los valores por defecto del workflow ahora también apuntan a `prod`.
+El sitio público usa únicamente el stage `prod`. `dev` queda reservado para pruebas. AWS y los tres repositorios usan `us-east-1`; la consola del navegador puede abrir otra región y no debe tomarse como evidencia de la región desplegada. Hoy las variables del frontend en GitHub apuntan a `portfolio-api-cloud-test-process-release` y `portfolio-api-cloud-test-publish-chat-knowledge`, nombres físicos de la instalación de `portfolio-api-cloud`. Los valores por defecto del workflow siguen siendo los de `portfolio-cloud`: quitar las variables devolvería la publicación a esas funciones.

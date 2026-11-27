@@ -1,0 +1,6 @@
+<section class="page-container not-found">
+  <p class="not-found__code">Error 404</p>
+  <h1 #title tabindex="-1">{{ heading() }}</h1>
+  <p class="not-found__message" [attr.role]="takeFocus() ? null : 'alert'">{{ message() }}</p>
+  <ng-content />
+</section>

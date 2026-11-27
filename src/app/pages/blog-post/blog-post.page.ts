@@ -5,33 +5,48 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  Injector,
   PLATFORM_ID,
   ViewEncapsulation,
+  afterNextRender,
   computed,
   effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { switchMap } from 'rxjs';
+import { ArrowLeft, LucideAngularModule } from 'lucide-angular';
+import { EMPTY, Subject, catchError, exhaustMap, finalize, startWith, switchMap } from 'rxjs';
 import { BlogPost } from '../../models/blog.model';
 import { AnalyticsService } from '../../services/analytics.service';
 import { BlogContentService } from '../../services/blog-content.service';
 import { SeoService } from '../../services/seo.service';
 import { FragmentLinkDirective } from '../../ui/fragment-link.directive';
 import { EditorialContentDirective } from '../../ui/editorial-content.directive';
+import { copyCodeBlock } from '../../ui/code-copy';
+import { NotFoundStateComponent } from '../../ui/not-found-state/not-found-state.component';
 
 type MermaidModule = typeof import('mermaid').default;
 
 @Component({
   selector: 'app-blog-post-page',
-  imports: [RouterLink, DatePipe, FragmentLinkDirective, EditorialContentDirective],
+  imports: [
+    RouterLink,
+    DatePipe,
+    FragmentLinkDirective,
+    EditorialContentDirective,
+    LucideAngularModule,
+    NotFoundStateComponent,
+  ],
   templateUrl: './blog-post.page.html',
   styleUrl: './blog-post.page.css',
   encapsulation: ViewEncapsulation.None,
 })
 export class BlogPostPage {
+  protected readonly backIcon = ArrowLeft;
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly route = inject(ActivatedRoute);
@@ -41,9 +56,17 @@ export class BlogPostPage {
   private readonly seo = inject(SeoService);
   private mermaidModulePromise: Promise<MermaidModule> | null = null;
 
+  private readonly injector = inject(Injector);
+  private readonly router = inject(Router);
+  private readonly title = viewChild<ElementRef<HTMLElement>>('articleTitle');
+  private readonly retry$ = new Subject<void>();
+
   readonly post = signal<BlogPost | null>(null);
-  readonly errorMessage = signal('');
-  readonly copyFeedback = signal('');
+  readonly loadError = signal<'not-found' | 'failed' | null>(null);
+  readonly isRetrying = signal(false);
+  /** Un artículo inexistente toma el foco si se llegó navegando o desde el reintento. */
+  protected readonly notFoundTakesFocus = signal(false);
+  private arrivedByNavigation = false;
   readonly tableOfContents = computed(() => {
     const current = this.post();
     const headings = current?.headings ?? [];
@@ -61,51 +84,106 @@ export class BlogPostPage {
 
   constructor() {
     this.setupEffects();
+    this.listenForCopy();
 
     this.route.paramMap
       .pipe(
         switchMap((params) => {
-          const slug = params.get('slug');
-
-          if (!slug) {
-            throw new Error('Missing blog post slug.');
+          const slug = params.get('slug') ?? '';
+          this.loadError.set(null);
+          this.isRetrying.set(false);
+          this.post.set(null);
+          this.arrivedByNavigation = this.router.navigated;
+          // Al llegar navegando se empieza arriba; conservar el scroll anterior desplaza la carga.
+          if (isPlatformBrowser(this.platformId) && this.router.navigated) {
+            window.scrollTo({ top: 0, behavior: 'instant' });
           }
 
-          this.errorMessage.set('');
-          this.post.set(null);
-          this.copyFeedback.set('');
-
-          return this.blogContent.getPostBySlug(slug);
+          // El error se atrapa por lectura: una ruta inexistente no corta la navegación siguiente.
+          return this.retry$.pipe(
+            startWith(undefined),
+            exhaustMap(() => {
+              const isRetry = this.loadError() !== null;
+              this.isRetrying.set(isRetry);
+              return this.blogContent.getPostBySlug(slug).pipe(
+                catchError((error: unknown) => {
+                  this.showError(error);
+                  return EMPTY;
+                }),
+                finalize(() => this.isRetrying.set(false)),
+              );
+            }),
+          );
         }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe({
-        next: (post) => {
-          this.post.set(post);
-          this.seo.setPageSeo({
-            title: post.seo.title,
-            description: post.seo.description,
-            canonicalUrl: post.seo.canonicalUrl,
-            ogImage: post.seo.ogImage.startsWith('http')
-              ? post.seo.ogImage
-              : `https://matiasgaleano.dev${post.seo.ogImage}`,
-            ogImageAlt: post.seo.ogImageAlt ?? `Portada social del post ${post.title}`,
-            type: 'article',
-            publishedTime: `${post.date}T00:00:00.000Z`,
-            modifiedTime: post.updatedAt ? `${post.updatedAt}T00:00:00.000Z` : undefined,
-          });
-          this.analytics.trackEvent('view_blog_post', {
-            post_slug: post.slug,
-            post_title: post.title,
-            reading_time_minutes: post.readingTimeMinutes,
-          });
-        },
-        error: (error: unknown) => {
-          const message =
-            error instanceof Error ? error.message : 'Unexpected error loading blog post.';
-          this.errorMessage.set(message);
-        },
-      });
+      .subscribe((post) => this.showPost(post));
+  }
+
+  retry(): void {
+    this.retry$.next();
+  }
+
+  private showPost(post: BlogPost): void {
+    const recovered = this.loadError() !== null;
+    this.loadError.set(null);
+    this.post.set(post);
+    this.seo.setPageSeo({
+      title: post.seo.title,
+      description: post.seo.description,
+      canonicalUrl: post.seo.canonicalUrl,
+      image: {
+        url: post.seo.ogImage.startsWith('http')
+          ? post.seo.ogImage
+          : `https://matiasgaleano.dev${post.seo.ogImage}`,
+        alt: post.seo.ogImageAlt ?? `Portada social del post ${post.title}`,
+        width: 1200,
+        height: 630,
+      },
+      type: 'article',
+      publishedTime: `${post.date}T00:00:00.000Z`,
+      modifiedTime: post.updatedAt ? `${post.updatedAt}T00:00:00.000Z` : undefined,
+    });
+    this.analytics.trackEvent('view_blog_post', {
+      post_slug: post.slug,
+      post_title: post.title,
+      reading_time_minutes: post.readingTimeMinutes,
+    });
+    // El botón de reintento deja de mostrarse: el foco pasa al título.
+    if (recovered) this.focusTitle();
+  }
+
+  private showError(error: unknown): void {
+    // Hosting responde un slug ausente con 404 o con el HTML de la aplicación (200 ilegible).
+    const status = (error as { status?: unknown } | null)?.status;
+    const notFound = status === 404 || status === 200;
+    this.notFoundTakesFocus.set(this.arrivedByNavigation || this.isRetrying());
+    this.loadError.set(notFound ? 'not-found' : 'failed');
+    this.seo.setPageSeo({
+      title: `${notFound ? 'Artículo no encontrado' : 'No se pudo cargar el artículo'} | Matias Galeano`,
+      description: 'Volvé al blog técnico de Matias Galeano para elegir otro artículo.',
+      // Un slug ausente sale del índice; una falla transitoria conserva su indexación.
+      ...(notFound
+        ? { noIndex: true }
+        : { canonicalUrl: 'https://matiasgaleano.dev/blog', type: 'website' }),
+    });
+  }
+
+  private focusTitle(): void {
+    afterNextRender(
+      { write: () => this.title()?.nativeElement.focus() },
+      { injector: this.injector },
+    );
+  }
+
+  private listenForCopy(): void {
+    const host = this.hostRef.nativeElement;
+    const onClick = (event: Event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('.code-copy');
+      if (button) void copyCodeBlock(button);
+    };
+    host.addEventListener('click', onClick);
+    this.destroyRef.onDestroy(() => host.removeEventListener('click', onClick));
   }
 
   private setupEffects() {
@@ -117,55 +195,9 @@ export class BlogPostPage {
       }
 
       this.scheduleDomTask(() => {
-        this.prepareCodeBlocks();
         void this.renderMermaidBlocks(currentPost.slug);
       });
     });
-  }
-
-  private prepareCodeBlocks(): void {
-    this.hostRef.nativeElement
-      .querySelectorAll<HTMLElement>('.blog-post__content pre')
-      .forEach((pre) => {
-        const code = pre.querySelector('code');
-        if (
-          !code ||
-          code.classList.contains('language-mermaid') ||
-          pre.parentElement?.classList.contains('code-block')
-        )
-          return;
-        const wrapper = document.createElement('div');
-        wrapper.className = 'code-block';
-        const toolbar = document.createElement('div');
-        toolbar.className = 'code-toolbar';
-        const language = document.createElement('span');
-        language.textContent = code.className.match(/language-([\w-]+)/)?.[1] ?? 'texto';
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'code-copy';
-        button.textContent = 'Copiar';
-        button.setAttribute('aria-label', `Copiar código ${language.textContent}`);
-        button.addEventListener('click', () => {
-          void this.copyCode(code.textContent ?? '');
-        });
-        toolbar.append(language, button);
-        pre.before(wrapper);
-        wrapper.append(toolbar, pre);
-        pre.tabIndex = 0;
-        pre.setAttribute('aria-label', `Código ${language.textContent}`);
-      });
-  }
-
-  private async copyCode(text: string): Promise<void> {
-    this.copyFeedback.set('');
-    try {
-      await navigator.clipboard.writeText(text);
-      this.copyFeedback.set('Código copiado.');
-    } catch {
-      this.copyFeedback.set(
-        'No se pudo copiar. Podés seleccionar el código y copiarlo manualmente.',
-      );
-    }
   }
 
   private async renderMermaidBlocks(slug: string) {

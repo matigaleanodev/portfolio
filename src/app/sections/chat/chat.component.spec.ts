@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Observable, of, throwError } from 'rxjs';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { Observable, Subject, of, throwError } from 'rxjs';
 
 import { ChatComponent } from './chat.component';
 import { ApiService } from '../../services/api.service';
@@ -96,8 +96,7 @@ describe('ChatComponent', () => {
     const chips = Array.from(el.querySelectorAll('.chat-chip')).map((chip) =>
       chip.textContent?.trim(),
     );
-    expect(chips).toContain('¿Qué tecnologías usás?');
-    expect(chips).toContain('¿Cuál es tu experiencia laboral?');
+    expect(chips).toEqual(['Tecnologías', 'Experiencia laboral']);
   });
 
   it('debería enviar una pregunta sugerida y renderizar mensajes + respuesta', () => {
@@ -125,6 +124,14 @@ describe('ChatComponent', () => {
       bubbles.some((text) => text?.includes('Trabajo con TypeScript, Angular y NestJS.')),
     ).toBe(true);
     expect(el.textContent).toContain('FAQ');
+    expect(el.querySelector('.chat-chip')).toBeNull();
+    const disclosure = el.querySelector<HTMLButtonElement>('[aria-controls="chat-suggestions"]')!;
+    expect(disclosure.getAttribute('aria-expanded')).toBe('false');
+    disclosure.click();
+    fixture.detectChanges();
+    expect(disclosure.getAttribute('aria-expanded')).toBe('true');
+    el.querySelector<HTMLButtonElement>('.chat-chip')!.click();
+    expect(sendChatMessageMock.mock.calls[1][0].message).toBe('¿Usás MongoDB?');
     expect(trackEventMock).toHaveBeenCalledWith(
       'chat_click_suggestion',
       expect.objectContaining({ length: '¿Qué tecnologías usás?'.length }),
@@ -208,16 +215,10 @@ describe('ChatComponent', () => {
     expect(trackEventMock).toHaveBeenCalledWith('chat_receive_error');
   });
 
-  it('debería mostrar estado de error y permitir reintentar starters', () => {
+  it('ofrece preguntas de respaldo sin anunciar un error de carga', () => {
     fixture.destroy();
     getChatStartersMock.mockReset();
-    getChatStartersMock
-      .mockReturnValueOnce(throwError(() => ({ status: 503 })))
-      .mockReturnValueOnce(
-        of({
-          suggestedQuestions: ['¿Qué tecnologías usás?'],
-        }),
-      );
+    getChatStartersMock.mockReturnValueOnce(throwError(() => ({ status: 503 })));
 
     fixture = TestBed.createComponent(ChatComponent);
     component = fixture.componentInstance;
@@ -227,25 +228,46 @@ describe('ChatComponent', () => {
     (el.querySelector('.chat-fab') as HTMLButtonElement).click();
     fixture.detectChanges();
 
-    expect(el.textContent).toContain('No pude cargar las sugerencias ahora');
+    expect(el.querySelector('.chat-error')).toBeNull();
+    expect(el.querySelectorAll('button.chat-chip')).toHaveLength(4);
     expect(trackEventMock).toHaveBeenCalledWith(
       'chat_starters_error',
       expect.objectContaining({ status: 503 }),
     );
 
-    const retryButton = Array.from(el.querySelectorAll('button')).find((button) =>
-      button.textContent?.includes('Reintentar'),
-    ) as HTMLButtonElement | undefined;
+    el.querySelector<HTMLButtonElement>('.chat-chip')!.click();
+    expect(sendChatMessageMock.mock.calls[0][0].message).toBe('¿Qué tecnologías usás?');
+  });
 
-    retryButton?.click();
-    fixture.detectChanges();
+  describe('carga de sugerencias', () => {
+    const globals = globalThis as { ngServerMode?: boolean };
 
-    expect(getChatStartersMock).toHaveBeenCalledTimes(2);
-    expect(trackEventMock).toHaveBeenCalledWith('chat_retry_starters');
-    expect(trackEventMock).toHaveBeenCalledWith(
-      'chat_starters_loaded',
-      expect.objectContaining({ count: 1 }),
-    );
+    afterEach(() => delete globals.ngServerMode);
+
+    it('no llama a la API durante el prerender', async () => {
+      fixture.destroy();
+      getChatStartersMock.mockClear();
+      globals.ngServerMode = true;
+
+      fixture = TestBed.createComponent(ChatComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(getChatStartersMock).not.toHaveBeenCalled();
+    });
+
+    it('las pide una sola vez en el navegador, despues del primer render', async () => {
+      fixture.destroy();
+      getChatStartersMock.mockClear();
+
+      fixture = TestBed.createComponent(ChatComponent);
+      expect(getChatStartersMock).not.toHaveBeenCalled();
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(getChatStartersMock).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('debería persistir y restaurar mensajes desde localStorage', async () => {
@@ -310,5 +332,299 @@ describe('ChatComponent', () => {
     } finally {
       globalThis.requestAnimationFrame = originalRaf;
     }
+  });
+
+  describe('foco y modalidad', () => {
+    let narrow = false;
+    let mediaListener: (() => void) | null = null;
+
+    const mount = (isNarrow: boolean) => {
+      narrow = isNarrow;
+      vi.stubGlobal('matchMedia', () => ({
+        get matches() {
+          return narrow;
+        },
+        addEventListener: (_: string, listener: () => void) => (mediaListener = listener),
+        removeEventListener: () => (mediaListener = null),
+      }));
+      fixture.destroy();
+      fixture = TestBed.createComponent(ChatComponent);
+      component = fixture.componentInstance;
+      document.body.appendChild(fixture.nativeElement);
+      const changes: boolean[] = [];
+      component.modalChange.subscribe((value) => changes.push(value));
+      fixture.detectChanges();
+      return { el: fixture.nativeElement as HTMLElement, changes };
+    };
+
+    const open = async (el: HTMLElement) => {
+      (el.querySelector('.chat-fab') as HTMLButtonElement).click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+    };
+
+    const press = (key: string, shiftKey = false) => {
+      const event = new KeyboardEvent('keydown', {
+        key,
+        shiftKey,
+        bubbles: true,
+        cancelable: true,
+      });
+      (document.activeElement ?? document.body).dispatchEvent(event);
+      fixture.detectChanges();
+      return event;
+    };
+
+    const outsideButton = () => {
+      const button = document.createElement('button');
+      document.body.appendChild(button);
+      return button;
+    };
+
+    const rect = (left: number, top: number, right: number, bottom: number) =>
+      ({ left, top, right, bottom, width: right - left, height: bottom - top }) as DOMRect;
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      document.body.innerHTML = '';
+    });
+
+    it('en viewport angosto es un diálogo modal y lo informa al shell', async () => {
+      const { el, changes } = mount(true);
+      await open(el);
+      expect(el.querySelector('#chat-widget')?.getAttribute('aria-modal')).toBe('true');
+      expect(changes.at(-1)).toBe(true);
+      press('Escape');
+      expect(changes.at(-1)).toBe(false);
+    });
+
+    it('en viewport ancho es un panel no modal', async () => {
+      const { el, changes } = mount(false);
+      await open(el);
+      expect(el.querySelector('#chat-widget')?.hasAttribute('aria-modal')).toBe(false);
+      expect(changes).not.toContain(true);
+    });
+
+    it('actualiza la modalidad si cambia el viewport con el chat abierto', async () => {
+      const { el, changes } = mount(false);
+      await open(el);
+      narrow = true;
+      mediaListener?.();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(el.querySelector('#chat-widget')?.getAttribute('aria-modal')).toBe('true');
+      expect(changes.at(-1)).toBe(true);
+    });
+
+    it('en modo modal Tab y Shift+Tab circulan dentro del diálogo', async () => {
+      const { el } = mount(true);
+      await open(el);
+      const first = el.querySelector<HTMLElement>('.chat-disclosure')!;
+      const last = el.querySelector<HTMLButtonElement>('button[aria-pressed]')!;
+      last.focus();
+      expect(press('Tab').defaultPrevented).toBe(true);
+      expect(document.activeElement).toBe(first);
+      expect(press('Tab', true).defaultPrevented).toBe(true);
+      expect(document.activeElement).toBe(last);
+    });
+
+    it('en modo no modal no intercepta Tab', async () => {
+      const { el } = mount(false);
+      await open(el);
+      el.querySelector<HTMLTextAreaElement>('#chat-input')!.focus();
+      expect(press('Tab').defaultPrevented).toBe(false);
+    });
+
+    it('en modo no modal Escape fuera del panel no lo cierra ni roba el foco', async () => {
+      const { el } = mount(false);
+      await open(el);
+      const button = outsideButton();
+      button.focus();
+      press('Escape');
+      expect(el.querySelector('#chat-widget')).toBeTruthy();
+      expect(document.activeElement).toBe(button);
+    });
+
+    it('en modo no modal Escape con el foco en el body no cierra el chat', async () => {
+      const { el } = mount(false);
+      await open(el);
+      (document.activeElement as HTMLElement | null)?.blur();
+      expect(document.activeElement).toBe(document.body);
+
+      const event = press('Escape');
+
+      expect(event.defaultPrevented).toBe(false);
+      expect(el.querySelector('#chat-widget')).toBeTruthy();
+      expect(trackEventMock).not.toHaveBeenCalledWith(
+        'chat_close',
+        expect.objectContaining({ reason: 'escape' }),
+      );
+    });
+
+    it('en modo no modal Escape con el foco dentro del panel lo cierra', async () => {
+      const { el } = mount(false);
+      await open(el);
+      el.querySelector<HTMLTextAreaElement>('#chat-input')!.focus();
+
+      press('Escape');
+
+      expect(el.querySelector('#chat-widget')).toBeNull();
+      expect(trackEventMock).toHaveBeenCalledWith(
+        'chat_close',
+        expect.objectContaining({ reason: 'escape' }),
+      );
+    });
+
+    it('en modo no modal cede si un control enfocado queda totalmente tapado', async () => {
+      const { el } = mount(false);
+      await open(el);
+      const button = outsideButton();
+      button.scrollIntoView = vi.fn();
+      button.getBoundingClientRect = () => rect(700, 500, 760, 540);
+      el.querySelector<HTMLElement>('#chat-widget')!.getBoundingClientRect = () =>
+        rect(600, 100, 1000, 700);
+      button.focus();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(button.scrollIntoView).not.toHaveBeenCalled();
+      expect(el.querySelector('#chat-widget')).toBeNull();
+      expect(document.activeElement).toBe(button);
+      expect(trackEventMock).toHaveBeenCalledWith(
+        'chat_close',
+        expect.objectContaining({ reason: 'focus_obscured' }),
+      );
+    });
+
+    it('en modo no modal permanece abierto si el control se ve en parte', async () => {
+      const { el } = mount(false);
+      await open(el);
+      const button = outsideButton();
+      button.getBoundingClientRect = () => rect(560, 500, 640, 540);
+      el.querySelector<HTMLElement>('#chat-widget')!.getBoundingClientRect = () =>
+        rect(600, 100, 1000, 700);
+      button.focus();
+      fixture.detectChanges();
+      expect(el.querySelector('#chat-widget')).toBeTruthy();
+    });
+
+    it('conserva el foco en el campo mientras envía', async () => {
+      sendChatMessageMock.mockReturnValueOnce(new Observable<ChatResponseDto>());
+      const { el } = mount(true);
+      await open(el);
+      el.querySelector<HTMLButtonElement>('button.chat-chip')!.click();
+      fixture.detectChanges();
+      const input = el.querySelector<HTMLTextAreaElement>('#chat-input')!;
+      expect(input.disabled).toBe(false);
+      expect(input.readOnly).toBe(true);
+      expect(document.activeElement).toBe(input);
+    });
+
+    it('al ceder conserva la solicitud en curso, los mensajes y el borrador', async () => {
+      const response = new Subject<ChatResponseDto>();
+      sendChatMessageMock.mockReturnValueOnce(response);
+      const { el } = mount(false);
+      await open(el);
+      el.querySelector<HTMLButtonElement>('button.chat-chip')!.click();
+      component['updateDraft']('borrador sin enviar');
+      fixture.detectChanges();
+      const button = outsideButton();
+      button.getBoundingClientRect = () => rect(700, 500, 760, 540);
+      el.querySelector<HTMLElement>('#chat-widget')!.getBoundingClientRect = () =>
+        rect(600, 100, 1000, 700);
+      button.focus();
+      fixture.detectChanges();
+      expect(el.querySelector('#chat-widget')).toBeNull();
+      expect(response.observed).toBe(true);
+
+      response.next({ answer: 'Llegó cerrado', source: 'faq', suggestedQuestions: [] });
+      response.complete();
+      await open(el);
+      expect(el.textContent).toContain('¿Qué tecnologías usás?');
+      expect(el.textContent).toContain('Llegó cerrado');
+      expect(el.querySelector<HTMLTextAreaElement>('#chat-input')!.value).toBe(
+        'borrador sin enviar',
+      );
+    });
+  });
+
+  describe('anuncios', () => {
+    const openChat = () => {
+      const el = fixture.nativeElement as HTMLElement;
+      el.querySelector<HTMLButtonElement>('.chat-fab')!.click();
+      fixture.detectChanges();
+      return el;
+    };
+
+    it('anuncia "escribiendo" en una región persistente fuera del log', () => {
+      const response = new Subject<ChatResponseDto>();
+      sendChatMessageMock.mockReturnValueOnce(response);
+      const el = openChat();
+      const status = el.querySelector('#chat-status')!;
+      expect(status.getAttribute('role')).toBe('status');
+      expect(status.textContent?.trim()).toBe('');
+      el.querySelector<HTMLButtonElement>('button.chat-chip')!.click();
+      fixture.detectChanges();
+      expect(el.querySelector('#chat-status')).toBe(status);
+      expect(status.textContent?.trim()).toBe('El asistente está escribiendo');
+      const log = el.querySelector('[role="log"]')!;
+      expect(log.querySelector('[role="status"], [aria-live]')).toBeNull();
+      expect(log.contains(status)).toBe(false);
+      expect(log.querySelector('.chat-typing')!.closest('[aria-hidden="true"]')).toBeTruthy();
+      response.next({ answer: 'ok', source: 'faq', suggestedQuestions: [] });
+      response.complete();
+      fixture.detectChanges();
+      expect(status.textContent?.trim()).toBe('');
+    });
+
+    it('anuncia un error de envío una sola vez, desde la conversación', () => {
+      sendChatMessageMock.mockReturnValueOnce(throwError(() => new Error('boom')));
+      const el = openChat();
+      el.querySelector<HTMLButtonElement>('button.chat-chip')!.click();
+      fixture.detectChanges();
+      const error = el.querySelector('#chat-error')!;
+      expect(error.hasAttribute('role')).toBe(false);
+      expect(error.hasAttribute('aria-live')).toBe(false);
+      expect(el.querySelector('[role="alert"]')).toBeNull();
+      expect(el.querySelector('[role="log"]')!.textContent).toContain('No pude responder');
+    });
+  });
+
+  describe('estados del envío', () => {
+    const open = () => {
+      const el = fixture.nativeElement as HTMLElement;
+      el.querySelector<HTMLButtonElement>('.chat-fab')!.click();
+      fixture.detectChanges();
+      return el;
+    };
+
+    it('usa Loading en Enviar sin disabled nativo e ignora repeticiones', () => {
+      sendChatMessageMock.mockReturnValue(new Observable());
+      const el = open();
+      const input = el.querySelector<HTMLTextAreaElement>('#chat-input')!;
+      input.value = 'Hola';
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      const button = el.querySelector<HTMLButtonElement>('.chat-submit')!;
+
+      button.click();
+      fixture.detectChanges();
+      button.click();
+
+      expect(button.disabled).toBe(false);
+      expect(button.getAttribute('aria-disabled')).toBe('true');
+      expect(button.getAttribute('aria-busy')).toBe('true');
+      expect(button.getAttribute('aria-label')).toBe('Enviando…');
+      expect(sendChatMessageMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('anuncia los agregados del log sin marcarlo como ocupado', () => {
+      sendChatMessageMock.mockReturnValue(new Observable());
+      const el = open();
+      el.querySelector<HTMLButtonElement>('button.chat-chip')!.click();
+      fixture.detectChanges();
+
+      expect(el.querySelector('[role="log"]')!.hasAttribute('aria-busy')).toBe(false);
+      expect(el.querySelector<HTMLButtonElement>('button.chat-chip')?.disabled ?? true).toBe(true);
+    });
   });
 });

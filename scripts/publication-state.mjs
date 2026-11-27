@@ -3,6 +3,8 @@ import { appendFile, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { assertCurrentRevision } from './current-revision.mjs';
+
 const stateUrl = 'https://matiasgaleano.dev/publication-state.json';
 
 export function createPublicationState(posts, gitSha) {
@@ -16,7 +18,13 @@ export function createPublicationState(posts, gitSha) {
   };
 }
 
-export async function getDeploymentDecision(expected, eventName, fetchImpl = fetch) {
+export async function getDeploymentDecision(
+  expected,
+  eventName,
+  fetchImpl = fetch,
+  env = process.env,
+) {
+  await assertCurrentRevision(expected.gitSha, env, fetchImpl);
   if (eventName !== 'schedule') {
     return { deploy: true, reason: 'Push or manual deployment requested.' };
   }

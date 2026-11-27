@@ -1,6 +1,8 @@
-<a class="skip-link" appFragmentLink="main-content">Saltar al contenido principal</a>
+<a class="skip-link" appFragmentLink="main-content" [attr.inert]="chatModal() ? '' : null"
+  >Saltar al contenido principal</a
+>
 
-<div class="app-shell">
+<div class="app-shell" [attr.inert]="chatModal() ? '' : null">
   <app-header />
 
   <div
@@ -14,6 +16,6 @@
 
   <app-footer />
 </div>
-<app-chat />
+<app-chat (modalChange)="chatModal.set($event)" />
 
 <app-toast />

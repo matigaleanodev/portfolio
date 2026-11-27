@@ -2,6 +2,70 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
+    <meta name="referrer" content="strict-origin" />
+
+    <script>
+      (() => {
+        // Quita `email` de la consulta, del fragmento y de la ruta; devuelve el valor retirado.
+        const takeEmail = (url) => {
+          let email;
+          // En el fragmento exige un valor: `#email` puede ser un ancla.
+          const strip = (params, requireValue) => {
+            let found = false;
+            for (const [key, value] of [...params]) {
+              if (key.toLowerCase() !== 'email' || (requireValue && !value)) continue;
+              email ??= value;
+              params.delete(key);
+              found = true;
+            }
+            return found;
+          };
+          strip(url.searchParams, false);
+          const fragment = new URLSearchParams(url.hash.slice(1));
+          if (strip(fragment, true)) url.hash = fragment.toString();
+          url.pathname = url.pathname.replace(/;email=([^/;]*)/gi, (_, value) => {
+            try {
+              email ??= decodeURIComponent(value);
+            } catch {
+              // Mal codificada: se retira igual, sin precompletar.
+              email ??= '';
+            }
+            return '';
+          });
+          return email;
+        };
+
+        const url = new URL(location.href);
+        const email = takeEmail(url);
+        if (email !== undefined) {
+          if (/^\/+blog\/unsubscribe(?:\.html|\/(?:index(?:\.html)?)?)?$/.test(url.pathname)) {
+            // Hand the prefill to Angular once, without putting it in storage or history state.
+            document.portfolioUnsubscribeEmail = email;
+          }
+          try {
+            history.replaceState(history.state, '', url.href);
+          } catch {
+            // A restricted history still permits the prefill and must keep analytics disabled.
+          }
+          return;
+        }
+        if (document.referrer && takeEmail(new URL(document.referrer)) !== undefined) {
+          return;
+        }
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-GBQ307ZC8X');
+
+        const tag = document.createElement('script');
+        tag.async = true;
+        tag.src = 'https://www.googletagmanager.com/gtag/js?id=G-GBQ307ZC8X';
+        document.head.appendChild(tag);
+      })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -9,16 +73,6 @@
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="dns-prefetch" href="//api.matiasgaleano.dev" />
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GBQ307ZC8X"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', 'G-GBQ307ZC8X');
-    </script>
 
     <script type="application/ld+json">
       {
@@ -40,7 +94,9 @@
     <base href="/" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#5B5F8F" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#F3F4F7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141A24" media="(prefers-color-scheme: dark)" />
 
     <meta
       name="description"
@@ -55,9 +111,14 @@
     <meta name="author" content="Matias Galeano" />
 
     <meta name="robots" content="index, follow" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
 
     <link rel="canonical" href="https://matiasgaleano.dev/" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Blog de Matias Galeano"
+      href="https://matiasgaleano.dev/rss.xml"
+    />
 
     <link rel="icon" type="image/webp" href="assets/icons/icon-128.webp" />
     <link rel="apple-touch-icon" href="assets/icons/icon-192.webp" />

@@ -75,6 +75,11 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "headers": {
+              "Referrer-Policy": "strict-origin"
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "portfolio:build:production"

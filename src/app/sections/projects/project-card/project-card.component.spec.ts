@@ -1,28 +1,12 @@
-import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { provideRouter } from '@angular/router';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import { ProjectCardComponent } from './project-card.component';
-import { AnalyticsService } from '../../../services/analytics.service';
 import { Project } from '../../../models/project.model';
-
-@Component({
-  // eslint-disable-next-line @angular-eslint/component-selector
-  selector: 'lucide-icon',
-  standalone: true,
-  template: '',
-})
-class LucideIconStubComponent {
-  @Input() img: unknown;
-  @Input() size: unknown;
-}
 
 describe('ProjectCardComponent', () => {
   let fixture: ComponentFixture<ProjectCardComponent>;
-
-  const analyticsMock: Pick<AnalyticsService, 'trackEvent'> = {
-    trackEvent: vi.fn(),
-  };
 
   const projectMock: Project = {
     slug: 'foodly-notes',
@@ -37,7 +21,7 @@ describe('ProjectCardComponent', () => {
     coverImage: '/assets/foodly.png',
     featured: true,
     order: 1,
-    stack: ['Angular', 'Ionic'],
+    stack: ['Angular', 'Ionic', 'Capacitor', 'AWS'],
     links: [
       { label: 'Play Store', url: 'https://play.google.com', icon: 'play', primary: true },
       { label: 'GitHub', url: 'https://github.com', icon: 'code', primary: false },
@@ -48,14 +32,8 @@ describe('ProjectCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProjectCardComponent],
-      providers: [{ provide: AnalyticsService, useValue: analyticsMock }],
-    })
-      .overrideComponent(ProjectCardComponent, {
-        set: {
-          imports: [LucideIconStubComponent],
-        },
-      })
-      .compileComponents();
+      providers: [provideRouter([])],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ProjectCardComponent);
     fixture.componentRef.setInput('project', projectMock);
@@ -65,23 +43,22 @@ describe('ProjectCardComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('debería renderizar el nombre, imagen y señales principales', () => {
+  it('debería renderizar el nombre, imagen, categoría y resumen', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
 
     expect(el.querySelector('h3')?.textContent).toContain('Foodly Notes');
     expect(el.textContent).toContain('App publicada');
-    expect(el.textContent).toContain('Backend propio + cloud');
 
     const img = el.querySelector('img') as HTMLImageElement;
     expect(img).toBeTruthy();
     expect(img.getAttribute('src')).toBe('/assets/foodly.png');
-    expect(img.getAttribute('alt')).toBe('Foodly Notes');
+    expect(img.getAttribute('alt')).toBe('Ilustración del producto: Foodly Notes');
 
     expect(el.textContent).toContain('Una app para recetas.');
-    expect(el.textContent).toContain('Disponible en Google Play.');
-    expect(el.textContent).toContain('Construi app y API.');
-    expect(el.textContent).toContain('NestJS en AWS.');
+    expect(el.textContent).not.toContain('Disponible en Google Play.');
+    expect(el.textContent).not.toContain('Construi app y API.');
+    expect(el.textContent).not.toContain('NestJS en AWS.');
   });
 
   it('debería renderizar las tecnologías cuando existen', () => {
@@ -91,22 +68,17 @@ describe('ProjectCardComponent', () => {
       chip.textContent?.trim(),
     );
 
-    expect(chips).toEqual(['Angular', 'Ionic']);
+    expect(chips).toEqual(['Angular', 'Ionic', 'Capacitor']);
   });
 
-  it('debería renderizar un link por cada item y trackear el click', () => {
+  it('debería renderizar una sola acción para abrir la ficha', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
 
-    const links = Array.from(el.querySelectorAll('a'));
-    expect(links.length).toBe(3);
-    expect(links[0]?.textContent).toContain('Play Store');
-
-    links[0]?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    expect(analyticsMock.trackEvent).toHaveBeenCalledWith('click_project_link', {
-      project_name: 'Foodly Notes',
-      link_name: 'Play Store',
-    });
+    const links = el.querySelectorAll('a');
+    expect(links).toHaveLength(1);
+    expect(links[0].getAttribute('href')).toBe('/projects/foodly-notes');
+    expect(links[0].getAttribute('aria-label')).toBe('Ver proyecto Foodly Notes');
   });
 
   it('no debería renderizar el bloque de tecnologías si está vacío', () => {

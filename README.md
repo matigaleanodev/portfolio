@@ -1,5 +1,12 @@
 # Portfolio
 
+[![CI](https://img.shields.io/github/actions/workflow/status/matigaleanodev/portfolio/ci.yml?style=flat-square&label=CI)](https://github.com/matigaleanodev/portfolio/actions/workflows/ci.yml)
+![Version](https://img.shields.io/badge/version-1.4.0-blue?style=flat-square)
+![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-DD2C00?style=flat-square&logo=firebase&logoColor=white)
+
 [Read in Spanish](./README.es.md)
 
 Public-facing portfolio application for Matias Galeano.
@@ -60,6 +67,7 @@ Operational details:
 ## Main Routes
 
 - `/`
+- `/projects/:slug`
 - `/blog`
 - `/blog/:slug`
 - `/blog/unsubscribe`
@@ -78,13 +86,17 @@ Useful commands:
 - `npm run build:content`
 - `npm run build`
 - `npm run lint`
+- `npm run format:check`
+- `npm run typecheck`
 - `npm test`
+
+Tests against the build also need `npm ci --prefix tools/firebase-cli --ignore-scripts`; see [continuous validation](./Docs/deploy-workflow.md#continuous-validation).
 
 ---
 
 ## Version
 
-Current application version: **1.3.0**
+Current application version: **1.4.0**
 
 ## Design and accessibility review
 

@@ -1,0 +1,13 @@
+.link-primary {
+  border-color: color-mix(in srgb, var(--band-text) 55%, var(--band-background));
+  border-radius: var(--radius-field);
+  background: var(--band-text);
+  color: var(--band-background);
+}
+.link-primary:focus-visible {
+  outline-color: var(--band-text);
+}
+.link-primary.project-link--outline {
+  background: transparent;
+  color: var(--band-text);
+}

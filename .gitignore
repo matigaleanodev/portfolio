@@ -9,6 +9,9 @@
 
 # Node
 /node_modules
+/tools/firebase-cli/node_modules
+/firebase-debug.log
+/.firebase
 npm-debug.log
 yarn-error.log
 

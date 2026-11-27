@@ -1,8 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
-import { inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { defer, from } from 'rxjs';
+import {
+  inject,
+  Injectable,
+  makeStateKey,
+  PendingTasks,
+  PLATFORM_ID,
+  TransferState,
+} from '@angular/core';
+import { defer, finalize, from, of, shareReplay, tap } from 'rxjs';
 import { Project } from '../models/project.model';
+
+const PROJECTS_KEY = makeStateKey<Project[]>('projects');
 
 @Injectable({
   providedIn: 'root',
@@ -11,12 +20,30 @@ export class ProjectContentService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
 
+  private readonly transferState = inject(TransferState);
+  private readonly pendingTasks = inject(PendingTasks);
+
+  // La lista y las fichas comparten la carga; tras un error se vuelve a pedir.
+  private readonly request$ = this.http
+    .get<Project[]>('/assets/projects.json')
+    .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+
   getProjects() {
     if (isPlatformServer(this.platformId)) {
-      return defer(() => from(this.readProjectsFile()));
+      return defer(() => {
+        const finish = this.pendingTasks.add();
+        return from(this.readProjectsFile()).pipe(
+          tap((projects) => this.transferState.set(PROJECTS_KEY, projects)),
+          finalize(finish),
+        );
+      });
     }
 
-    return this.http.get<Project[]>('/assets/projects.json');
+    // La hidratación necesita los datos en forma síncrona para conservar el prerender.
+    const transferred = this.transferState.get(PROJECTS_KEY, null);
+    if (transferred) return of(transferred);
+
+    return this.request$;
   }
 
   private async readProjectsFile(): Promise<Project[]> {
@@ -45,9 +72,11 @@ function loadNodePath(): Promise<NodePathModule> {
 }
 
 function getProcessCwd(): string {
-  const processRef = (globalThis as typeof globalThis & {
-    process?: { cwd?: () => string };
-  }).process;
+  const processRef = (
+    globalThis as typeof globalThis & {
+      process?: { cwd?: () => string };
+    }
+  ).process;
 
   if (!processRef?.cwd) {
     throw new Error('Process cwd is not available in the current runtime.');

@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { NgStyle } from '@angular/common';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -15,7 +14,6 @@ import { ProjectContentService } from '../../services/project-content.service';
 })
 class ProjectCardStubComponent {
   @Input({ required: true }) project!: Project;
-  @Input() index = 1;
 }
 
 const createProject = (overrides: Partial<Project>): Project => ({
@@ -55,7 +53,7 @@ describe('ProjectsComponent', () => {
     })
       .overrideComponent(ProjectsComponent, {
         set: {
-          imports: [NgStyle, ProjectCardStubComponent],
+          imports: [ProjectCardStubComponent],
         },
       })
       .compileComponents();
@@ -104,5 +102,18 @@ describe('ProjectsComponent', () => {
     const cards = el.querySelectorAll('app-project-card');
 
     expect(cards.length).toBe(3);
+  });
+
+  it('incluye todos los proyectos en la misma lista', () => {
+    getProjectsMock.mockReturnValueOnce(
+      of([
+        createProject({ slug: 'a', order: 1, featured: true }),
+        createProject({ slug: 'b', order: 2 }),
+      ]),
+    );
+
+    fixture = TestBed.createComponent(ProjectsComponent);
+
+    expect(fixture.componentInstance.sortedProjects().map((p) => p.slug)).toEqual(['a', 'b']);
   });
 });

@@ -13,7 +13,7 @@ describe('ContactComponent', () => {
   let component: ContactComponent;
 
   const sendContactMock = vi.fn<(dto: ContactDto) => Observable<unknown>>();
-  const showMock = vi.fn<(message: string, type: 'success' | 'error') => void>();
+  const showMock = vi.fn<(message: string) => void>();
   const trackEventMock = vi.fn<(eventName: string, params?: Record<string, unknown>) => void>();
 
   beforeEach(async () => {
@@ -39,6 +39,15 @@ describe('ContactComponent', () => {
     component = fixture.componentInstance;
 
     vi.clearAllMocks();
+  });
+
+  it('muestra el éxito en contexto sin una segunda región que lo anuncie', () => {
+    component.submitSucceeded.set(true);
+    fixture.detectChanges();
+    const success = fixture.nativeElement.querySelector('.feedback--success');
+
+    expect(success).toBeTruthy();
+    expect(success.closest('[role="status"], [role="alert"], [aria-live]')).toBeNull();
   });
 
   it('debería crearse', () => {
@@ -84,7 +93,7 @@ describe('ContactComponent', () => {
       expect.objectContaining({ message_length: expectedDto.message.length }),
     );
     expect(trackEventMock).toHaveBeenCalledWith('contact_submit_success');
-    expect(showMock).toHaveBeenCalledWith('Mensaje enviado correctamente', 'success');
+    expect(showMock).toHaveBeenCalledWith('Mensaje enviado correctamente');
 
     expect(component.form.get('name')?.value).toBe('');
     expect(component.form.get('email')?.value).toBe('');
@@ -92,41 +101,65 @@ describe('ContactComponent', () => {
     expect(component.form.get('company')?.value).toBe('');
   });
 
-  it('debería mostrar toast error cuando el backend falla', () => {
-    sendContactMock.mockReturnValueOnce(
-      throwError(() => ({ error: { message: 'No se pudo enviar' } })),
-    );
+  const validValue = {
+    name: 'Matias',
+    email: 'matias@test.com',
+    message: 'Hola esto es un mensaje válido',
+    company: '',
+  };
 
-    component.form.setValue({
-      name: 'Matias',
-      email: 'matias@test.com',
-      message: 'Hola esto es un mensaje válido',
-      company: '',
+  for (const [status, expected] of [
+    [429, 'Hay demasiados intentos. Esperá un momento y volvé a probar.'],
+    [400, 'No pudimos aceptar los datos. Revisalos y volvé a enviar.'],
+    [503, 'No se pudo enviar el mensaje. Intentalo nuevamente en unos minutos.'],
+    [0, 'No se pudo conectar. Revisá tu conexión y volvé a probar.'],
+  ] as const) {
+    it(`muestra en contexto un error en español para el estado ${status}, sin toast`, () => {
+      sendContactMock.mockReturnValueOnce(
+        throwError(() => ({ status, error: { message: ['Rate limit'] }, message: 'Http failure' })),
+      );
+      component.form.setValue(validValue);
+
+      component.submit();
+      fixture.detectChanges();
+
+      expect(component.submitError()).toBe(expected);
+      expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain(expected);
+      expect(showMock).not.toHaveBeenCalled();
+      expect(component.form.getRawValue()).toEqual(validValue);
+      expect(trackEventMock).toHaveBeenCalledWith('contact_submit_error', { status });
     });
+  }
+
+  it('mientras envía usa Loading sin disabled nativo y deja los campos de solo lectura', () => {
+    sendContactMock.mockReturnValueOnce(new Observable());
+    component.form.setValue(validValue);
 
     component.submit();
+    fixture.detectChanges();
 
-    expect(showMock).toHaveBeenCalledWith('No se pudo enviar', 'error');
-    expect(trackEventMock).toHaveBeenCalledWith(
-      'contact_submit_error',
-      expect.objectContaining({ status: undefined }),
-    );
+    const el = fixture.nativeElement as HTMLElement;
+    const button = el.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    expect(button.disabled).toBe(false);
+    expect(button.getAttribute('aria-disabled')).toBe('true');
+    expect(button.getAttribute('aria-busy')).toBe('true');
+    expect(button.textContent).toContain('Enviando…');
+    expect(el.querySelector<HTMLInputElement>('#contact-name')!.readOnly).toBe(true);
+    expect(el.querySelector<HTMLTextAreaElement>('#contact-message')!.readOnly).toBe(true);
+    component.submit();
+    expect(sendContactMock).toHaveBeenCalledTimes(1);
   });
 
-  it('debería resolver errores de validación del backend con message array', () => {
-    sendContactMock.mockReturnValueOnce(
-      throwError(() => ({ status: 429, error: { message: ['Rate limit'] } })),
-    );
+  it('deja el botón habilitado y al enviar inválido enfoca el primer campo con error', () => {
+    document.body.appendChild(fixture.nativeElement);
+    component.form.patchValue({ name: 'Matias', email: 'mal' });
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
 
-    component.form.setValue({
-      name: 'Ma',
-      email: 'matias@test.com',
-      message: 'Hola esto es un mensaje válido',
-      company: '',
-    });
-
+    expect(el.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(false);
     component.submit();
 
-    expect(component.submitError()).toBe('Rate limit');
+    expect(document.activeElement?.id).toBe('contact-email');
+    el.remove();
   });
 });

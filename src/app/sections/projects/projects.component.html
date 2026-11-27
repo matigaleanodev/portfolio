@@ -1,37 +1,18 @@
-<section id="projects" tabindex="-1" class="projects-shell py-14 md:py-20">
-  <div class="max-w-6xl mx-auto px-6 space-y-10 md:space-y-12">
+<section id="projects" tabindex="-1" class="projects-shell" aria-labelledby="projects-title">
+  <div class="page-container projects-body">
     <header class="projects-intro">
-      <div class="projects-intro__eyebrow">
-        <span class="projects-intro__line" aria-hidden="true"></span>
-        <span>Casos de desarrollo</span>
-      </div>
-
-      <div class="projects-intro__copy">
-        <h2 class="section-title">Proyectos destacados</h2>
-        <p class="text-base md:text-lg opacity-75 max-w-3xl leading-relaxed">
-          Una selección de proyectos donde combiné producto, backend, arquitectura y cloud.
-        </p>
-      </div>
+      <h2 id="projects-title" class="section-title">Proyectos</h2>
+      <p>Una selección de proyectos donde combiné producto, backend, arquitectura y cloud.</p>
     </header>
 
-    @if (errorMessage() && !sortedProjects().length) {
-      <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-        No se pudieron cargar los proyectos.
-        @if (errorMessage()) {
-          <span class="block opacity-80">{{ errorMessage() }}</span>
-        }
-      </div>
+    @if (errorMessage() && !projects().length) {
+      <p class="feedback feedback--danger" role="alert">
+        No se pudieron cargar los proyectos. Recargá la página para volver a intentar.
+      </p>
     } @else {
       <div class="projects-grid">
         @for (project of sortedProjects(); track project.slug) {
-          <div
-            class="project-stage"
-            [ngStyle]="{
-              '--project-delay': $index * 130 + 'ms',
-            }"
-          >
-            <app-project-card [project]="project" [index]="$index + 1" />
-          </div>
+          <app-project-card [project]="project" />
         }
       </div>
     }
