@@ -48,6 +48,10 @@ describe('workflow de publicación', () => {
     expect(workflow).not.toMatch(/firebase-tools@/);
   });
 
+  it('construye la 404 que publica Hosting', () => {
+    expect(step('Build Angular app')).toContain('run: npm run build:app');
+  });
+
   it('no concede más que lectura y OIDC, ni deja el token en el checkout', () => {
     expect(workflow).toContain('permissions:\n  contents: read\n  id-token: write\n\n');
     expect(step('Checkout repository')).toContain('persist-credentials: false');

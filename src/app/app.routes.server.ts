@@ -30,6 +30,10 @@ export const serverRoutes: ServerRoute[] = [
     getPrerenderParams: () => loadSlugs('blog/posts.json'),
   },
   {
+    path: '404',
+    renderMode: RenderMode.Prerender,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender,
   },

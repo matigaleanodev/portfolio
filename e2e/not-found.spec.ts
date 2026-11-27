@@ -18,27 +18,21 @@ const missing = [
 
 test.use({ serviceWorkers: 'block' });
 
-/** Como el rewrite de Hosting: lo que no tiene archivo propio recibe el index con 200. */
-async function emulateHosting(page: Page, baseURL: string) {
+// El emulador de Hosting responde 404; el servidor de desarrollo no distingue estados.
+const missingStatus = process.env['PORTFOLIO_E2E_BUILD'] === 'true' ? 404 : 200;
+
+async function isolateRequests(page: Page, baseURL: string) {
   const origin = new URL(baseURL).origin;
-  await page.route('**/*', async (route) => {
+  await page.route('**/*', (route) => {
     const url = new URL(route.request().url());
     if (url.pathname.startsWith('/api/')) {
       return route.fulfill({ json: { suggestedQuestions: [] } });
     }
-    if (url.origin !== origin) return route.abort();
-    const response = await route.fetch();
-    // El servidor local lista las carpetas sin index; Hosting aplica el rewrite.
-    const isDocument = route.request().resourceType() === 'document';
-    const hasFile =
-      response.status() !== 404 &&
-      !(isDocument && (await response.text()).includes('Directory listing for'));
-    if (hasFile) return route.fulfill({ response });
-    return route.fulfill({ response: await route.fetch({ url: `${origin}/index.html` }) });
+    return url.origin === origin ? route.continue() : route.abort();
   });
 }
 
-test.beforeEach(({ page, baseURL }) => emulateHosting(page, baseURL!));
+test.beforeEach(({ page, baseURL }) => isolateRequests(page, baseURL!));
 // Los pedidos que sigan en vuelo al terminar no son parte de la prueba.
 test.afterEach(({ page }) => page.unrouteAll({ behavior: 'ignoreErrors' }));
 
@@ -93,7 +87,7 @@ for (const path of missing) {
 
     const response = await page.goto(path);
 
-    expect(response?.status()).toBe(200);
+    expect(response?.status()).toBe(missingStatus);
     await expectNotFoundPage(page);
     const url = new URL(page.url());
     expect(url.pathname + url.search + url.hash).toBe(path);
@@ -166,8 +160,20 @@ const missingContent = [
 
 for (const state of missingContent) {
   test(`un ${state.name} inexistente comparte el estado 404 y sus metadatos`, async ({ page }) => {
-    await page.goto(state.path);
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'error' && !message.text().startsWith('Failed to load resource')) {
+        errors.push(message.text());
+      }
+    });
+
+    const response = await page.goto(state.path);
+    expect(response?.status()).toBe(missingStatus);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(state.heading);
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('main')).toHaveCount(1);
+    expect(errors).toEqual([]);
     await expect(page.getByText('Error 404', { exact: true })).toBeVisible();
     await expect(page).toHaveTitle(state.title);
     await expect(page).toHaveURL(new RegExp(`${state.path}$`));

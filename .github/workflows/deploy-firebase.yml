@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Angular app
         if: steps.publication.outputs.deploy == 'true'
-        run: npx ng build
+        run: npm run build:app
 
       - name: Write deployed publication state
         if: steps.publication.outputs.deploy == 'true'

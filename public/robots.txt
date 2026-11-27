@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://matiasgaleano.dev/sitemap.xml
+Sitemap: https://matiasgaleano.dev/sitemap-blog.xml

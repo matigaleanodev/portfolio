@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { RenderMode } from '@angular/ssr';
 
+import { routes } from './app.routes';
 import { serverRoutes } from './app.routes.server';
 
 interface PrerenderRouteLike {
@@ -26,8 +27,16 @@ describe('serverRoutes', () => {
       { path: 'blog', renderMode: RenderMode.Prerender },
       { path: 'blog/unsubscribe', renderMode: RenderMode.Prerender },
       { path: 'blog/:slug', renderMode: RenderMode.Prerender },
+      { path: '404', renderMode: RenderMode.Prerender },
       { path: '**', renderMode: RenderMode.Prerender },
     ]);
+  });
+
+  it('deberia declarar la 404 antes del comodin para generar su HTML', () => {
+    const paths = routes.map((route) => route.path);
+
+    expect(paths.indexOf('404')).toBeGreaterThan(-1);
+    expect(paths.indexOf('404')).toBeLessThan(paths.indexOf('**'));
   });
 
   it('deberia resolver slugs prerenderizables desde el indice del blog', async () => {

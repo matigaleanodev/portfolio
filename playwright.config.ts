@@ -15,8 +15,9 @@ export default defineConfig({
   webServer: process.env['PORTFOLIO_BASE_URL']
     ? undefined
     : {
+        // El build se sirve con el emulador de Hosting para probar la misma configuración que se publica.
         command: process.env['PORTFOLIO_E2E_BUILD'] === 'true'
-          ? 'python3 -m http.server 4200 --bind 127.0.0.1 --directory dist/portfolio/browser'
+          ? 'npm run serve:hosting'
           : 'npm start -- --host 0.0.0.0',
         url: 'http://localhost:4200',
         reuseExistingServer: !process.env['CI'],

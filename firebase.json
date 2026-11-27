@@ -1,12 +1,21 @@
 {
+  "emulators": {
+    "hosting": {
+      "host": "127.0.0.1",
+      "port": 4200
+    },
+    "ui": {
+      "enabled": false
+    }
+  },
   "hosting": {
     "public": "dist/portfolio/browser",
     "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "regex": "^/+blog/unsubscribe;[^/]*/?$",
+        "destination": "/blog/unsubscribe/index.html"
       }
     ],
     "headers": [
