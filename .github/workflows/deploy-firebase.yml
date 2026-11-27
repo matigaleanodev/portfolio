@@ -45,8 +45,11 @@ jobs:
       - name: Build content artifacts
         run: npm run build:content
 
+      # Solo la cabeza de main puede publicar: se confirma acá y otra vez antes de cada efecto.
       - name: Check whether Firebase needs a deployment
         id: publication
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/publication-state.mjs
 
       - name: Build Angular app
@@ -69,7 +72,11 @@ jobs:
 
       - name: Deploy to Firebase Hosting
         if: steps.publication.outputs.deploy == 'true'
-        run: tools/firebase-cli/node_modules/.bin/firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/current-revision.mjs
+          tools/firebase-cli/node_modules/.bin/firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -90,7 +97,9 @@ jobs:
         env:
           # Un reintento del CLI solaparía dos publicaciones; la corrida siguiente retoma lo pendiente.
           AWS_MAX_ATTEMPTS: '1'
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
+          node scripts/current-revision.mjs
           aws lambda invoke \
             --cli-read-timeout 70 \
             --function-name "${PROCESS_RELEASE_FUNCTION_NAME}" \
@@ -106,7 +115,10 @@ jobs:
       - name: Invoke portfolio-cloud publish-chat-knowledge
         # Un aviso incompleto falla el job, pero no puede dejar vencer el conocimiento del chat.
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
+          node scripts/current-revision.mjs
           aws lambda invoke \
             --function-name "${PUBLISH_CHAT_KNOWLEDGE_FUNCTION_NAME}" \
             --invocation-type RequestResponse \

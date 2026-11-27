@@ -34,6 +34,27 @@ describe('workflow de publicación', () => {
     expect(step('Invoke portfolio-cloud process-release')).not.toMatch(/\n\s+if:/);
   });
 
+  it.each([
+    ['Deploy to Firebase Hosting', 'tools/firebase-cli/node_modules/.bin/firebase deploy'],
+    ['Invoke portfolio-cloud process-release', 'aws lambda invoke'],
+    ['Invoke portfolio-cloud publish-chat-knowledge', 'aws lambda invoke'],
+  ])('confirma la revisión vigente justo antes del efecto: %s', (name, effect) => {
+    const block = step(name);
+    const lines = block.split('\n').map((line) => line.trim());
+    const guard = lines.indexOf('node scripts/current-revision.mjs');
+
+    expect(block).toContain('GITHUB_TOKEN: ${{ github.token }}');
+    expect(guard).toBeGreaterThan(-1);
+    expect(lines.findIndex((line) => line.startsWith(effect))).toBe(guard + 1);
+    expect(block).not.toContain('continue-on-error');
+  });
+
+  it('confirma la revisión también en la decisión inicial', () => {
+    expect(step('Check whether Firebase needs a deployment')).toContain(
+      'GITHUB_TOKEN: ${{ github.token }}',
+    );
+  });
+
   it('despliega solo con la CLI de Firebase fijada por lockfile', () => {
     const read = (file: string) =>
       JSON.parse(readFileSync(join(process.cwd(), 'tools/firebase-cli', file), 'utf8'));
