@@ -63,6 +63,9 @@ export class BlogListPage {
   private readonly listState = inject(BlogListStateService);
   private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
   private readonly resultsStatus = viewChild<ElementRef<HTMLElement>>('resultsStatus');
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly reorderAnimations = new WeakMap<HTMLElement, Animation>();
+  private reorderScheduled = false;
 
   protected readonly successIcon = CircleCheck;
   protected readonly errorIcon = CircleAlert;
@@ -186,6 +189,7 @@ export class BlogListPage {
       return;
     }
 
+    this.scheduleReorderAnimation();
     this.listState.sortOrder.set(order);
     this.analytics.trackEvent('sort_blog_posts', {
       sort_order: order,
@@ -250,6 +254,44 @@ export class BlogListPage {
 
   private focusAfterRender(target: () => ElementRef<HTMLElement> | undefined): void {
     afterNextRender({ write: () => target()?.nativeElement.focus() }, { injector: this.injector });
+  }
+
+  private scheduleReorderAnimation(): void {
+    if (this.reorderScheduled) return;
+
+    const host = this.host.nativeElement;
+    const browser = host.ownerDocument.defaultView;
+    const cards = [...host.querySelectorAll<HTMLElement>('.blog-card')];
+    const canAnimate = browser?.matchMedia?.('(prefers-reduced-motion: reduce)').matches === false;
+    // Si hay una animación en curso, la próxima parte desde la posición visible.
+    const positions = canAnimate ? cards.map((card) => card.getBoundingClientRect()) : [];
+    for (const card of cards) {
+      this.reorderAnimations.get(card)?.cancel();
+    }
+    if (positions.length < 2) return;
+
+    this.reorderScheduled = true;
+    afterNextRender(
+      {
+        earlyRead: () =>
+          cards.map((card, index) => {
+            const { left, top } = card.getBoundingClientRect();
+            return { card, x: positions[index].left - left, y: positions[index].top - top };
+          }),
+        write: (moves) => {
+          this.reorderScheduled = false;
+          for (const { card, x, y } of moves) {
+            if (!card.isConnected || (!x && !y)) continue;
+            const animation = card.animate(
+              [{ transform: `translate(${x}px, ${y}px)` }, { transform: 'none' }],
+              { duration: 300, easing: 'ease-in-out' },
+            );
+            this.reorderAnimations.set(card, animation);
+          }
+        },
+      },
+      { injector: this.injector },
+    );
   }
 
   private normalizeSearch(value: string): string {

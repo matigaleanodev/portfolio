@@ -205,8 +205,8 @@ body {
 
 /* Enlaces secundarios de un proyecto, agrupados como lista bajo la acción principal. */
 .project-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11.5rem), 1fr));
+  display: flex;
+  flex-wrap: wrap;
   column-gap: var(--space-4);
   margin: 0;
   padding: var(--space-1) 0 0;
@@ -444,27 +444,13 @@ body {
 .segment > input:checked + .btn--toggle {
   border-color: var(--color-accent);
   background: var(--color-accent-subtle);
+  color: var(--color-accent);
   box-shadow: inset 0 0 0 2px var(--color-accent);
 }
 .segment > input:focus-visible + .btn--toggle {
   outline: 3px solid var(--color-focus);
   outline-offset: 4px;
 }
-.segment__check {
-  position: relative;
-}
-.segment > input:checked + .btn--toggle .segment__check::after {
-  content: '';
-  position: absolute;
-  top: 0.125rem;
-  left: 0.3125rem;
-  width: 0.3125rem;
-  height: 0.5625rem;
-  border: solid var(--color-accent);
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
 .btn:disabled,
 .btn:disabled:hover,
 .btn:disabled:active {
@@ -519,13 +505,13 @@ body {
   height: 1rem;
   flex: none;
 }
-.btn > .btn__slot:not(.segment__check) {
+.btn > .btn__slot {
   position: absolute;
   inset-block: 0;
   inset-inline-start: var(--space-1);
   margin-block: auto;
 }
-.btn > .btn__slot:empty:not(.segment__check) {
+.btn > .btn__slot:empty {
   display: none;
 }
 .btn__spinner {
@@ -589,9 +575,6 @@ body {
   }
   .segment > .btn--toggle {
     position: relative;
-  }
-  .segment__check::after {
-    border-color: Highlight !important;
   }
   .btn:disabled {
     border-color: GrayText;

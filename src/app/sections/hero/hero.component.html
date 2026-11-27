@@ -1,33 +1,51 @@
-<section class="site-band py-16 md:py-20">
-  <div class="page-container space-y-7 hero-shell">
-    <div class="hero-accent inline-flex items-center" aria-hidden="true">
-      <span class="hero-accent__line" aria-hidden="true"></span>
+<section class="site-band hero">
+  <div class="page-container hero-shell">
+    <div class="space-y-7 hero-copy">
+      <h1 class="text-4xl md:text-6xl font-semibold leading-[0.98] tracking-[-0.03em]">
+        Matias Galeano
+      </h1>
+
+      <div class="space-y-2">
+        <p class="text-lg md:text-2xl opacity-95 m-0 font-medium tracking-[-0.02em]">
+          Desarrollador full stack
+        </p>
+        <p class="text-sm md:text-base opacity-65 m-0 font-mono tracking-[0.06em] uppercase">
+          Angular · TypeScript · AWS
+        </p>
+      </div>
+
+      <p class="max-w-2xl text-base md:text-lg opacity-78 mt-6 leading-relaxed">
+        Desarrollo aplicaciones con Angular y TypeScript, y diseño los servicios en AWS que las
+        acompañan.
+      </p>
+      <p class="max-w-2xl text-sm md:text-base opacity-78 leading-relaxed">
+        Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para
+        Fondos Comunes de Inversión.
+      </p>
+      <nav class="hero-actions" aria-label="Explorar portfolio">
+        <a appFragmentLink="projects" class="hero-action hero-action--primary">Ver proyectos</a>
+        <a appFragmentLink="contact" class="hero-action">Contactarme</a>
+      </nav>
     </div>
 
-    <h1 class="text-4xl md:text-6xl font-semibold leading-[0.98] tracking-[-0.03em]">
-      Matias Galeano
-    </h1>
-
-    <div class="space-y-2">
-      <p class="text-lg md:text-2xl opacity-95 m-0 font-medium tracking-[-0.02em]">
-        Desarrollador full stack
-      </p>
-      <p class="text-sm md:text-base opacity-65 m-0 font-mono tracking-[0.06em] uppercase">
-        Angular · TypeScript · AWS
-      </p>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 280 280" width="280" height="280" focusable="false">
+        <g fill="none" stroke="currentColor" stroke-width=".7">
+          <circle cx="140" cy="140" r="112" opacity=".1" />
+          <circle cx="140" cy="140" r="91" opacity=".2" stroke-dasharray="3 6" />
+          <circle cx="140" cy="140" r="73" opacity=".16" />
+          <path d="M14 140h252M140 14v252" opacity=".12" />
+        </g>
+        <g fill="currentColor" opacity=".34">
+          <circle cx="49" cy="140" r="2.5" />
+          <circle cx="231" cy="140" r="2.5" />
+          <circle cx="140" cy="49" r="2.5" />
+          <circle cx="140" cy="231" r="2.5" />
+        </g>
+      </svg>
     </div>
-
-    <p class="max-w-2xl text-base md:text-lg opacity-78 mt-6 leading-relaxed">
-      Desarrollo aplicaciones con Angular y TypeScript, y diseño los servicios en AWS que las
-      acompañan.
-    </p>
-    <p class="max-w-2xl text-sm md:text-base opacity-78 leading-relaxed">
-      Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para
-      Fondos Comunes de Inversión.
-    </p>
-    <nav class="hero-actions" aria-label="Explorar portfolio">
-      <a appFragmentLink="projects" class="hero-action hero-action--primary">Ver proyectos</a>
-      <a appFragmentLink="contact" class="hero-action">Contactarme</a>
-    </nav>
   </div>
+  <a appFragmentLink="projects" class="hero-scroll" aria-label="Desplazarse a proyectos">
+    <lucide-icon [img]="scrollIcon" size="22" aria-hidden="true" />
+  </a>
 </section>

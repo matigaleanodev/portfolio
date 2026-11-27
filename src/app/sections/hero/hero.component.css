@@ -1,28 +1,30 @@
-.hero-shell {
-  position: relative;
+.hero {
+  --hero-rule-inset: max(var(--space-6), calc((100% - 75rem) / 2 + var(--space-6)));
+  display: grid;
+  grid-template-rows: minmax(var(--space-8), 1fr) auto minmax(var(--space-20), 1fr);
 }
-
-.hero-shell::after {
+.hero::before,
+.hero::after {
   content: '';
-  display: block;
-  width: min(420px, 76vw);
-  height: 1px;
-  margin-top: 0.75rem;
+  grid-column: 1;
+  width: min(30rem, 68vw);
   background: linear-gradient(
-    90deg,
-    color-mix(in srgb, currentColor 50%, transparent),
-    transparent
-  );
+      var(--hero-rule-direction, 90deg),
+      color-mix(in srgb, currentColor 50%, transparent),
+      transparent
+    )
+    0 var(--hero-rule-position, 70%) / 100% 1px no-repeat;
+  pointer-events: none;
 }
-
-.hero-accent__line {
-  width: min(420px, 76vw);
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, currentColor 50%, transparent),
-    transparent
-  );
+.hero::before {
+  justify-self: start;
+  margin-inline-start: var(--hero-rule-inset);
+}
+.hero::after {
+  --hero-rule-direction: 270deg;
+  --hero-rule-position: 30%;
+  justify-self: end;
+  margin-inline-end: var(--hero-rule-inset);
 }
 
 .hero-actions {
@@ -51,4 +53,93 @@
 .hero-action:hover {
   text-decoration: underline;
   text-underline-offset: 0.2em;
+}
+
+.hero::after,
+.hero-scroll {
+  grid-area: 3 / 1;
+}
+.hero-scroll {
+  display: grid;
+  place-items: center;
+  align-self: end;
+  justify-self: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-block-end: var(--space-1);
+  border-radius: var(--radius-pill);
+  color: color-mix(in srgb, var(--band-text) 75%, var(--band-background));
+}
+.hero-scroll:hover {
+  color: var(--band-text);
+}
+.hero-scroll:focus-visible {
+  outline-color: var(--band-text);
+}
+
+.hero-art {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .hero {
+    grid-template-rows: minmax(var(--space-12), 1fr) auto minmax(var(--space-20), 1fr);
+  }
+  .hero-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--space-6);
+  }
+  .hero-copy h1 {
+    font-size: 3rem;
+  }
+  .hero-art {
+    position: relative;
+    display: block;
+    width: min(100%, 18rem, 44svh);
+    margin-inline: auto;
+    pointer-events: none;
+  }
+  .hero-art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .hero-art::after {
+    position: absolute;
+    inset: 26%;
+    background: currentColor;
+    mask: url('/assets/icons/matias-galeano.svg') center / contain no-repeat;
+    opacity: 0.25;
+    content: '';
+  }
+}
+@media (min-width: 64rem) {
+  .hero {
+    min-block-size: calc(100svh - var(--home-header-height, 0px));
+    grid-template-rows: minmax(var(--space-16), 1fr) auto minmax(var(--space-16), 1fr);
+  }
+  .hero-shell {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    column-gap: var(--space-8);
+  }
+  .hero-copy h1 {
+    font-size: 3.75rem;
+  }
+  .hero-art {
+    width: min(100%, 30rem, 54svh);
+  }
+}
+@media (min-width: 64rem) and (max-height: 48rem) {
+  .hero {
+    grid-template-rows: minmax(var(--space-8), 1fr) auto minmax(var(--space-16), 1fr);
+  }
+  .hero-copy {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .hero-copy > * {
+    margin-block: 0;
+  }
 }

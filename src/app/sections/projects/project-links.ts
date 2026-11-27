@@ -1,32 +1,18 @@
-import { computed, inject, Signal } from '@angular/core';
-import { BookOpen, Code, LucideIconData, Play, Server } from 'lucide-angular';
+import { computed, Signal } from '@angular/core';
 
-import { Project, ProjectLink } from '../../models/project.model';
-import { AnalyticsService } from '../../services/analytics.service';
+import { Project } from '../../models/project.model';
 
-const ICONS: Record<string, LucideIconData> = {
-  code: Code,
-  server: Server,
-  bookopen: BookOpen,
-  play: Play,
-};
-
-/** Enlaces de la ficha de un proyecto. Requiere contexto de inyección. */
 export function projectLinks(project: Signal<Project | null | undefined>) {
-  const analytics = inject(AnalyticsService);
-  const primary = computed<ProjectLink | null>(() => {
+  return computed(() => {
     const links = project()?.links ?? [];
-    return links.find((link) => link.primary) ?? links[0] ?? null;
-  });
+    const primary = links.find((link) => link.primary) ?? links[0];
+    const repository = links.find((link) => link !== primary && link.icon === 'code');
+    const hero = primary ? [primary] : [];
+    if (repository) hero.push(repository);
 
-  return {
-    primary,
-    secondary: computed(() => (project()?.links ?? []).filter((link) => link !== primary())),
-    iconFor: (name?: string): LucideIconData => ICONS[name ?? ''] ?? Code,
-    track: (linkName: string) =>
-      analytics.trackEvent('click_project_link', {
-        project_name: project()?.title,
-        link_name: linkName,
-      }),
-  };
+    return {
+      hero,
+      related: links.filter((link) => !hero.includes(link)),
+    };
+  });
 }

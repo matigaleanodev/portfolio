@@ -52,12 +52,27 @@ test('con poca altura y 320px el campo del chat ocupa todo el ancho', async ({ p
   await expect(page.locator('#chat-counter')).toBeInViewport({ ratio: 1 });
 });
 
-test('a 1440 × 900 se ven las primeras tarjetas', async ({ page }) => {
+test('el header y el hero completan el primer pantallazo en escritorio', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
-  const card = (await page.locator('.project-card').first().boundingBox())!;
-  expect(card.y).toBeLessThanOrEqual(860);
+  const projects = page.locator('#projects');
+  await expect.poll(async () => (await projects.boundingBox())!.y).toBeCloseTo(900, 0);
+  await expect(page.locator('.hero-art')).toBeVisible();
+  await expect(page.locator('#projects-title')).not.toBeInViewport();
+
+  await page.locator('app-header').evaluate((header) => {
+    header.style.paddingBottom = '18px';
+  });
+  await expect.poll(async () => (await projects.boundingBox())!.y).toBeCloseTo(900, 0);
+
+  await page.getByRole('link', { name: 'Desplazarse a proyectos' }).click();
+  await expect(projects).toBeFocused();
+  await expect(page.locator('#projects-title')).toBeInViewport();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await expect(page.locator('.hero-art')).toBeHidden();
 });
 
 test('Modo Playa comparte la grilla de proyectos y abre su ficha', async ({ page }) => {

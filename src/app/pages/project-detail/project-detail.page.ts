@@ -1,18 +1,20 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { afterNextRender, Component, effect, ElementRef, inject, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArrowLeft, LucideAngularModule } from 'lucide-angular';
 import { catchError, map, of, switchMap } from 'rxjs';
 
+import { ProjectLinkComponent } from '../../sections/projects/project-link.component';
 import { projectLinks } from '../../sections/projects/project-links';
 import { ProjectContentService } from '../../services/project-content.service';
 import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-project-detail-page',
-  imports: [LucideAngularModule],
+  imports: [LucideAngularModule, NgTemplateOutlet, ProjectLinkComponent],
   templateUrl: './project-detail.page.html',
-  styleUrl: './project-detail.page.css',
+  styleUrls: ['./project-detail.page.css', '../../sections/projects/project-tech-chip.css'],
 })
 export class ProjectDetailPage {
   protected readonly backIcon = ArrowLeft;

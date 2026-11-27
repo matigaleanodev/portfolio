@@ -32,6 +32,97 @@ const search = (page: Page) => page.getByLabel('Buscar posts');
 const noOverflow = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
 
+for (const width of [390, 1280]) {
+  test(`el orden anima las mismas tarjetas y permite invertir el movimiento a ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/blog');
+    await page.waitForLoadState('networkidle');
+    const firstCard = (await cards(page).first().elementHandle())!;
+    const newest = page.getByRole('radio', { name: 'Más nuevos' });
+    const oldest = page.getByRole('radio', { name: 'Más viejos' });
+    const labels = page.locator('.blog-sort label');
+    const dimensions = () =>
+      labels.evaluateAll((items) =>
+        items.map(({ clientWidth, clientHeight }) => [clientWidth, clientHeight]),
+      );
+    const initialDimensions = await dimensions();
+    const textOffsets = await labels.evaluateAll((items) =>
+      items.map((label) => {
+        const range = document.createRange();
+        range.selectNodeContents(label);
+        const text = range.getBoundingClientRect();
+        const button = label.getBoundingClientRect();
+        return Math.abs(text.left + text.width / 2 - (button.left + button.width / 2));
+      }),
+    );
+    for (const offset of textOffsets) expect(offset).toBeLessThan(1);
+
+    await newest.focus();
+    await expect(newest).toBeFocused();
+    await newest.press('ArrowRight');
+    await expect(oldest).toBeChecked();
+    await expect(labels.last()).toHaveCSS('outline-style', 'solid');
+    expect(await dimensions()).toEqual(initialDimensions);
+    await expect.poll(() => firstCard.evaluate((card) => card.getAnimations().length)).toBe(1);
+
+    const motion = await page.locator('.blog-cards-grid').evaluate((grid) => {
+      const effects = grid.getAnimations({ subtree: true }).map(({ effect }) => {
+        const keyframes = effect as KeyframeEffect;
+        return {
+          card: keyframes.target?.matches('.blog-card'),
+          duration: keyframes.getTiming().duration,
+          from: keyframes.getKeyframes()[0]['transform'],
+        };
+      });
+      return { container: grid.getAnimations().length, effects };
+    });
+    expect(motion.container).toBe(0);
+    expect(motion.effects.length).toBeGreaterThan(1);
+    expect(motion.effects.every(({ card, duration }) => card && duration === 300)).toBe(true);
+    expect(new Set(motion.effects.map(({ from }) => from)).size).toBeGreaterThan(1);
+
+    const interrupted = await firstCard.evaluate((card) => {
+      const [animation] = card.getAnimations();
+      animation.pause();
+      animation.currentTime = 150;
+      const { x, y } = card.getBoundingClientRect();
+      document.querySelector<HTMLInputElement>('#blog-order-newest')!.click();
+      return { x, y };
+    });
+
+    await expect(newest).toBeChecked();
+    const resumed = await firstCard.evaluate((card) => {
+      const [animation] = card.getAnimations();
+      animation.pause();
+      animation.currentTime = 0;
+      const { x, y } = card.getBoundingClientRect();
+      animation.play();
+      return { x, y };
+    });
+    expect(resumed.x).toBeCloseTo(interrupted.x);
+    expect(resumed.y).toBeCloseTo(interrupted.y);
+    await expect.poll(() => firstCard.evaluate((card) => card.getAnimations().length)).toBe(0);
+    expect(await firstCard.evaluate((card) => document.querySelector('.blog-card') === card)).toBe(
+      true,
+    );
+    expect(await dimensions()).toEqual(initialDimensions);
+  });
+}
+
+test('orden cambia sin animar las tarjetas con movimiento reducido', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/blog');
+  await page.waitForLoadState('networkidle');
+  const title = await cards(page).first().locator('h2').innerText();
+  await page.getByRole('radio', { name: 'Más viejos' }).check();
+  await expect(cards(page).first().locator('h2')).not.toHaveText(title);
+  expect(
+    await cards(page).evaluateAll((items) => items.every((card) => !card.getAnimations().length)),
+  ).toBe(true);
+});
+
 test('búsqueda y orden sobreviven al regreso desde un artículo', async ({ page }) => {
   await page.goto('/blog');
   await page.waitForLoadState('networkidle');
