@@ -173,7 +173,7 @@ Casos que requieren una acción adicional:
 - Rama atrasada: **Update branch**. El auto-merge no actualiza la rama; si el destino avanza mientras espera, hay que pulsarlo.
 - Check `CodeRabbit` ausente o cancelado: comentar `@coderabbitai full review` en el pull request.
 
-El check `CodeRabbit` indica que su revisión terminó, no que aprobó. También pasa cuando la omite, cuando la pausa o alcanza su límite de uso y, con la configuración predeterminada, cuando falla. Las observaciones abiertas como conversación bloquean hasta resolverlas; las incluidas solo en el cuerpo de la revisión no bloquean. Leerlas antes de integrar; el auto-merge no espera esa lectura, así que activarlo solo después de leer la revisión del head vigente o usar el merge manual.
+El check `CodeRabbit` indica que su revisión terminó, no que aprobó. También pasa cuando la omite, cuando la pausa o alcanza su límite de uso y, con la configuración predeterminada, cuando falla. Las observaciones abiertas como conversación bloquean hasta resolverlas; las incluidas solo en el cuerpo de la revisión no bloquean y el auto-merge no espera a que se lean. Para revisarlas antes de integrar, usar el merge manual.
 
 Integrar en `main` despliega automáticamente: ver [pipeline actual](#pipeline-actual).
 
