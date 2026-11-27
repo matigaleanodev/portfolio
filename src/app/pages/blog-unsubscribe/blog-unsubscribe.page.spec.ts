@@ -63,15 +63,14 @@ describe('BlogUnsubscribePage', () => {
     delete legacyDocument.portfolioUnsubscribeEmail;
   });
 
-  it('debería mantener el SEO de la página de baja', () => {
+  it('debería excluir la página de baja del índice sin declarar una canónica', () => {
     const fixture = TestBed.createComponent(BlogUnsubscribePage);
     fixture.detectChanges();
 
     expect(setPageSeoMock).toHaveBeenCalledWith({
       title: 'Baja de suscripción | Blog de Matias Galeano',
       description: 'Confirmación de baja para la suscripción del blog técnico de Matias Galeano.',
-      canonicalUrl: 'https://matiasgaleano.dev/blog/unsubscribe',
-      type: 'website',
+      noIndex: true,
     });
     expect(trackEventMock).toHaveBeenCalledWith('view_blog_unsubscribe', {
       email_prefilled: true,

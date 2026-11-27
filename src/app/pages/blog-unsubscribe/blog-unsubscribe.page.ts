@@ -55,8 +55,7 @@ export class BlogUnsubscribePage {
     this.seo.setPageSeo({
       title: 'Baja de suscripción | Blog de Matias Galeano',
       description: 'Confirmación de baja para la suscripción del blog técnico de Matias Galeano.',
-      canonicalUrl: 'https://matiasgaleano.dev/blog/unsubscribe',
-      type: 'website',
+      noIndex: true,
     });
 
     afterNextRender({
