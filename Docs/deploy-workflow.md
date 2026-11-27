@@ -82,7 +82,7 @@ Its purpose is to give `portfolio-cloud` a stable handoff artifact with:
 
 - git SHA and ref
 - deploy target metadata
-- blog post slugs
+- slug, title, date, canonical path and excerpt (optional for the consumer) of each post
 - project slugs
 - SEO file paths
 

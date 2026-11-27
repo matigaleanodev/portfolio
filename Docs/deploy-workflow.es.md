@@ -82,7 +82,7 @@ Su objetivo es dejar un artefacto de handoff estable para `portfolio-cloud` con:
 
 - SHA y ref de git
 - metadatos del target de deploy
-- slugs de posts del blog
+- slug, título, fecha, ruta canónica y extracto (opcional para el consumidor) de cada post
 - slugs de proyectos
 - paths de archivos SEO
 

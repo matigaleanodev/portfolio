@@ -30,7 +30,10 @@ describe('build-release-manifest', () => {
         ) as {
           git: { sha: string; ref: string };
           deploy: { provider: string; publicDir: string };
-          content: { posts: { slug: string }[]; projects: { slug: string }[] };
+          content: {
+            posts: { slug: string; excerpt?: string }[];
+            projects: { slug: string }[];
+          };
           seo: { rssPath: string };
         };
 
@@ -43,6 +46,13 @@ describe('build-release-manifest', () => {
           true,
         );
         expect(manifest.content.projects.length).toBeGreaterThan(0);
+
+        const index = JSON.parse(
+          readFileSync(join(fixture.root, 'src', 'assets', 'blog', 'posts.json'), 'utf8'),
+        ) as { slug: string; excerpt: string }[];
+        expect(manifest.content.posts.map(({ slug, excerpt }) => ({ slug, excerpt }))).toEqual(
+          index.map(({ slug, excerpt }) => ({ slug, excerpt })),
+        );
       } finally {
         fixture.dispose();
       }
