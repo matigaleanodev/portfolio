@@ -1,7 +1,7 @@
 import { afterNextRender, Component, effect, ElementRef, inject, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { ArrowLeft, LucideAngularModule } from 'lucide-angular';
 import { catchError, map, of, switchMap } from 'rxjs';
 
 import { projectLinks } from '../../sections/projects/project-links';
@@ -15,6 +15,8 @@ import { SeoService } from '../../services/seo.service';
   styleUrl: './project-detail.page.css',
 })
 export class ProjectDetailPage {
+  protected readonly backIcon = ArrowLeft;
+
   private readonly route = inject(ActivatedRoute);
   private readonly content = inject(ProjectContentService);
   private readonly title = viewChild<ElementRef<HTMLElement>>('title');

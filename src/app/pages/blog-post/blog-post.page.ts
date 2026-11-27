@@ -17,6 +17,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ArrowLeft, LucideAngularModule } from 'lucide-angular';
 import { EMPTY, Subject, catchError, exhaustMap, finalize, startWith, switchMap } from 'rxjs';
 import { BlogPost } from '../../models/blog.model';
 import { AnalyticsService } from '../../services/analytics.service';
@@ -30,12 +31,20 @@ type MermaidModule = typeof import('mermaid').default;
 
 @Component({
   selector: 'app-blog-post-page',
-  imports: [RouterLink, DatePipe, FragmentLinkDirective, EditorialContentDirective],
+  imports: [
+    RouterLink,
+    DatePipe,
+    FragmentLinkDirective,
+    EditorialContentDirective,
+    LucideAngularModule,
+  ],
   templateUrl: './blog-post.page.html',
   styleUrl: './blog-post.page.css',
   encapsulation: ViewEncapsulation.None,
 })
 export class BlogPostPage {
+  protected readonly backIcon = ArrowLeft;
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly route = inject(ActivatedRoute);

@@ -369,6 +369,7 @@ Copiar está en Loading desde la activación hasta que la promesa de `navigator.
 
 - Enlaces: `accent`, subrayados en prosa y listas (separación 0,2em); hover `accent-hover` con subrayado de 2px; mismo anillo de foco; visitados sin cambio. Los enlaces externos que abren otra pestaña lo dicen en su nombre accesible.
 - Encabezado con monograma y nombre a la izquierda y navegación en píldora a la derecha. La página actual usa una píldora sólida con los colores del tema invertidos y conserva aria-current. Los enlaces tienen al menos 44px de alto.
+- Los enlaces de regreso en artículos y fichas muestran «Volver» con una flecha a la izquierda y nombran el destino para tecnologías de asistencia.
 - Enlace de salto primero en el orden de tabulación; los destinos reciben foco y tienen margen de scroll de 24px.
 - El pie ocupa todo el ancho y comparte con el hero los colores de contraste del tema. Tiene 48px de relleno vertical en móvil y 96px desde 768px. La firma profesional, los botones circulares de redes y la acción redondeada «Volver arriba» forman tres columnas desde 768px. La tarjeta de suscripción sigue arriba del pie.
 

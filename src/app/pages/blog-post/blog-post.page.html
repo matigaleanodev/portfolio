@@ -3,7 +3,8 @@
     <article class="blog-post">
       <header class="blog-post__header">
         <a routerLink="/blog" class="link blog-post-back" aria-label="Volver al listado del blog">
-          Volver al blog
+          <lucide-icon [img]="backIcon" size="16" aria-hidden="true" />
+          Volver
         </a>
 
         <p class="blog-post__meta">
@@ -94,7 +95,10 @@
             </span>
           </button>
         }
-        <a routerLink="/blog" class="link">Volver al blog</a>
+        <a routerLink="/blog" class="link" aria-label="Volver al blog">
+          <lucide-icon [img]="backIcon" size="16" aria-hidden="true" />
+          Volver
+        </a>
       </div>
       <p class="blog-post-state__progress" role="status">
         {{ isRetrying() ? 'Reintentando…' : '' }}

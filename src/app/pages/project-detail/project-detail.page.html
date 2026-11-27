@@ -1,6 +1,9 @@
 <main class="page-container">
   <div class="project-detail">
-    <a href="/#projects-title" class="link">Volver a proyectos</a>
+    <a href="/#projects-title" class="link" aria-label="Volver a proyectos">
+      <lucide-icon [img]="backIcon" size="16" aria-hidden="true" />
+      Volver
+    </a>
 
     @if (project(); as current) {
       <article>

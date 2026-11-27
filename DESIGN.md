@@ -615,6 +615,7 @@ Copy is in Loading from activation until the `navigator.clipboard.writeText()` p
 
 - Links: `accent`, underlined in prose and lists (offset 0.2em); hover `accent-hover` with 2px underline; same focus ring; visited unchanged. External links that open a new tab say so in their accessible name.
 - Header: monogram and name on the left, pill-shaped navigation on the right. The current page uses a solid pill with inverted theme colors and retains its aria-current marker. Links have a minimum height of 44px.
+- Article and project back links display “Volver” with a left arrow and name their destination for assistive technology.
 - Skip link first in tab order; targets receive focus and have 24px scroll margin.
 - Footer: full-width contrasting band using the same theme colors as the hero, with 48px vertical padding on mobile and 96px from 768px. The professional byline, circular social buttons and rounded “Volver arriba” action form three columns from 768px. The existing blog subscription card sits above the footer.
 
