@@ -1,5 +1,12 @@
 # Portfolio
 
+[![CI](https://img.shields.io/github/actions/workflow/status/matigaleanodev/portfolio/ci.yml?style=flat-square&label=CI)](https://github.com/matigaleanodev/portfolio/actions/workflows/ci.yml)
+![Version](https://img.shields.io/badge/version-1.3.0-blue?style=flat-square)
+![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-DD2C00?style=flat-square&logo=firebase&logoColor=white)
+
 [Read in Spanish](./README.es.md)
 
 Public-facing portfolio application for Matias Galeano.
