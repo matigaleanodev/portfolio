@@ -120,4 +120,4 @@ Pull request CI builds the site, installs Chromium and runs Playwright against t
 
 ## Production target verified on 2026-10-09
 
-The public site uses only the `prod` stage. `dev` is reserved for testing. AWS and the three repositories use `us-east-1`; the browser console may open another region and must not be used as evidence of the deployment region. The existing frontend GitHub variables already target `portfolio-cloud-prod-process-release` and `portfolio-cloud-prod-publish-chat-knowledge`; workflow fallbacks now also target `prod`.
+The public site uses only the `prod` stage. `dev` is reserved for testing. AWS and the three repositories use `us-east-1`; the browser console may open another region and must not be used as evidence of the deployment region. The frontend GitHub variables currently target `portfolio-api-cloud-test-process-release` and `portfolio-api-cloud-test-publish-chat-knowledge`, the physical names of the `portfolio-api-cloud` installation. The workflow fallbacks are still the `portfolio-cloud` names: removing the variables would send publication back to those functions.
