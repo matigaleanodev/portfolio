@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { Bot, ChevronRight, LucideAngularModule, X } from 'lucide-angular';
+import { ArrowUp, Bot, ChevronRight, LucideAngularModule, X } from 'lucide-angular';
 import { ApiService } from '../../services/api.service';
 import { ChatSource } from '../../models/chat.model';
 import { AnalyticsService } from '../../services/analytics.service';
@@ -72,6 +72,7 @@ export class ChatComponent {
   readonly modalChange = output<boolean>();
 
   protected readonly botIcon = Bot;
+  protected readonly sendIcon = ArrowUp;
   protected readonly closeIcon = X;
 
   protected readonly isOpen = signal(false);

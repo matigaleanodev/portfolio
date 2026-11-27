@@ -8,9 +8,6 @@ import { HomePage } from './home.page';
 @Component({ selector: 'app-hero', standalone: true, template: '' })
 class HeroStubComponent {}
 
-@Component({ selector: 'app-featured-project', standalone: true, template: '' })
-class FeaturedStubComponent {}
-
 @Component({ selector: 'app-projects', standalone: true, template: '' })
 class ProjectsStubComponent {}
 
@@ -36,12 +33,7 @@ describe('HomePage', () => {
     })
       .overrideComponent(HomePage, {
         set: {
-          imports: [
-            HeroStubComponent,
-            FeaturedStubComponent,
-            ProjectsStubComponent,
-            ContactStubComponent,
-          ],
+          imports: [HeroStubComponent, ProjectsStubComponent, ContactStubComponent],
         },
       })
       .compileComponents();

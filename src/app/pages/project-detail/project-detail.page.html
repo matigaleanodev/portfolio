@@ -1,0 +1,80 @@
+<main class="page-container">
+  <div class="project-detail">
+    <a href="/#projects-title" class="link">Volver a proyectos</a>
+
+    @if (project(); as current) {
+      <article>
+        <header class="project-detail__header">
+          <img [src]="current.coverImage" alt="" width="96" height="96" decoding="async" />
+          <div>
+            <p class="project-detail__category">{{ current.productType }}</p>
+            <h1 #title class="section-title" tabindex="-1">{{ current.title }}</h1>
+          </div>
+        </header>
+
+        <p>{{ current.excerpt }}</p>
+
+        <dl class="project-detail__facts">
+          <div>
+            <dt>Decisión principal</dt>
+            <dd>{{ current.primarySignal }}</dd>
+          </div>
+          <div>
+            <dt>Cómo se usa</dt>
+            <dd>{{ current.proof }}</dd>
+          </div>
+          <div>
+            <dt>Mi aporte</dt>
+            <dd>{{ current.role }}</dd>
+          </div>
+        </dl>
+
+        <h2>Arquitectura y tecnologías</h2>
+        <p>{{ current.architecture }}</p>
+        @if (current.stack.length) {
+          <p class="project-detail__category">{{ current.stack.join(' · ') }}</p>
+        }
+
+        @if (links.primary(); as link) {
+          <a
+            [href]="link.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            (click)="links.track(link.label)"
+            [attr.aria-label]="link.label + ' de ' + current.title + ' (abre en una pestaña nueva)'"
+            class="link-primary"
+          >
+            <lucide-icon [img]="links.iconFor(link.icon)" size="16" aria-hidden="true" />
+            {{ link.label }}
+          </a>
+        }
+
+        @if (links.secondary().length) {
+          <ul class="project-links" [attr.aria-label]="'Más enlaces de ' + current.title">
+            @for (link of links.secondary(); track link.url) {
+              <li>
+                <a
+                  [href]="link.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  (click)="links.track(link.label)"
+                  [attr.aria-label]="
+                    link.label + ' de ' + current.title + ' (abre en una pestaña nueva)'
+                  "
+                  class="link"
+                >
+                  <lucide-icon [img]="links.iconFor(link.icon)" size="16" aria-hidden="true" />
+                  {{ link.label }}
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </article>
+    } @else if (project() === null) {
+      <h1 #title class="section-title" tabindex="-1">No pudimos abrir este proyecto</h1>
+    } @else {
+      <p role="status">Cargando proyecto…</p>
+    }
+  </div>
+</main>

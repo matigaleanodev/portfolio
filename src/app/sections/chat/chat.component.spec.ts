@@ -591,7 +591,7 @@ describe('ChatComponent', () => {
       expect(button.disabled).toBe(false);
       expect(button.getAttribute('aria-disabled')).toBe('true');
       expect(button.getAttribute('aria-busy')).toBe('true');
-      expect(button.textContent).toContain('Enviando…');
+      expect(button.getAttribute('aria-label')).toBe('Enviando…');
       expect(sendChatMessageMock).toHaveBeenCalledTimes(1);
     });
 

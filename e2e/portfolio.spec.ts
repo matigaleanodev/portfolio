@@ -46,9 +46,11 @@ test('contenido y destinos editoriales disponibles sin JavaScript', async ({
   await link.click();
   expect(new URL(page.url()).hash).toBe('#' + href?.split('#')[1]);
   await page.goto('/');
-  await page.getByRole('link', { name: 'Ver proyectos' }).hover();
-  await page.locator('.project-card__architecture summary').first().click();
-  await expect(page.locator('.project-card__architecture p').first()).toBeVisible();
+  await page.getByRole('link', { name: 'Ver proyecto Modo Playa', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Modo Playa', level: 1 })).toBeVisible();
+  await expect(page.getByText('Decisión principal', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Arquitectura y tecnologías' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Repositorio de la API/ })).toBeVisible();
   await context.close();
 });
 
@@ -151,8 +153,11 @@ test('búsqueda normalizada, orden exclusivo y estado vacío', async ({ page }) 
 
 test('contacto y suscripción con errores asociados sin efectos externos', async ({ page }) => {
   let requests = 0;
-  await page.route('**/api/contact', (route) => {
+  let release!: () => void;
+  const response = new Promise<void>((resolve) => (release = resolve));
+  await page.route('**/api/contact', async (route) => {
     requests++;
+    await response;
     return route.fulfill({ status: 500, json: { message: 'Error simulado' } });
   });
   await page.goto('/');
@@ -169,8 +174,26 @@ test('contacto y suscripción con errores asociados sin efectos externos', async
   await page
     .locator('#contact-message')
     .fill('Mensaje simulado para verificar el estado de error del formulario.');
-  await page.locator('.contact-submit').click();
-  await expect.poll(() => requests).toBe(1);
+  const submit = page.getByRole('button', { name: 'Enviar mensaje' });
+  await page.evaluate(() => document.fonts.ready);
+  const idleLayout = await submit.evaluate((button) => {
+    const label = button.querySelector('.btn__label')!.getBoundingClientRect();
+    const { x, width, height } = button.getBoundingClientRect();
+    return { width, height, left: label.left - x, right: x + width - label.right };
+  });
+  try {
+    expect(idleLayout.left).toBeCloseTo(idleLayout.right);
+    await submit.click();
+    await expect.poll(() => requests).toBe(1);
+    const loading = page.getByRole('button', { name: 'Enviando…' });
+    await expect(loading).toHaveAttribute('aria-busy', 'true');
+    expect(await loading.boundingBox()).toMatchObject({
+      width: idleLayout.width,
+      height: idleLayout.height,
+    });
+  } finally {
+    release();
+  }
   await expect(page.getByRole('alert').first()).toBeVisible();
   await page.screenshot({ path: '.generated/design-review/states/contact-error.png' });
   await page.goto('/blog');

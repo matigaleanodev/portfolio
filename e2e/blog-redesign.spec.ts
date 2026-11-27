@@ -199,42 +199,30 @@ test('la copia no mueve el contenido y conserva el foco', async ({ page, context
   }
 });
 
-test('la línea de lectura queda cerca de 65 a 75 caracteres en escritorio', async ({ page }) => {
-  for (const [width, size] of [
-    [1440, '18px'],
-    [390, '17px'],
-  ] as const) {
-    await page.setViewportSize({ width, height: 900 });
-    for (const slug of [withoutImage, 'desplegar-apis-docker-ec2', 'arquitectura-modo-playa']) {
-      await page.goto(`/blog/${slug}`);
-      await page.evaluate(() => document.fonts.ready);
-      const measure = await page.locator('.blog-post__content > p').evaluateAll((paragraphs) => {
-        let characters = 0;
-        let lines = 0;
-        for (const paragraph of paragraphs) {
-          const range = document.createRange();
-          range.selectNodeContents(paragraph);
-          const tops = new Set(Array.from(range.getClientRects(), (r) => Math.round(r.top / 12)));
-          if (tops.size < 3) continue;
-          // La última línea suele quedar incompleta: se descuenta media.
-          characters += paragraph.textContent!.length;
-          lines += tops.size - 0.5;
-        }
-        return {
-          perLine: characters / lines,
-          size: getComputedStyle(paragraphs[0]).fontSize,
-          width: paragraphs[0].getBoundingClientRect().width,
-        };
-      });
-      console.log(`linea ${width}px ${slug}: ${JSON.stringify(measure)}`);
-      expect(measure.size).toBe(size);
-      if (width === 1440) {
-        expect(measure.width).toBeLessThanOrEqual(608);
-        expect(measure.perLine).toBeGreaterThan(60);
-        expect(measure.perLine).toBeLessThan(80);
-      }
-    }
-  }
+test('el cuerpo y los bloques anchos del artículo comparten el eje de lectura', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 2560, height: 900 });
+  await page.goto('/blog/desplegar-apis-docker-ec2');
+  const content = page.locator('.blog-post__content');
+  const text = content.locator(':scope > p').first();
+  const code = content.locator('.code-block').first();
+  const diagram = content.locator('p:has(> a[href^="/diagrams/"] > img)').first();
+  await expect(text).toHaveCSS('width', '800px');
+  await expect(text).toHaveCSS('font-size', '18px');
+  await expect(text).toHaveCSS('line-height', '30.6px');
+  await expect(code).toHaveCSS('width', '960px');
+  await expect(diagram).toHaveCSS('width', '960px');
+  const center = async (locator: typeof text) => {
+    const box = (await locator.boundingBox())!;
+    return box.x + box.width / 2;
+  };
+  expect(await center(code)).toBe(await center(text));
+  expect(await center(diagram)).toBe(await center(text));
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(text).toHaveCSS('font-size', '17px');
+  expect(await noOverflow(page)).toBe(true);
 });
 
 for (const scheme of ['light', 'dark'] as const) {

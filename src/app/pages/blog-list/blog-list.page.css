@@ -223,8 +223,8 @@
   background: var(--color-success-subtle);
   color: var(--color-success);
 }
-/* Hasta 1279px el contenido llega bajo el lanzador del chat: el formulario le deja un carril. */
-@media (max-width: 1279px) {
+/* En anchos menores el contenido llega bajo el lanzador del chat: el formulario le deja un carril. */
+@media (max-width: 83rem) {
   .blog-toolbar__subscribe-form {
     padding-inline-end: var(--space-8);
   }

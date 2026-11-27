@@ -137,10 +137,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
   *,
   *::before,
   *::after {
@@ -188,9 +184,23 @@ body {
 .page-container {
   box-sizing: border-box;
   width: 100%;
-  max-width: 72rem;
+  max-width: 75rem;
   margin-inline: auto;
   padding-inline: var(--space-6);
+}
+
+.site-band {
+  --band-background: var(--color-text);
+  --band-text: var(--color-canvas);
+  background: var(--band-background);
+  color: var(--band-text);
+}
+
+@media (prefers-color-scheme: dark) {
+  .site-band {
+    --band-background: var(--color-surface);
+    --band-text: var(--color-text);
+  }
 }
 
 /* Enlaces secundarios de un proyecto, agrupados como lista bajo la acción principal. */
@@ -502,12 +512,21 @@ body {
   color: var(--color-code-text);
 }
 
-/* El spinner ocupa un espacio reservado y el rótulo reserva el ancho más largo. */
+/* El rótulo fija el ancho y el spinner usa el relleno lateral durante la carga. */
 .btn__slot {
   display: inline-block;
   width: 1rem;
   height: 1rem;
   flex: none;
+}
+.btn > .btn__slot:not(.segment__check) {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--space-1);
+  margin-block: auto;
+}
+.btn > .btn__slot:empty:not(.segment__check) {
+  display: none;
 }
 .btn__spinner {
   display: block;

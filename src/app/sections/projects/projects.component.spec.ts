@@ -14,7 +14,6 @@ import { ProjectContentService } from '../../services/project-content.service';
 })
 class ProjectCardStubComponent {
   @Input({ required: true }) project!: Project;
-  @Input() index = 1;
 }
 
 const createProject = (overrides: Partial<Project>): Project => ({
@@ -105,7 +104,7 @@ describe('ProjectsComponent', () => {
     expect(cards.length).toBe(3);
   });
 
-  it('no repite el proyecto destacado en la lista', () => {
+  it('incluye todos los proyectos en la misma lista', () => {
     getProjectsMock.mockReturnValueOnce(
       of([
         createProject({ slug: 'a', order: 1, featured: true }),
@@ -115,6 +114,6 @@ describe('ProjectsComponent', () => {
 
     fixture = TestBed.createComponent(ProjectsComponent);
 
-    expect(fixture.componentInstance.sortedProjects().map((p) => p.slug)).toEqual(['b']);
+    expect(fixture.componentInstance.sortedProjects().map((p) => p.slug)).toEqual(['a', 'b']);
   });
 });

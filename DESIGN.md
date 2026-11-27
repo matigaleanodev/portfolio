@@ -1,6 +1,6 @@
 ---
 name: Índigo de taller
-revision: 2
+revision: 3
 description: Visual system of matiasgaleano.dev, light and dark.
 colors:
   light-canvas: '#F3F4F7'
@@ -248,7 +248,7 @@ components:
 
 [Español](DESIGN.es.md)
 
-Revision 2. This repository is the source of the visual decisions of the ecosystem; other repositories adapt a numbered revision and do not redefine it. Any change to a token or a mandatory rule increases the revision. The token front matter lives in this file.
+Revision 3. This repository is the source of the visual decisions of the ecosystem; other repositories adapt a numbered revision and do not redefine it. Any change to a token or a mandatory rule increases the revision. The token front matter lives in this file.
 
 **MUST** rules are acceptance criteria. **SHOULD** rules are recommendations that may be deviated from with a recorded reason. Values marked _derived_ complete the base palette and identity; see Value origin.
 
@@ -259,8 +259,8 @@ A professional, technical, sober and personal portfolio: the work comes early an
 - MUST keep the M monogram, IBM Plex Sans and IBM Plex Mono, and the indigo identity. No blue substitute and no second identity color.
 - MUST lead with evidence (case, figure, article); decoration does not compete with it.
 - MUST treat light and dark as two complete themes. Dark has its own canvas, surface and accent; never invert or filter colors.
-- MUST use accent for action, links and the identity rule. Not for ornament.
-- MUST NOT use glass surfaces, decorative gradients, glows or resting shadows.
+- Use accent for actions, links and article quotes.
+- Decorative gradients are limited to the two short rules in the hero. The header navigation and footer use their published inset highlights.
 - SHOULD write labels in sentence case. IBM Plex Mono is for dates, metadata, identifiers and code, not subtitles.
 
 ## Colors
@@ -271,7 +271,7 @@ A professional, technical, sober and personal portfolio: the work comes early an
 | `surface`        | #FCFCFE | #1F2937 | approved | Cards, panels, fields                    |
 | `text`           | #1F2937 | #EAECF2 | approved | Primary text                             |
 | `text-muted`     | #4B5563 | #AEB7C9 | approved | Secondary text, metadata, placeholders   |
-| `accent`         | #5B5F8F | #B7B8EE | approved | Links, primary action, identity rule     |
+| `accent`         | #5B5F8F | #B7B8EE | approved | Links, primary action, article quotes    |
 | `divider`        | #C8CCD7 | #394355 | approved | Decorative separators, card borders      |
 | `on-accent`      | #FCFCFE | #141A24 | approved | Content on accent fills                  |
 | `surface-sunken` | #E8EAF0 | #273244 | derived  | Inline code, table header, neutral hover |
@@ -427,8 +427,7 @@ IBM Plex Sans (400, 500, 600) with `Segoe UI`, Arial fallback; IBM Plex Mono (40
 | meta (Mono)   | 13px                    | 400 / 1.5 / 0                   |
 | code (Mono)   | 14px                    | 400 / 1.6 / 0                   |
 
-- Article text column: `max-width: 38rem`; 18px, 17px below 640px. Code, tables and figures MAY use up to `46rem` on the same axis.
-- MUST verify the effective line length (65–75 characters as reference, from 640px up) when the article is implemented; changing the column or size needs approval.
+- Article text column: `max-width: 50rem`; 18px, 17px below 640px, with 1.7 line height. Code, tables, diagrams and figures MAY use up to `60rem` on the same axis.
 - MUST set rem-based sizes, keep text at 12px or more, and survive 200% zoom and user text spacing without clipping.
 - MUST show full titles: no truncation or line clamp on the web. Use `overflow-wrap: anywhere` on titles, URLs and identifiers.
 - SHOULD use `text-wrap: balance` on headings.
@@ -436,9 +435,9 @@ IBM Plex Sans (400, 500, 600) with `Segoe UI`, Arial fallback; IBM Plex Mono (40
 ## Layout
 
 - Spacing scale: 4, 8, 12, 16, 24, 32, 40, 48, 64, 80px. MUST use scale values for gaps and padding.
-- Containers (`box-sizing: border-box`, centered): page `72rem`, form `48rem`, article text `38rem`, article wide `46rem`. Inline padding 24px; 16px on articles below 640px. Container maximums include the padding except for the article columns.
-- Breakpoints: 640px, 960px (768px only for the chat panel). Mobile first.
-- Section rhythm: 48px below 768px, 80px from 768px. Inside a block: 8–16px; between blocks: 24–32px. Exception, home page: from the presentation and featured project to the remaining projects the spacing is tighter (see Pages: home and projects).
+- Containers (`box-sizing: border-box`, centered): page `75rem`, form `48rem`, article text `50rem`, article wide `60rem`. Inline padding 24px; 16px on articles below 640px. Container maximums include the padding except for the article columns.
+- Breakpoints: 640px, 960px (768px for the chat panel and project grid). Mobile first.
+- Section rhythm: 48px below 768px, 80px from 768px. Inside a block: 8–16px; between blocks: 24–32px. Exception, home page: from the presentation to the projects the spacing is tighter (see Pages: home and projects).
 - MUST reflow at 320px with no page-level horizontal scroll; only code, tables and diagrams scroll, inside a focusable region.
 - DOM order MUST match visual order.
 - Full-height views SHOULD use `dvh` and safe-area insets.
@@ -452,8 +451,8 @@ IBM Plex Sans (400, 500, 600) with `Segoe UI`, Arial fallback; IBM Plex Mono (40
 
 ## Shapes
 
-- Radii: buttons and fields 5px; code blocks and figures 12px; cards 16px; tags pill; suggestion chips and the chat launcher are pill-shaped, the only approved exceptions to the 5px button radius; editorial rules 0. The featured project panel uses the 16px card radius and keeps its leading identity rule.
-- Borders: 1px. Identity rule: 3px solid `accent`, used above the home presentation, and on the leading edge of the featured project panel; article quotes also use a 3px `accent` leading edge. Do not add it elsewhere.
+- Radii: buttons and fields 5px; code blocks and figures 12px; cards 16px; tags pill; suggestion chips and the chat launcher are pill-shaped, the only approved exceptions to the 5px button radius; editorial rules 0.
+- Borders are 1px. Article quotes use a 3px accent leading edge.
 - Icons: Lucide, 16px inline and 20px in icon buttons, stroke 2, `currentColor`; existing brand SVGs for external profiles. Decorative icons `aria-hidden`; icon-only controls have an accessible name. No emoji as icons.
 - Monogram: the existing M vector, one color (`text`), 40px high in the header, beside the name. No tile, gradient, shadow or recoloring; clear space of 8px at least.
 - Images: authentic assets only. A caption MUST say whether it is a product illustration or an interface screenshot; never fabricate screens. Logos and seals use `object-fit: contain`; no overlays or filters. Alt describes the content; decorative images use empty alt.
@@ -490,8 +489,8 @@ State is resolved in layers:
 
 - Semantics: actions are `<button type>`; navigation is `<a>` and is not a button variant, even when it looks like one (it follows the link rules; a link styled as primary or secondary borrows the colors of Default, Hover, Focus-visible and Active and has no Disabled, Loading or Selected). Exclusive choices are native radios in a `fieldset`; independent toggles use `aria-pressed`. `aria-expanded` is disclosure, not selection.
 - Toggle keyboard: an `aria-pressed` button activates with Enter or Space; a radio group is one Tab stop, arrows move and select, Space selects. The group has a `legend`; if the input is visually hidden, draw the ring on its segment (`input:focus-visible + label`).
-- Stable dimensions: 1px border in every variant and state (transparent when invisible); selection uses an inset shadow; spinner and check use a reserved 16px slot. No weight or size change between states.
-- Loading: the spinner replaces the leading icon in its slot; the label may change to the progress text (such as “Enviando…”) with the width of the longest label reserved, and the accessible name matches the visible label. Progress and result are written as text (such as “Enviando…”) in a polite status region outside the button that exists before it is updated and, inside a modal, lives within the dialog. With reduced motion the spinner is static and that text MUST be visible.
+- Stable dimensions: 1px border in every variant and state (transparent when invisible); selection uses an inset shadow; the check uses a reserved 16px slot. No weight or size change between states.
+- Loading: the spinner replaces the icon in icon-only buttons and appears in the side padding of text buttons; the label may change to the progress text (such as “Enviando…”) with the width of the longest label reserved, and the accessible name matches the visible label. Progress and result are written as text (such as “Enviando…”) in a polite status region outside the button that exists before it is updated and, inside a modal, lives within the dialog. With reduced motion the spinner is static and that text MUST be visible.
 - Non-color cues: underline, or a 1px inset border on icon-only variants (hover), ring (focus), 1px offset (active), dashed border (disabled), spinner and text (loading), check and inset border (selected). With reduced motion the active offset is replaced by a 3px inset border in `currentColor` (4px in `accent` when also selected).
 - Focus: 3px solid ring, offset 4px (2px inside code toolbars), `focus` token (`code-focus` on code). Never `outline: none` without this ring.
 - Transitions: background, color and border 150ms `cubic-bezier(0.2, 0, 0, 1)`; transform 100ms; the focus ring appears instantly.
@@ -615,9 +614,9 @@ Copy is in Loading from activation until the `navigator.clipboard.writeText()` p
 ### Links and navigation
 
 - Links: `accent`, underlined in prose and lists (offset 0.2em); hover `accent-hover` with 2px underline; same focus ring; visited unchanged. External links that open a new tab say so in their accessible name.
-- Header: monogram plus name on the left, existing destinations on the right, on `canvas` with a 1px `accent` bottom rule. Current page: `aria-current="page"`, weight kept, 2px underline. Links at least 44px high.
+- Header: monogram and name on the left, pill-shaped navigation on the right. The current page uses a solid pill with inverted theme colors and retains its aria-current marker. Links have a minimum height of 44px.
 - Skip link first in tab order; targets receive focus and have 24px scroll margin.
-- Footer, blog list header and unsubscribe page MUST follow the semantic tokens of each theme, without inverted bands or gradients: footer on `surface` with a 1px `divider` top border; list header on `canvas`; unsubscribe content on a `surface` card over `canvas`. Same focus and target rules.
+- Footer: full-width contrasting band using the same theme colors as the hero, with 48px vertical padding on mobile and 96px from 768px. The professional byline, circular social buttons and rounded “Volver arriba” action form three columns from 768px. The existing blog subscription card sits above the footer.
 
 ### Fields
 
@@ -646,16 +645,16 @@ Placeholders are examples in `text-muted`, never the label. Counters use `meta`.
 ### Cards and tags
 
 - Card: `surface`, 1px `divider`, radius 16px, padding 24px, no shadow.
-- A fully clickable card has one link, wrapping the title and stretched over the card by a pseudo-element; “Leer post” is plain text. Hover changes the border to `accent` and underlines the title; the ring surrounds the card (`:has(a:focus-visible)`); no lift or scale. Cards with secondary links, such as projects, are not fully clickable.
+- A fully clickable card has one link, wrapping the title and stretched over the card by a pseudo-element; “Leer post” is plain text. Hover changes the border to `accent` and underlines the title; the ring surrounds the card (`:has(a:focus-visible)`); no lift or scale. Project cards provide an action at the bottom of the card.
 - Tags are non-interactive: pill, 1px `divider`, `meta` size 12–13px, `text-muted`.
 
 ### Chat
 
-The panel layout at low viewport height and the launcher position are not fixed by this revision: both MUST be validated with screenshots and approved before they change. The focus rules below apply regardless.
-
-- Panel: `surface`, level 1, 400×575px from 768px, full screen below; header with title and close icon button.
+- Panel: `surface`, level 1, 400×575px from 768px as height permits and full screen below. Short viewports use tighter spacing and a single row of horizontally scrollable suggestions. The header contains the title and close icon button.
 - Assistant messages on `canvas` with `divider` border; user messages on `accent-subtle`; each shows its author in text. No bubble shadows.
-- Suggestions use the suggestion variant; send uses primary.
+- Suggestions use their own variant. The composer integrates the message field, the counter at bottom left and a 44×44px primary action at bottom right with an up arrow and the accessible name “Enviar”. While sending, the spinner occupies the same space.
+- The panel uses 2px focus outlines with a 2px offset. The field focus outline surrounds the composer. Scrollable chat areas use thin scrollbars with the control border token.
+- Starter errors align the message with the “Reintentar” action.
 - Modal below 768px (`aria-modal`, focus contained, background inert); non-modal dialog above. Escape closes and returns focus to the launcher; the launcher leaves the tab order while open.
 - The panel is a `role="dialog"` named with `aria-labelledby`. On open, focus goes to the message field. After sending from the field, the send button or a suggestion, focus moves to the message field; suggestions are Disabled while the reply is pending and may then be replaced. The message list is a named `role="log"`: each message added to it, from the user or the assistant, is announced politely without rereading the history. The typing placeholder is hidden from assistive technology and progress is announced in a separate `role="status"` region. Escape closes the non-modal panel only while focus is inside it. Crossing 768px while open updates `aria-modal` and `inert`.
 - If focus moves under the non-modal panel, close the panel or scroll the focused element into view.
@@ -675,17 +674,15 @@ The panel layout at low viewport height and the launcher position are not fixed 
 
 ### Pages: home and projects
 
-Order: presentation and featured project, remaining projects, contact.
+The page opens with the professional introduction, followed by “Proyectos” and contact.
 
-- The first block sits on `canvas` (no full-bleed inverted band): identity rule, name (`display`, the only H1), role, professional presentation, then “Ver proyectos” (primary link) and “Contactarme” (text link).
+- The hero spans the viewport and uses a contrasting background in both themes. Its vertical padding is 64px on mobile and 80px from 768px. It places the name between the first short gradient rule and the professional role, with the technologies immediately below the role. “Ver proyectos” is filled and “Contactarme” is outlined. The second short gradient rule follows the actions.
 - MUST show this text on the home page, naming Banco Comafi first and Boreal IT as the contractual channel: «Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos Comunes de Inversión.»
-- Featured project: editorial composition of text, image and caption on a `surface` panel with the identity edge and the card radius. DOM and visual order: head (label, title, summary), `figure` with `figcaption`, facts (key decision, how it is used, own contribution), actions (primary link, then secondary links) and architecture and stack.
-- Below 640px the panel is one column in that order, so the illustration comes before the actions. From 640px the head (`1fr`) and the figure (`0.58fr`) are two columns; facts, actions and details span the full width below them.
-- Key decision, how it is used and own contribution MUST stay visible; only architecture and stack are collapsed, inside native `details`. From 960px each fact label SHOULD run in with its text, followed by a colon.
-- From 960px the presentation and the panel are two columns `1.1fr 0.88fr` with 40px gap. Name, role and the start of the case SHOULD be visible together at 390×844.
-- Home spacing: below 960px the first block has 32px above and 48px below; the projects section has 48px block padding below 768px, and 24px above and 80px below from 768px. From 960px the first block has 24px above and 16px below, the projects section starts with 16px and uses a 16px gap, and its heading and lead share a line when they fit. At 1440×900 the first project cards SHOULD start within the first screen.
-- The featured project MUST NOT be repeated in the list. All published cases and their links remain.
-- Each project shows, in this order: product type, title, summary, key decision, how it is used, own contribution, primary link, secondary links, and architecture and stack inside native `details`. A case without an image is valid.
+- The introduction is its own section. The 1200px container aligns with the header, blog and footer and has 24px inline padding.
+- All published projects, including Modo Playa, share one grid with one column below 768px, two from 768px and three from 960px.
+- Each card displays the image, category, name, excerpt, up to three technologies in content order and a “Ver proyecto” link.
+- The project detail at `/projects/:slug` displays the key decision, usage, contribution, architecture, full stack and project links.
+- “Enviar mensaje” sits below the contact form, with centered text and symmetric horizontal padding. The label sets the width and the visible loading indicator uses the padding without changing button dimensions.
 
 ### Pages: blog list
 
@@ -706,7 +703,7 @@ Order: presentation and featured project, remaining projects, contact.
 ### Motion
 
 - Motion answers an action: state changes 150ms, panel and toast entrance 200ms with opacity and up to 8px translate. Easing `cubic-bezier(0.2, 0, 0, 1)`.
-- MUST NOT animate on first load or on scroll, start content at opacity 0, or use blur, scale-on-hover or looping decoration. Only progress indicators loop.
+- Internal anchors and “Volver arriba” use native smooth scrolling. The page avoids entrance animations on initial load or on scroll, initial opacity of 0, blur, hover scaling and looping decoration. Only progress indicators loop.
 - The existing route transition remains for navigations after the first one and never runs on initial load.
 - `prefers-reduced-motion: reduce`: no route transition, translate, smooth scroll or looping animation; changes are instant and progress is conveyed by text.
 
@@ -734,16 +731,16 @@ Order: presentation and featured project, remaining projects, contact.
 
 ## Value origin
 
-| Group                                                         | Origin and reason                                                                                                                                                                                                     |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Colors                                                        | Per token in Colors.                                                                                                                                                                                                  |
-| Typefaces and monogram                                        | Approved identity.                                                                                                                                                                                                    |
-| Type sizes, weights, line heights, tracking                   | Derived: one fluid hierarchy limited to three weights. Article reading column (38rem) and sizes (18px, 17px mobile) are approved.                                                                                     |
-| Spacing, containers, breakpoints                              | Derived from the existing scale and containers.                                                                                                                                                                       |
-| Radii                                                         | Approved: 5px for buttons and fields, with pill suggestion chips and chat launcher as explicit exceptions, and the featured panel on the card radius. Derived: cards 16px and code 12px, for continuity.              |
-| Home composition                                              | Approved: two columns, identity rule, contact as a link, featured text, image and caption, featured case not repeated; revision 2: panel order, two columns from 640px, visible facts and tighter spacing on desktop. |
-| Theme surfaces and feedback                                   | Approved: footer, list header and unsubscribe page on theme tokens; success-only toast of 5s or more; important confirmations also in context; errors in context; no resting shadows or load and scroll animations.   |
-| Elevation, motion, component states, header and chat measures | Derived: accessibility, stable dimensions and a flat hierarchy.                                                                                                                                                       |
+| Group                                                         | Origin and reason                                                                                                                                                            |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Colors                                                        | Per token in Colors.                                                                                                                                                         |
+| Typefaces and monogram                                        | Approved identity.                                                                                                                                                           |
+| Type sizes, weights, line heights, tracking                   | Derived: one fluid hierarchy limited to three weights. Article reading column (50rem) and sizes (18px, 17px mobile) are approved.                                            |
+| Spacing, containers, breakpoints                              | Derived from the existing scale and containers.                                                                                                                              |
+| Radii                                                         | 5px for buttons and fields, pill-shaped chat suggestions and launcher, 16px for cards and 12px for code.                                                                     |
+| Home composition                                              | Full-width hero with short gradient rules, technologies below the role and two actions. The project grid follows as a separate section.                                      |
+| Theme surfaces and feedback                                   | Contrasting bands for the hero and footer, theme tokens for the blog and unsubscribe page, and feedback in context. Internal anchors and back to top respect reduced motion. |
+| Elevation, motion, component states, header and chat measures | Derived: accessibility, stable dimensions and a flat hierarchy.                                                                                                              |
 
 ## Do's and Don'ts
 

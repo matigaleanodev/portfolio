@@ -2,7 +2,7 @@
 
 [English](DESIGN.md)
 
-Revisión 2. Este repositorio es la fuente de las decisiones visuales del ecosistema; los demás repositorios adaptan una revisión numerada y no la redefinen. Todo cambio de token o de regla obligatoria incrementa la revisión. Los tokens en formato legible por herramientas están en el encabezado de [DESIGN.md](DESIGN.md).
+Revisión 3. Este repositorio es la fuente de las decisiones visuales del ecosistema; los demás repositorios adaptan una revisión numerada y no la redefinen. Todo cambio de token o de regla obligatoria incrementa la revisión. Los tokens en formato legible por herramientas están en el encabezado de [DESIGN.md](DESIGN.md).
 
 Las reglas **DEBE** son criterios de aceptación. Las reglas **CONVIENE** son recomendaciones que admiten desvíos con motivo registrado. Los valores _derivados_ completan la paleta base y la identidad; ver Origen de los valores.
 
@@ -13,8 +13,8 @@ Un portfolio profesional, técnico, sobrio y personal: el trabajo aparece tempra
 - DEBE conservar el monograma M, IBM Plex Sans e IBM Plex Mono, y la identidad índigo. Sin reemplazo azul ni segundo color de identidad.
 - DEBE priorizar la evidencia (caso, figura, artículo); la decoración no compite con ella.
 - DEBE tratar claro y oscuro como dos temas completos. El oscuro tiene lienzo, superficie y acento propios; nunca invertir ni filtrar colores.
-- DEBE usar el acento para acciones, enlaces y el filete de identidad. No como adorno.
-- NO DEBE usar superficies de vidrio, degradados decorativos, brillos ni sombras en reposo.
+- Usar el acento para acciones, enlaces y citas del artículo.
+- Los degradados decorativos se limitan a las dos líneas cortas del hero. La navegación y el pie conservan sus reflejos interiores de la versión publicada.
 - CONVIENE escribir rótulos en minúscula con inicial mayúscula. IBM Plex Mono es para fechas, metadatos, identificadores y código, no para subtítulos.
 
 ## Color
@@ -25,7 +25,7 @@ Un portfolio profesional, técnico, sobrio y personal: el trabajo aparece tempra
 | `surface`        | #FCFCFE | #1F2937 | aprobado | Tarjetas, paneles, campos                          |
 | `text`           | #1F2937 | #EAECF2 | aprobado | Texto principal                                    |
 | `text-muted`     | #4B5563 | #AEB7C9 | aprobado | Texto secundario, metadatos, placeholders          |
-| `accent`         | #5B5F8F | #B7B8EE | aprobado | Enlaces, acción principal, filete de identidad     |
+| `accent`         | #5B5F8F | #B7B8EE | aprobado | Enlaces, acción principal, citas                   |
 | `divider`        | #C8CCD7 | #394355 | aprobado | Separadores decorativos, bordes de tarjeta         |
 | `on-accent`      | #FCFCFE | #141A24 | aprobado | Contenido sobre relleno de acento                  |
 | `surface-sunken` | #E8EAF0 | #273244 | derivado | Código en línea, encabezado de tabla, hover neutro |
@@ -181,8 +181,7 @@ IBM Plex Sans (400, 500, 600) con respaldo `Segoe UI`, Arial; IBM Plex Mono (400
 | meta (Mono)   | 13px                   | 400 / 1.5 / 0                  |
 | code (Mono)   | 14px                   | 400 / 1.6 / 0                  |
 
-- Columna de texto del artículo: `max-width: 38rem`; 18px, 17px bajo 640px. Código, tablas y figuras PUEDEN ocupar hasta `46rem` sobre el mismo eje.
-- DEBE verificarse la longitud efectiva de línea (65–75 caracteres como referencia, desde 640px) al implementar el artículo; cambiar columna o tamaño requiere aprobación.
+- Columna de texto del artículo: `max-width: 50rem`; 18px, 17px bajo 640px, con interlineado 1,7. Código, tablas, diagramas y figuras PUEDEN ocupar hasta `60rem` sobre el mismo eje.
 - DEBE usar tamaños en rem, texto de 12px o más y soportar zoom 200 % y espaciado de texto del usuario sin recortes.
 - DEBE mostrar títulos completos: sin truncado ni line clamp en la web. `overflow-wrap: anywhere` en títulos, URLs e identificadores.
 - CONVIENE `text-wrap: balance` en encabezados.
@@ -190,9 +189,9 @@ IBM Plex Sans (400, 500, 600) con respaldo `Segoe UI`, Arial; IBM Plex Mono (400
 ## Espaciado, grillas y responsive
 
 - Escala de espaciado: 4, 8, 12, 16, 24, 32, 40, 48, 64, 80px. DEBE usar valores de la escala en separaciones y rellenos.
-- Contenedores (`box-sizing: border-box`, centrados): página `72rem`, formulario `48rem`, texto de artículo `38rem`, artículo ancho `46rem`. Relleno lateral 24px; 16px en artículos bajo 640px. Los máximos incluyen el relleno, salvo en las columnas de artículo.
-- Cortes: 640px y 960px (768px sólo para el panel de chat). Mobile first.
-- Ritmo de secciones: 48px bajo 768px, 80px desde 768px. Dentro de un bloque: 8–16px; entre bloques: 24–32px. Excepción, portada: entre la presentación con el proyecto destacado y el resto de los proyectos la separación es menor (ver Páginas: portada y proyectos).
+- Contenedores (`box-sizing: border-box`, centrados): página `75rem`, formulario `48rem`, texto de artículo `50rem`, artículo ancho `60rem`. Relleno lateral 24px; 16px en artículos bajo 640px. Los máximos incluyen el relleno, salvo en las columnas de artículo.
+- Cortes: 640px y 960px (768px para el panel de chat y la grilla de proyectos). Mobile first.
+- Ritmo de secciones: 48px bajo 768px, 80px desde 768px. Dentro de un bloque: 8–16px; entre bloques: 24–32px. Excepción, portada: entre la presentación y los proyectos la separación es menor (ver Páginas: portada y proyectos).
 - DEBE reacomodarse a 320px sin desplazamiento horizontal de página; sólo código, tablas y diagramas se desplazan, dentro de una región enfocable.
 - El orden del DOM DEBE coincidir con el visual.
 - Las vistas a pantalla completa CONVIENE que usen `dvh` y safe areas.
@@ -206,8 +205,8 @@ IBM Plex Sans (400, 500, 600) con respaldo `Segoe UI`, Arial; IBM Plex Mono (400
 
 ## Bordes, radios, iconos e imágenes
 
-- Radios: botones y campos 5px; bloques de código y figuras 12px; tarjetas 16px; etiquetas en píldora; las sugerencias y el lanzador del chat van en píldora, únicas excepciones aprobadas al radio de 5px en botones; filetes editoriales 0. El panel del proyecto destacado usa el radio de tarjeta de 16px y conserva su filete inicial de identidad.
-- Bordes: 1px. Filete de identidad: 3px sólido `accent`, sobre la presentación de la portada y en el borde inicial del panel del proyecto destacado; las citas del artículo también llevan borde inicial `accent` de 3px. No agregarlo en otros lugares.
+- Radios: botones y campos 5px; bloques de código y figuras 12px; tarjetas 16px; etiquetas en píldora; las sugerencias y el lanzador del chat van en píldora, únicas excepciones aprobadas al radio de 5px en botones; filetes editoriales 0.
+- Los bordes son de 1px. Las citas de artículos llevan un borde de acento de 3px.
 - Iconos: Lucide, 16px en línea y 20px en botones de icono, trazo 2, `currentColor`; SVG de marca vigentes para perfiles externos. Iconos decorativos con `aria-hidden`; controles sólo con icono llevan nombre accesible. Sin emoji como icono.
 - Monograma: el vector M vigente, un color (`text`), 40px de alto en el encabezado, junto al nombre. Sin recuadro, degradado, sombra ni recoloreo; área libre mínima de 8px.
 - Imágenes: sólo material auténtico. La leyenda DEBE indicar si es una ilustración del producto o una captura de su interfaz; nunca fabricar pantallas. Logos y sellos con `object-fit: contain`; sin velos ni filtros. El alt describe el contenido; las decorativas usan alt vacío.
@@ -244,8 +243,8 @@ El estado se resuelve por capas:
 
 - Semántica: las acciones son `<button type>`; navegar es `<a>` y no es una variante de botón aunque lo parezca (sigue las reglas de enlaces; un enlace con aspecto principal o secundario toma los colores de Default, Hover, Focus-visible y Active y no tiene Disabled, Loading ni Selected). Las elecciones excluyentes son radios nativos en un `fieldset`; los conmutadores independientes usan `aria-pressed`. `aria-expanded` es despliegue, no selección.
 - Teclado de conmutables: un botón `aria-pressed` se activa con Enter o Espacio; un grupo de radios es una sola parada de Tab, las flechas mueven y seleccionan, Espacio selecciona. El grupo lleva `legend`; si el input se oculta visualmente, el anillo va sobre su segmento (`input:focus-visible + label`).
-- Dimensiones estables: borde de 1px en toda variante y estado (transparente si no se ve); la selección usa sombra interior; spinner y check ocupan un espacio reservado de 16px. Sin cambios de peso ni tamaño entre estados.
-- Loading: el spinner reemplaza al icono inicial en su espacio; el rótulo puede cambiar al texto de progreso (por ejemplo, “Enviando…”) con el ancho del rótulo más largo reservado, y el nombre accesible coincide con el rótulo visible. Progreso y resultado se escriben como texto (por ejemplo, “Enviando…”) en una región de estado `polite` fuera del botón, que existe antes de actualizarse y, en un modal, vive dentro del diálogo. Con movimiento reducido el spinner queda quieto y ese texto DEBE ser visible.
+- Dimensiones estables: borde de 1px en toda variante y estado (transparente si no se ve); la selección usa sombra interior; el check ocupa un espacio reservado de 16px. Sin cambios de peso ni tamaño entre estados.
+- Loading: el spinner reemplaza al icono en los botones de sólo icono y aparece en el relleno lateral de los botones de texto; el rótulo puede cambiar al texto de progreso (por ejemplo, “Enviando…”) con el ancho del rótulo más largo reservado, y el nombre accesible coincide con el rótulo visible. Progreso y resultado se escriben como texto (por ejemplo, “Enviando…”) en una región de estado `polite` fuera del botón, que existe antes de actualizarse y, en un modal, vive dentro del diálogo. Con movimiento reducido el spinner queda quieto y ese texto DEBE ser visible.
 - Señales además del color: subrayado, o borde interior de 1px en variantes sólo con icono (hover), anillo (foco), desplazamiento de 1px (active), borde discontinuo (disabled), spinner y texto (loading), check y borde interior (selected). Con movimiento reducido, el desplazamiento de active se reemplaza por un borde interior de 3px en `currentColor` (4px en `accent` si además está seleccionado).
 - Foco: anillo sólido de 3px, separación 4px (2px en barras de código), token `focus` (`code-focus` sobre código). Nunca `outline: none` sin este anillo.
 - Transiciones: fondo, color y borde 150ms `cubic-bezier(0.2, 0, 0, 1)`; transform 100ms; el anillo aparece al instante.
@@ -369,9 +368,9 @@ Copiar está en Loading desde la activación hasta que la promesa de `navigator.
 ### Enlaces y navegación
 
 - Enlaces: `accent`, subrayados en prosa y listas (separación 0,2em); hover `accent-hover` con subrayado de 2px; mismo anillo de foco; visitados sin cambio. Los enlaces externos que abren otra pestaña lo dicen en su nombre accesible.
-- Encabezado: monograma y nombre a la izquierda, destinos vigentes a la derecha, sobre `canvas` con filete inferior `accent` de 1px. Página actual: `aria-current="page"`, mismo peso, subrayado de 2px. Enlaces de 44px de alto como mínimo.
+- Encabezado con monograma y nombre a la izquierda y navegación en píldora a la derecha. La página actual usa una píldora sólida con los colores del tema invertidos y conserva aria-current. Los enlaces tienen al menos 44px de alto.
 - Enlace de salto primero en el orden de tabulación; los destinos reciben foco y tienen margen de scroll de 24px.
-- Pie, apertura del listado y página de baja DEBEN seguir los tokens semánticos de cada tema, sin bandas invertidas ni degradados: pie sobre `surface` con borde superior `divider` de 1px; apertura del listado sobre `canvas`; contenido de baja en una tarjeta `surface` sobre `canvas`. Mismas reglas de foco y objetivos.
+- El pie ocupa todo el ancho y comparte con el hero los colores de contraste del tema. Tiene 48px de relleno vertical en móvil y 96px desde 768px. La firma profesional, los botones circulares de redes y la acción redondeada «Volver arriba» forman tres columnas desde 768px. La tarjeta de suscripción sigue arriba del pie.
 
 ### Campos
 
@@ -400,16 +399,16 @@ Los placeholders son ejemplos en `text-muted`, nunca el rótulo. Los contadores 
 ### Tarjetas y etiquetas
 
 - Tarjeta: `surface`, borde `divider` de 1px, radio 16px, relleno 24px, sin sombra.
-- Una tarjeta totalmente clickeable tiene un solo enlace, que envuelve el título y se extiende a la tarjeta con un pseudo-elemento; “Leer post” es texto sin enlace. Hover cambia el borde a `accent` y subraya el título; el anillo rodea la tarjeta (`:has(a:focus-visible)`); sin elevación ni escala. Las tarjetas con enlaces secundarios, como las de proyectos, no son totalmente clickeables.
+- Una tarjeta totalmente clickeable tiene un solo enlace, que envuelve el título y se extiende a la tarjeta con un pseudo-elemento; “Leer post” es texto sin enlace. Hover cambia el borde a `accent` y subraya el título; el anillo rodea la tarjeta (`:has(a:focus-visible)`); sin elevación ni escala. Las tarjetas de proyectos ofrecen una acción al pie de la tarjeta.
 - Las etiquetas no son interactivas: píldora, borde `divider` de 1px, tamaño `meta` de 12–13px, `text-muted`.
 
 ### Chat
 
-Esta revisión no fija la distribución del panel con poca altura ni la posición del lanzador: ambas DEBEN validarse con capturas y aprobarse antes de cambiar. Las reglas de foco siguientes rigen igual.
-
-- Panel: `surface`, nivel 1, 400×575px desde 768px y pantalla completa debajo; encabezado con título y botón de icono para cerrar.
+- Panel: `surface`, nivel 1, 400×575px desde 768px si el alto lo permite y pantalla completa debajo. Las pantallas bajas usan espaciado compacto y una fila de sugerencias con desplazamiento horizontal. El encabezado contiene el título y el botón con icono para cerrar.
 - Mensajes del asistente sobre `canvas` con borde `divider`; mensajes del usuario sobre `accent-subtle`; cada uno muestra su autor en texto. Sin sombras en las burbujas.
-- Las sugerencias usan la variante de sugerencia; enviar usa la principal.
+- Las sugerencias usan su variante. El área de composición integra el campo de mensaje, el contador abajo a la izquierda y la acción principal de 44×44px abajo a la derecha, con flecha hacia arriba y nombre accesible «Enviar». Durante el envío muestra el spinner en el mismo espacio.
+- El panel usa contornos de foco de 2px con 2px de separación. El foco del campo se dibuja alrededor del contenedor de composición. Las zonas desplazables del chat usan barras finas con el token de borde de controles.
+- Los errores de sugerencias alinean el mensaje con «Reintentar».
 - Modal bajo 768px (`aria-modal`, foco contenido, fondo inerte); diálogo no modal arriba. Escape cierra y devuelve el foco al lanzador; el lanzador sale del orden de tabulación mientras está abierto.
 - El panel es un `role="dialog"` nombrado con `aria-labelledby`. Al abrir, el foco va al campo de mensaje. Tras enviar desde el campo, el botón de envío o una sugerencia, el foco pasa al campo de mensaje; las sugerencias quedan en Disabled mientras la respuesta está pendiente y luego pueden reemplazarse. La lista de mensajes es un `role="log"` con nombre: cada mensaje que se agrega, del usuario o del asistente, se anuncia de forma `polite` sin releer el historial. El indicador de escritura se oculta a la tecnología de asistencia y el progreso se anuncia en una región `role="status"` aparte. Escape cierra el panel no modal sólo con el foco dentro. Cruzar 768px abierto actualiza `aria-modal` e `inert`.
 - Si el foco pasa debajo del panel no modal, cerrar el panel o desplazar el elemento enfocado a la vista.
@@ -429,17 +428,15 @@ Esta revisión no fija la distribución del panel con poca altura ni la posició
 
 ### Páginas: portada y proyectos
 
-Orden: presentación y proyecto destacado, resto de los proyectos, contacto.
+El orden es presentación profesional, Proyectos y contacto.
 
-- El primer bloque va sobre `canvas` (sin banda invertida a sangre): filete de identidad, nombre (`display`, único H1), rol, presentación profesional y luego “Ver proyectos” (enlace principal) y “Contactarme” (enlace de texto).
+- El hero ocupa todo el ancho y usa un fondo de contraste en ambos temas. Tiene 64px de relleno vertical en móvil y 80px desde 768px. El nombre va entre la primera línea corta degradada y el rol profesional, con las tecnologías justo debajo del rol. «Ver proyectos» va relleno y «Contactarme» tiene borde. La segunda línea corta degradada queda después de las acciones.
 - DEBE mostrar en la portada este texto, con Banco Comafi primero y Boreal IT como vínculo contractual: «Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos Comunes de Inversión.»
-- Proyecto destacado: composición editorial de texto, imagen y leyenda sobre un panel `surface` con el borde de identidad y el radio de tarjeta. Orden del DOM y visual: encabezado (rótulo, título, resumen), `figure` con `figcaption`, datos (decisión principal, cómo se usa, aporte propio), acciones (enlace principal y luego secundarios) y arquitectura y tecnologías.
-- Bajo 640px el panel es una columna en ese orden, así que la ilustración va antes de las acciones. Desde 640px el encabezado (`1fr`) y la figura (`0.58fr`) forman dos columnas; datos, acciones y detalle ocupan debajo todo el ancho.
-- Decisión principal, cómo se usa y aporte propio DEBEN quedar visibles; sólo arquitectura y tecnologías van colapsadas, en un `details` nativo. Desde 960px el rótulo de cada dato CONVIENE que vaya en línea con su texto, seguido de dos puntos.
-- Desde 960px, presentación y panel forman dos columnas `1.1fr 0.88fr` con 40px de separación. Nombre, rol y comienzo del caso CONVIENE que se vean juntos a 390×844.
-- Separaciones de la portada: bajo 960px el primer bloque tiene 32px arriba y 48px abajo; la sección de proyectos tiene 48px de relleno vertical bajo 768px, y 24px arriba y 80px abajo desde 768px. Desde 960px el primer bloque tiene 24px arriba y 16px abajo, la sección de proyectos empieza con 16px y usa 16px de separación, y su encabezado y bajada comparten renglón cuando entran. A 1440×900 las primeras tarjetas CONVIENE que empiecen dentro de la primera pantalla.
-- El proyecto destacado NO DEBE repetirse en la lista. Se conservan todos los casos publicados y sus enlaces.
-- Cada proyecto muestra, en este orden: tipo de producto, título, resumen, decisión principal, cómo se usa, aporte propio, enlace principal, enlaces secundarios, y arquitectura y tecnologías en un `details` nativo. Un caso sin imagen es válido.
+- La presentación ocupa su propia sección. El contenedor de 1200px comparte el eje del encabezado, blog y pie, con 24px de margen interior a cada lado.
+- Todos los casos publicados, incluido Modo Playa, comparten una grilla de una columna bajo 768px, dos desde 768px y tres desde 960px.
+- Cada tarjeta muestra la imagen, la categoría, el nombre, el resumen, hasta tres tecnologías en el orden del contenido y un enlace «Ver proyecto».
+- La ficha del proyecto en `/projects/:slug` muestra la decisión principal, el uso, el aporte, la arquitectura, el stack completo y los enlaces del caso.
+- «Enviar mensaje» queda debajo del formulario, con texto centrado y relleno lateral simétrico. El rótulo fija el ancho y el indicador visible de carga usa el relleno sin cambiar las dimensiones del botón.
 
 ### Páginas: listado del blog
 
@@ -460,7 +457,7 @@ Orden: presentación y proyecto destacado, resto de los proyectos, contacto.
 ### Movimiento
 
 - El movimiento responde a una acción: cambios de estado 150ms, entrada de panel y toast 200ms con opacidad y hasta 8px de desplazamiento. Curva `cubic-bezier(0.2, 0, 0, 1)`.
-- NO DEBE animar en la carga inicial ni al hacer scroll, iniciar contenido con opacidad 0, ni usar blur, escala en hover o decoración en bucle. Sólo los indicadores de progreso se repiten.
+- Los enlaces a anclas internas y «Volver arriba» usan desplazamiento suave nativo. No se aplican animaciones de entrada en la carga inicial ni activadas por el desplazamiento, opacidad inicial de 0, blur, escala en hover o decoración en bucle. Sólo los indicadores de progreso se repiten.
 - La transición de ruta vigente se mantiene en las navegaciones posteriores a la primera y nunca corre en la carga inicial.
 - `prefers-reduced-motion: reduce`: sin transición de ruta, desplazamientos, scroll suave ni animaciones en bucle; los cambios son instantáneos y el progreso se comunica con texto.
 
@@ -488,16 +485,16 @@ Orden: presentación y proyecto destacado, resto de los proyectos, contacto.
 
 ## Origen de los valores
 
-| Grupo                                                                       | Origen y motivo                                                                                                                                                                                                                 |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Colores                                                                     | Por token en Color.                                                                                                                                                                                                             |
-| Tipografías y monograma                                                     | Identidad aprobada.                                                                                                                                                                                                             |
-| Tamaños, pesos, interlineados y tracking                                    | Derivados: una jerarquía fluida limitada a tres pesos. La columna de lectura (38rem) y sus tamaños (18px, 17px en móvil) están aprobados.                                                                                       |
-| Espaciado, contenedores y cortes                                            | Derivados de la escala y los contenedores vigentes.                                                                                                                                                                             |
-| Radios                                                                      | Aprobado: 5px en botones y campos, con sugerencias y lanzador del chat en píldora como excepciones explícitas, y el panel destacado con el radio de tarjeta. Derivado: tarjetas 16px y código 12px, por continuidad.            |
-| Composición de portada                                                      | Aprobado: dos columnas, filete, contacto como enlace, destacado con texto, imagen y leyenda, sin repetirlo en la lista; revisión 2: orden del panel, dos columnas desde 640px, datos visibles y menos separación en escritorio. |
-| Superficies por tema y feedback                                             | Aprobado: pie, apertura del listado y baja con tokens del tema; toast sólo de éxito de 5s o más; confirmaciones importantes también en contexto; errores en contexto; sin sombras en reposo ni animaciones de carga o scroll.   |
-| Elevación, movimiento, estados de componentes, medidas de encabezado y chat | Derivados: accesibilidad, dimensiones estables y jerarquía plana.                                                                                                                                                               |
+| Grupo                                                                       | Origen y motivo                                                                                                                                                      |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Colores                                                                     | Por token en Color.                                                                                                                                                  |
+| Tipografías y monograma                                                     | Identidad aprobada.                                                                                                                                                  |
+| Tamaños, pesos, interlineados y tracking                                    | Derivados: una jerarquía fluida limitada a tres pesos. La columna de lectura (50rem) y sus tamaños (18px, 17px en móvil) están aprobados.                            |
+| Espaciado, contenedores y cortes                                            | Derivados de la escala y los contenedores vigentes.                                                                                                                  |
+| Radios                                                                      | Botones y campos de 5px, sugerencias y lanzador del chat en píldora, tarjetas de 16px y código de 12px.                                                              |
+| Composición de portada                                                      | Hero de ancho completo con líneas cortas degradadas, tecnologías debajo del rol y dos acciones. La grilla de proyectos va en su propia sección.                      |
+| Superficies por tema y feedback                                             | Bandas de contraste en el hero y el pie, tokens del tema para el blog y la baja, y feedback en contexto. Las anclas y Volver arriba respetan el movimiento reducido. |
+| Elevación, movimiento, estados de componentes, medidas de encabezado y chat | Derivados: accesibilidad, dimensiones estables y jerarquía plana.                                                                                                    |
 
 ## Qué hacer y qué evitar
 

@@ -3,11 +3,11 @@
   display: block;
   min-height: 100vh;
 }
-/* Un solo eje: texto en 38rem; código, tablas y figuras hasta 46rem. */
+/* Un solo eje: texto en 50rem; código, tablas y figuras hasta 60rem. */
 .blog-post,
 .blog-post-state {
   box-sizing: content-box;
-  max-width: 46rem;
+  max-width: 60rem;
   min-width: 0;
   margin-inline: auto;
   padding: var(--space-8) var(--space-4) var(--space-12);
@@ -16,7 +16,7 @@
 .blog-post-toc,
 .blog-post__content > *,
 .blog-post-state > * {
-  max-width: 38rem;
+  max-width: 50rem;
   margin-inline: auto;
 }
 .blog-post__header {
@@ -67,13 +67,25 @@
   margin-top: 0;
 }
 .blog-post__content
-  > :is(.code-block, .table-scroll, figure, .mermaid-diagram, p:has(> img:only-child)) {
-  max-width: 46rem;
+  > :is(
+    .code-block,
+    .table-scroll,
+    figure,
+    .mermaid-diagram,
+    p:has(> img:only-child, > a[href^='/diagrams/']:only-child > img:only-child)
+  ) {
+  max-width: 60rem;
   margin-top: var(--space-6);
 }
 /* Lo que sigue a un bloque ancho conserva su separación. */
 .blog-post__content
-  > :is(.code-block, .table-scroll, figure, .mermaid-diagram, p:has(> img:only-child))
+  > :is(
+    .code-block,
+    .table-scroll,
+    figure,
+    .mermaid-diagram,
+    p:has(> img:only-child, > a[href^='/diagrams/']:only-child > img:only-child)
+  )
   + * {
   margin-top: var(--space-6);
 }

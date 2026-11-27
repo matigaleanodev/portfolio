@@ -11,8 +11,8 @@ const ICONS: Record<string, LucideIconData> = {
   play: Play,
 };
 
-/** Enlaces de un caso, compartidos por la tarjeta y el destacado. Requiere contexto de inyección. */
-export function projectLinks(project: Signal<Project | null>) {
+/** Enlaces de la ficha de un proyecto. Requiere contexto de inyección. */
+export function projectLinks(project: Signal<Project | null | undefined>) {
   const analytics = inject(AnalyticsService);
   const primary = computed<ProjectLink | null>(() => {
     const links = project()?.links ?? [];

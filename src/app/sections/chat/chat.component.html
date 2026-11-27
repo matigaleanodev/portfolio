@@ -144,44 +144,38 @@
       <form class="chat-form" (ngSubmit)="submit()">
         <label for="chat-input" class="sr-only">Escribí tu pregunta</label>
 
-        <textarea
-          id="chat-input"
-          rows="2"
-          maxlength="500"
-          autocomplete="off"
-          [value]="draft()"
-          (input)="updateDraft($any($event.target).value)"
-          (keydown)="onTextareaKeydown($event)"
-          [readOnly]="sending()"
-          [attr.aria-describedby]="apiError() ? 'chat-error' : 'chat-counter'"
-          class="field__control chat-input"
-          placeholder="Ej: ¿Publicaste apps en Play Store?"
-        ></textarea>
+        <div class="chat-composer">
+          <textarea
+            id="chat-input"
+            rows="2"
+            maxlength="500"
+            autocomplete="off"
+            [value]="draft()"
+            (input)="updateDraft($any($event.target).value)"
+            (keydown)="onTextareaKeydown($event)"
+            [readOnly]="sending()"
+            [attr.aria-describedby]="apiError() ? 'chat-counter chat-error' : 'chat-counter'"
+            class="chat-input"
+            placeholder="Ej: ¿Publicaste apps en Play Store?"
+          ></textarea>
 
-        <div class="chat-form__footer">
-          <div id="chat-counter" class="chat-counter">{{ draft().trim().length }}/500</div>
-
-          <button
-            type="submit"
-            [disabled]="!sending() && !canSend()"
-            [attr.aria-disabled]="sending() ? 'true' : null"
-            [attr.aria-busy]="sending() ? 'true' : null"
-            class="btn btn--primary chat-submit"
-          >
-            <span class="btn__slot" aria-hidden="true">
+          <div class="chat-composer__actions">
+            <div id="chat-counter" class="chat-counter">{{ draft().trim().length }}/500</div>
+            <button
+              type="submit"
+              [disabled]="!sending() && !canSend()"
+              [attr.aria-disabled]="sending() ? 'true' : null"
+              [attr.aria-busy]="sending() ? 'true' : null"
+              [attr.aria-label]="sending() ? 'Enviando…' : 'Enviar'"
+              class="btn btn--primary chat-submit"
+            >
               @if (sending()) {
-                <span class="btn__spinner"></span>
+                <span class="btn__spinner" aria-hidden="true"></span>
+              } @else {
+                <lucide-icon [img]="sendIcon" size="20" aria-hidden="true" />
               }
-            </span>
-            <span class="btn__label">
-              <span [attr.data-idle]="!sending()" [attr.aria-hidden]="sending() ? 'true' : null"
-                >Enviar</span
-              >
-              <span [attr.data-idle]="sending()" [attr.aria-hidden]="sending() ? null : 'true'"
-                >Enviando…</span
-              >
-            </span>
-          </button>
+            </button>
+          </div>
         </div>
 
         @if (apiError(); as error) {

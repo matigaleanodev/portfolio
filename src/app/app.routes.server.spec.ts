@@ -14,7 +14,7 @@ interface BlogIndexEntry {
 }
 
 describe('serverRoutes', () => {
-  it('deberia prerenderizar home, blog, baja, detalle y fallback', () => {
+  it('deberia prerenderizar home, proyectos, blog, baja y fallback', () => {
     expect(
       serverRoutes.map((route) => ({
         path: route.path,
@@ -22,6 +22,7 @@ describe('serverRoutes', () => {
       })),
     ).toEqual([
       { path: '', renderMode: RenderMode.Prerender },
+      { path: 'projects/:slug', renderMode: RenderMode.Prerender },
       { path: 'blog', renderMode: RenderMode.Prerender },
       { path: 'blog/unsubscribe', renderMode: RenderMode.Prerender },
       { path: 'blog/:slug', renderMode: RenderMode.Prerender },
@@ -31,14 +32,16 @@ describe('serverRoutes', () => {
 
   it('deberia resolver slugs prerenderizables desde el indice del blog', async () => {
     const postRoute = serverRoutes.find((route) => route.path === 'blog/:slug') as
-      | (typeof serverRoutes)[number]
-      | undefined;
+      (typeof serverRoutes)[number] | undefined;
     const prerenderRoute = postRoute as (typeof postRoute & PrerenderRouteLike) | undefined;
 
     expect(prerenderRoute?.getPrerenderParams).toBeTypeOf('function');
 
     const params = await prerenderRoute!.getPrerenderParams!();
-    const rawIndex = await readFile(join(process.cwd(), 'src', 'assets', 'blog', 'posts.json'), 'utf8');
+    const rawIndex = await readFile(
+      join(process.cwd(), 'src', 'assets', 'blog', 'posts.json'),
+      'utf8',
+    );
     const expectedParams = (JSON.parse(rawIndex) as BlogIndexEntry[]).map((post) => ({
       slug: post.slug,
     }));

@@ -1,19 +1,33 @@
-<section class="hero">
-  <h1 class="hero__name">Matias Galeano</h1>
+<section class="site-band py-16 md:py-20">
+  <div class="page-container space-y-7 hero-shell">
+    <div class="hero-accent inline-flex items-center" aria-hidden="true">
+      <span class="hero-accent__line" aria-hidden="true"></span>
+    </div>
 
-  <p class="hero__role">Desarrollador full stack</p>
+    <h1 class="text-4xl md:text-6xl font-semibold leading-[0.98] tracking-[-0.03em]">
+      Matias Galeano
+    </h1>
 
-  <p class="hero__current">
-    Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos
-    Comunes de Inversión.
-  </p>
-  <p class="hero__summary">
-    Desarrollo aplicaciones con Angular y TypeScript, y diseño los servicios en AWS que las
-    acompañan.
-  </p>
+    <div class="space-y-2">
+      <p class="text-lg md:text-2xl opacity-95 m-0 font-medium tracking-[-0.02em]">
+        Desarrollador full stack
+      </p>
+      <p class="text-sm md:text-base opacity-65 m-0 font-mono tracking-[0.06em] uppercase">
+        Angular · TypeScript · AWS
+      </p>
+    </div>
 
-  <nav class="hero__actions" aria-label="Explorar portfolio">
-    <a appFragmentLink="projects" class="link-primary">Ver proyectos</a>
-    <a appFragmentLink="contact" class="link">Contactarme</a>
-  </nav>
+    <p class="max-w-2xl text-base md:text-lg opacity-78 mt-6 leading-relaxed">
+      Desarrollo aplicaciones con Angular y TypeScript, y diseño los servicios en AWS que las
+      acompañan.
+    </p>
+    <p class="max-w-2xl text-sm md:text-base opacity-78 leading-relaxed">
+      Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para
+      Fondos Comunes de Inversión.
+    </p>
+    <nav class="hero-actions" aria-label="Explorar portfolio">
+      <a appFragmentLink="projects" class="hero-action hero-action--primary">Ver proyectos</a>
+      <a appFragmentLink="contact" class="hero-action">Contactarme</a>
+    </nav>
+  </div>
 </section>

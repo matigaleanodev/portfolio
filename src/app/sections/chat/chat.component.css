@@ -57,6 +57,17 @@
   overflow-y: auto;
   padding: var(--space-3);
 }
+.chat-widget__body,
+.chat-messages,
+.chat-suggestions,
+.chat-input {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-control-border) transparent;
+}
+.chat-widget :focus-visible {
+  outline-width: 2px;
+  outline-offset: 2px;
+}
 .chat-widget__body > * {
   flex-shrink: 0;
 }
@@ -168,29 +179,62 @@
 .chat-retry {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2);
+}
+.chat-retry .btn {
+  flex: none;
+  padding-inline: var(--space-2);
 }
 .chat-form {
   display: grid;
   gap: var(--space-3);
 }
-.chat-input {
-  min-height: 4.5rem;
+.chat-composer {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+}
+.chat-composer:has(.chat-input:read-only) {
+  background: var(--color-surface-sunken);
+}
+.chat-composer:has(.chat-input:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.chat-widget .chat-input {
+  width: 100%;
+  padding-inline: var(--space-1);
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: 400 1rem/1.5 var(--font-sans);
   resize: none;
 }
-.chat-form__footer {
+.chat-widget .chat-input:focus-visible {
+  outline: none;
+}
+.chat-input::placeholder {
+  color: var(--color-text-muted);
+}
+.chat-composer__actions {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  padding-inline-start: var(--space-1);
 }
 .chat-counter {
   color: var(--color-text-muted);
   font: 400 0.8125rem/1.5 var(--font-mono);
 }
 .chat-submit {
-  min-height: 3rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
 }
 .chat-error {
   margin: 0;
@@ -210,8 +254,7 @@
 }
 
 /*
- * Poca altura: sugerencias en una fila desplazable y campo, contador y Enviar
- * compactos, para que conversación y envío entren sin desplazar el cuerpo.
+ * Poca altura: sugerencias en una fila desplazable y campo compacto para dejar espacio a la conversación.
  */
 @media (max-height: 599px) {
   .chat-widget__header {
@@ -224,10 +267,7 @@
   .chat-suggestions {
     flex-wrap: nowrap;
     overflow-x: auto;
-    /* El anillo de foco (3px a 4px) no queda recortado por el desplazamiento. */
-    padding: 7px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-control-border) transparent;
+    padding: var(--space-1);
   }
   .chat-suggestions__more {
     display: inline-flex;
@@ -235,49 +275,24 @@
   .chat-suggestions > * {
     flex: none;
   }
-  .chat-form {
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: var(--space-3);
-    row-gap: 0;
+  .chat-composer {
+    gap: 0;
+    padding-block: var(--space-1);
   }
   .chat-input {
-    grid-row: 1;
-    grid-column: 1;
-    height: 3rem;
-    min-height: 3rem;
+    height: 1.5rem;
   }
-  /* En una sola línea el ejemplo se abrevia en vez de quedar cortado. */
   .chat-input:placeholder-shown {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-  .chat-form__footer {
-    grid-row: 1;
-    grid-column: 2;
-    flex-direction: column-reverse;
-    justify-content: center;
-    gap: 0;
-  }
-  .chat-form > .chat-error {
-    grid-column: 1 / -1;
-  }
 }
 
-/* Angosto y bajo: el campo recupera todo el ancho y contador y Enviar van debajo. */
-@media (max-height: 599px) and (max-width: 479px) {
-  .chat-form {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: var(--space-3);
-  }
-  .chat-input {
-    grid-column: 1;
-  }
-  .chat-form__footer {
-    grid-row: auto;
-    grid-column: 1;
-    flex-direction: row;
-    justify-content: space-between;
+@media (min-width: 768px) and (max-height: 599px) {
+  .chat-widget {
+    bottom: var(--space-2);
+    height: calc(100dvh - 1rem);
   }
 }
 
