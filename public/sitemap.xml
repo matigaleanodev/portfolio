@@ -8,4 +8,20 @@
     <priority>1.0</priority>
   </url>
 
+  <url>
+    <loc>https://matiasgaleano.dev/projects/modo-playa</loc>
+  </url>
+
+  <url>
+    <loc>https://matiasgaleano.dev/projects/foodly-notes</loc>
+  </url>
+
+  <url>
+    <loc>https://matiasgaleano.dev/projects/portfolio</loc>
+  </url>
+
+  <url>
+    <loc>https://matiasgaleano.dev/projects/nora</loc>
+  </url>
+
 </urlset>

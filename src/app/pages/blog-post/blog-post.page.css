@@ -309,6 +309,11 @@
   color: var(--color-text-muted);
   font-size: 0.875rem;
 }
+/* El enlace toma la caja de la imagen para que el anillo de foco la rodee. */
+.blog-post__content a:has(> img:only-child) {
+  display: block;
+  border-radius: var(--radius-code);
+}
 /* Placa clara: los diagramas no tienen fuente oscura. */
 .blog-post__content .mermaid-diagram {
   box-sizing: border-box;

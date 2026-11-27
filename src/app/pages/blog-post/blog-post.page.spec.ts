@@ -90,8 +90,12 @@ describe('BlogPostPage', () => {
       title: 'Cómo diseñé la arquitectura de Modo Playa | Matias Galeano',
       description: 'Multi-tenant real',
       canonicalUrl: 'https://matiasgaleano.dev/blog/arquitectura-modo-playa',
-      ogImage: 'https://media.matiasgaleano.dev/og/arquitectura-modo-playa.png',
-      ogImageAlt: 'Portada social del post Cómo diseñé la arquitectura de Modo Playa',
+      image: {
+        url: 'https://media.matiasgaleano.dev/og/arquitectura-modo-playa.png',
+        alt: 'Portada social del post Cómo diseñé la arquitectura de Modo Playa',
+        width: 1200,
+        height: 630,
+      },
       type: 'article',
       publishedTime: '2026-03-07T00:00:00.000Z',
       modifiedTime: undefined,
@@ -172,15 +176,29 @@ describe('BlogPostPage', () => {
     fixture.detectChanges();
     const host = fixture.nativeElement as HTMLElement;
     expect(host.querySelector('h1')?.textContent).toContain('No encontramos este artículo');
-    expect(setPageSeoMock).toHaveBeenLastCalledWith(
-      expect.objectContaining({ title: 'Artículo no encontrado | Matias Galeano' }),
-    );
+    expect(setPageSeoMock).toHaveBeenLastCalledWith({
+      title: 'Artículo no encontrado | Matias Galeano',
+      description: 'Volvé al blog técnico de Matias Galeano para elegir otro artículo.',
+      noIndex: true,
+    });
 
     getPostBySlugMock.mockReturnValue(of(postMock));
     paramMap$.next(convertToParamMap({ slug: postMock.slug }));
     fixture.detectChanges();
 
     expect(host.querySelector('h1')?.textContent).toContain(postMock.title);
+  });
+
+  it('no excluye del indice un articulo que fallo al cargar', () => {
+    getPostBySlugMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 503 })));
+    TestBed.createComponent(BlogPostPage);
+
+    expect(setPageSeoMock).toHaveBeenLastCalledWith({
+      title: 'No se pudo cargar el artículo | Matias Galeano',
+      description: 'Volvé al blog técnico de Matias Galeano para elegir otro artículo.',
+      canonicalUrl: 'https://matiasgaleano.dev/blog',
+      type: 'website',
+    });
   });
 
   it('deberia llevar el foco al titulo si el reintento termina en no encontrado', async () => {

@@ -5,6 +5,7 @@ const privateMarker = 'unsubscribe-fixture-m76';
 const fixtureEmail = `${privateMarker.toUpperCase()}+QA@example.test`;
 const normalizedEmail = fixtureEmail.toLowerCase();
 const legacyLink = `${path}?email=${encodeURIComponent(fixtureEmail)}`;
+const fragmentLink = `${path}#email=${encodeURIComponent(fixtureEmail)}`;
 const unsubscribed = { message: 'Unsubscribed successfully', email: normalizedEmail };
 
 // Exercise GA's default URL for automatic/config and history page views, plus custom events.
@@ -405,4 +406,106 @@ test('el documento con el enlace heredado y su navegación no exponen el email a
       JSON.stringify(footprint).toLowerCase().includes(privateMarker),
     ),
   ).toEqual([]);
+});
+
+async function collectTelemetry(page: Page) {
+  const telemetry: Request[] = [];
+  await page.route('https://www.googletagmanager.com/gtag/js?*', (route) => {
+    telemetry.push(route.request());
+    return route.fulfill({ contentType: 'application/javascript', body: analyticsStub });
+  });
+  await page.route('https://analytics.example.test/collect', (route) => {
+    telemetry.push(route.request());
+    return route.fulfill({ status: 204 });
+  });
+  return telemetry;
+}
+
+const queuedAnalytics = (page: Page) =>
+  page.evaluate(() =>
+    JSON.stringify((window as Window & { dataLayer?: unknown[] }).dataLayer ?? []).toLowerCase(),
+  );
+
+test('el enlace con #email= precompleta sin enviar el email al servidor ni a analytics', async ({
+  page,
+  baseURL,
+}) => {
+  const requests: Request[] = [];
+  const subscriptionRequests: Request[] = [];
+  page.on('request', (request) => requests.push(request));
+  await isolateRequests(page, baseURL, (route) => {
+    subscriptionRequests.push(route.request());
+    return route.fulfill({ json: unsubscribed });
+  });
+  const telemetry = await collectTelemetry(page);
+
+  await page.goto(fragmentLink);
+  await expect(page.getByLabel('Email')).toHaveValue(normalizedEmail);
+  await page.waitForLoadState('networkidle');
+  await expect(page).toHaveURL(/\/blog\/unsubscribe\/?$/);
+  expect(subscriptionRequests).toHaveLength(0);
+
+  await page.getByRole('button', { name: 'Confirmar baja' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Tu suscripción fue dada de baja.' }),
+  ).toBeFocused();
+  expect(subscriptionRequests.map(requestContract)).toEqual([expectedRequest]);
+  expect(telemetry).toHaveLength(0);
+  expect(await queuedAnalytics(page)).not.toContain(privateMarker);
+
+  const footprints = await Promise.all(
+    requests
+      .filter((request) => !subscriptionRequests.includes(request))
+      .map(async (request) => ({
+        // El fragmento de la navegación de entrada no viaja al servidor.
+        url: request.isNavigationRequest() ? request.url().split('#')[0] : request.url(),
+        headers: await request.allHeaders(),
+        body: request.postData(),
+      })),
+  );
+  expect(
+    footprints.filter((footprint) =>
+      JSON.stringify(footprint).toLowerCase().includes(privateMarker),
+    ),
+  ).toEqual([]);
+});
+
+for (const variant of [
+  '/blog/unsubscribe?Email=',
+  '//blog/unsubscribe?email=',
+  '/blog/Unsubscribe?email=',
+  '/blog/unsubscribe;email=',
+  '/ruta-inexistente?email=',
+  '/blog?EMAIL=',
+  '/blog#email=',
+]) {
+  test(`la variante ${variant} limpia la URL y no carga analytics`, async ({ page, baseURL }) => {
+    await isolateRequests(page, baseURL, (route) => route.fulfill({ json: unsubscribed }));
+    const telemetry = await collectTelemetry(page);
+    const origin = new URL(baseURL!).origin;
+    // Como el rewrite de Hosting: las rutas sin archivo propio reciben el index.
+    await page.route(
+      (url) => /^\/(?:ruta-inexistente|blog\/Unsubscribe|blog\/unsubscribe;)/.test(url.pathname),
+      async (route) =>
+        route.fulfill({ response: await route.fetch({ url: `${origin}/index.html` }) }),
+    );
+
+    await page.goto(`${origin}${variant}${encodeURIComponent(fixtureEmail)}`);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    await expect.poll(() => page.url().toLowerCase()).not.toContain(privateMarker);
+    expect(telemetry).toHaveLength(0);
+    expect(await queuedAnalytics(page)).not.toContain(privateMarker);
+    // En la ruta de baja la dirección retirada además precompleta el campo.
+    if (/^\/{1,2}blog\/unsubscribe[?;]/.test(variant))
+      await expect(page.getByLabel('Email')).toHaveValue(normalizedEmail);
+  });
+}
+
+test('un ancla #email sin valor no se confunde con una dirección', async ({ page, baseURL }) => {
+  await isolateRequests(page, baseURL, (route) => route.fulfill({ json: unsubscribed }));
+  const telemetry = await collectTelemetry(page);
+  await page.goto('/blog#email');
+  await expect.poll(() => telemetry.length).toBeGreaterThan(0);
+  await expect(page).toHaveURL(/#email$/);
 });

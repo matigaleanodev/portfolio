@@ -28,6 +28,9 @@
   flex: none;
   border-radius: var(--radius-code);
   object-fit: contain;
+  /* Si la imagen falla, el texto alternativo no desborda su caja; el nombre accesible se mantiene. */
+  overflow: hidden;
+  font-size: 0;
 }
 .project-card__type {
   color: var(--color-text-muted);

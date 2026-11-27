@@ -126,10 +126,14 @@ export class BlogPostPage {
       title: post.seo.title,
       description: post.seo.description,
       canonicalUrl: post.seo.canonicalUrl,
-      ogImage: post.seo.ogImage.startsWith('http')
-        ? post.seo.ogImage
-        : `https://matiasgaleano.dev${post.seo.ogImage}`,
-      ogImageAlt: post.seo.ogImageAlt ?? `Portada social del post ${post.title}`,
+      image: {
+        url: post.seo.ogImage.startsWith('http')
+          ? post.seo.ogImage
+          : `https://matiasgaleano.dev${post.seo.ogImage}`,
+        alt: post.seo.ogImageAlt ?? `Portada social del post ${post.title}`,
+        width: 1200,
+        height: 630,
+      },
       type: 'article',
       publishedTime: `${post.date}T00:00:00.000Z`,
       modifiedTime: post.updatedAt ? `${post.updatedAt}T00:00:00.000Z` : undefined,
@@ -153,8 +157,10 @@ export class BlogPostPage {
     this.seo.setPageSeo({
       title: `${notFound ? 'Artículo no encontrado' : 'No se pudo cargar el artículo'} | Matias Galeano`,
       description: 'Volvé al blog técnico de Matias Galeano para elegir otro artículo.',
-      canonicalUrl: 'https://matiasgaleano.dev/blog',
-      type: 'website',
+      // Un slug ausente sale del índice; una falla transitoria conserva su indexación.
+      ...(notFound
+        ? { noIndex: true }
+        : { canonicalUrl: 'https://matiasgaleano.dev/blog', type: 'website' }),
     });
   }
 

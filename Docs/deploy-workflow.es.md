@@ -82,7 +82,7 @@ Su objetivo es dejar un artefacto de handoff estable para `portfolio-cloud` con:
 
 - SHA y ref de git
 - metadatos del target de deploy
-- slugs de posts del blog
+- slug, título, fecha, ruta canónica y extracto (opcional para el consumidor) de cada post
 - slugs de proyectos
 - paths de archivos SEO
 
@@ -120,4 +120,4 @@ El CI de pull requests construye el sitio, instala Chromium y ejecuta Playwright
 
 ## Destino de producción verificado el 2026-10-09
 
-El sitio público usa únicamente el stage `prod`. `dev` queda reservado para pruebas. AWS y los tres repositorios usan `us-east-1`; la consola del navegador puede abrir otra región y no debe tomarse como evidencia de la región desplegada. Las variables existentes del frontend en GitHub ya apuntan a `portfolio-cloud-prod-process-release` y `portfolio-cloud-prod-publish-chat-knowledge`; los valores por defecto del workflow ahora también apuntan a `prod`.
+El sitio público usa únicamente el stage `prod`. `dev` queda reservado para pruebas. AWS y los tres repositorios usan `us-east-1`; la consola del navegador puede abrir otra región y no debe tomarse como evidencia de la región desplegada. Hoy las variables del frontend en GitHub apuntan a `portfolio-api-cloud-test-process-release` y `portfolio-api-cloud-test-publish-chat-knowledge`, nombres físicos de la instalación de `portfolio-api-cloud`. Los valores por defecto del workflow siguen siendo los de `portfolio-cloud`: quitar las variables devolvería la publicación a esas funciones.

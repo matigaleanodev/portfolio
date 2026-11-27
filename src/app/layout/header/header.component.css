@@ -66,6 +66,12 @@
   color: var(--color-canvas);
 }
 
+@media (forced-colors: active) {
+  .header-nav a.is-active {
+    text-decoration: underline 3px;
+  }
+}
+
 @media (max-width: 640px) {
   .header-nav a {
     padding-inline: 0.75rem;

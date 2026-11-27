@@ -420,6 +420,10 @@ body {
 .segment:active > .btn--toggle {
   transform: translateY(1px);
 }
+/* La seleccionada conserva su borde aunque el puntero siga encima. */
+.segment:active > input:checked + .btn--toggle {
+  border-color: var(--color-accent);
+}
 .btn--code:active {
   border-color: var(--color-code-keyword);
   background: var(--color-code-hover);
@@ -556,7 +560,7 @@ body {
 @media (forced-colors: active) {
   .btn--icon:hover::after,
   .btn--launcher:hover::after,
-  .btn:active:not(:disabled)::after {
+  .btn:active:not(:disabled):not([aria-busy='true'])::after {
     content: '';
     position: absolute;
     inset: 2px;
@@ -575,6 +579,19 @@ body {
   }
   .segment > .btn--toggle {
     position: relative;
+  }
+  /* Presionada: gana al indicador de 1px de hover, selección y botón activo. */
+  .segment:active > input:not(:disabled) + .btn.btn--toggle::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border: 3px solid Highlight;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .btn__spinner {
+    border-color: ButtonText;
+    border-top-color: Canvas;
   }
   .btn:disabled {
     border-color: GrayText;
@@ -624,7 +641,7 @@ body {
 .field__control::placeholder {
   color: var(--color-text-muted);
 }
-.field__control:hover:not(:read-only):not(:disabled) {
+.field__control:hover:not(:read-only, :disabled, :focus-visible, [aria-invalid='true']) {
   border-color: var(--color-text-muted);
 }
 .field__control:read-only {

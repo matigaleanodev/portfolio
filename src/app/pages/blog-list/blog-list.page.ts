@@ -131,7 +131,6 @@ export class BlogListPage {
       description:
         'Posts técnicos en español sobre Angular, NestJS, AWS, arquitectura y decisiones de producto escritos desde proyectos reales.',
       canonicalUrl: 'https://matiasgaleano.dev/blog',
-      ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
       type: 'website',
     });
 

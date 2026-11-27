@@ -56,7 +56,6 @@ export class BlogUnsubscribePage {
       title: 'Baja de suscripción | Blog de Matias Galeano',
       description: 'Confirmación de baja para la suscripción del blog técnico de Matias Galeano.',
       canonicalUrl: 'https://matiasgaleano.dev/blog/unsubscribe',
-      ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
       type: 'website',
     });
 

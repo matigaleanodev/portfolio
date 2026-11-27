@@ -105,7 +105,6 @@ date: 2026-03-07
 tags:
   - angular
   - architecture
-coverImage: /assets/blog/angular-signals/cover.webp
 ---
 ```
 
@@ -115,6 +114,7 @@ Campos opcionales:
 ---
 updatedAt: 2026-03-08
 canonicalUrl: https://matiasgaleano.dev/blog/angular-signals-in-practice
+coverImage: /assets/blog/angular-signals/cover.webp
 ogImage: /assets/blog/angular-signals/og.webp
 draft: false
 ---
@@ -122,7 +122,8 @@ draft: false
 
 Reglas de validacion:
 
-- `title`, `slug`, `excerpt`, `date`, `tags` y `coverImage` son obligatorios.
+- `title`, `slug`, `excerpt`, `date` y `tags` son obligatorios.
+- `coverImage` es opcional: el listado y el artículo no muestran portada. Si se declara, debe ser un texto no vacío.
 - `slug` debe ser URL-safe y unico.
 - `date` y `updatedAt` usan `YYYY-MM-DD`.
 - `tags` debe tener al menos un valor.

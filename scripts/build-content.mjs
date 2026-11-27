@@ -38,7 +38,10 @@ export async function runBuildContent(now = new Date()) {
 
   const projects = await loadProjects();
   const posts = await loadPosts(now);
-  await publishDiagrams(rootDir, projects, posts.details);
+  const imageSizes = await publishDiagrams(rootDir, projects, posts.details);
+  for (const post of posts.details) {
+    post.contentHtml = declareImageSizes(post.contentHtml, imageSizes);
+  }
   const chatKnowledge = buildChatKnowledge(projects, posts.details);
 
   await fs.writeFile(projectsOutputPath, `${JSON.stringify(projects, null, 2)}\n`);
@@ -153,10 +156,13 @@ async function loadPosts(now) {
     validateRequiredString(entry.data.title, `Missing post title in ${relative(filePath)}`);
     validateRequiredString(entry.data.excerpt, `Missing post excerpt in ${relative(filePath)}`);
     const postDate = normalizeDate(entry.data.date, `Invalid post date in ${relative(filePath)}`);
-    validateRequiredString(
-      entry.data.coverImage,
-      `Missing post coverImage in ${relative(filePath)}`,
-    );
+    // El listado y el artículo no muestran portada: un artículo puede publicarse sin imagen.
+    if (entry.data.coverImage != null) {
+      validateRequiredString(
+        entry.data.coverImage,
+        `Invalid post coverImage in ${relative(filePath)}`,
+      );
+    }
     validateStringArray(entry.data.tags, `Invalid post tags in ${relative(filePath)}`);
 
     const updatedAt =
@@ -177,7 +183,7 @@ async function loadPosts(now) {
         date: postDate,
         ...(updatedAt ? { updatedAt } : {}),
         tags: entry.data.tags.map((value) => value.trim()),
-        coverImage: entry.data.coverImage.trim(),
+        ...(entry.data.coverImage != null ? { coverImage: entry.data.coverImage.trim() } : {}),
         readingTimeMinutes,
         contentHtml,
         headings,
@@ -272,6 +278,14 @@ export function renderMarkdown(markdown) {
   renderer.table = (token) =>
     `<div class="table-scroll" role="region" aria-label="Tabla del artículo" tabindex="0">${renderTable(token)}</div>`;
   return { contentHtml: sanitizeGeneratedHtml(marked.parse(markdown, { renderer })), headings };
+}
+
+// Reserva el alto de cada imagen antes de que cargue.
+function declareImageSizes(html, sizes) {
+  return html.replace(/<img\b[^>]*?\ssrc="([^"]+)"/g, (tag, source) => {
+    const size = sizes.get(source);
+    return size ? `${tag} width="${size.width}" height="${size.height}"` : tag;
+  });
 }
 
 export function sanitizeGeneratedHtml(html) {
