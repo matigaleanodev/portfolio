@@ -1,14 +1,26 @@
 import '../../locale';
 
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  Injector,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { LucideAngularModule, CircleAlert, CircleCheck } from 'lucide-angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BlogPostSummary } from '../../models/blog.model';
 import { AnalyticsService } from '../../services/analytics.service';
 import { ApiService } from '../../services/api.service';
 import { BlogContentService } from '../../services/blog-content.service';
+import { BlogListStateService, BlogSortOrder } from '../../services/blog-list-state.service';
 import { SeoService } from '../../services/seo.service';
 
 type SubscriptionStatus = 'idle' | 'submitting' | 'success' | 'already' | 'invalid' | 'error';
@@ -35,9 +47,8 @@ const SUBSCRIPTION_MESSAGES = {
 } as const;
 
 @Component({
-  host: { class: 'legacy-light' },
   selector: 'app-blog-list-page',
-  imports: [RouterLink, DatePipe, ReactiveFormsModule],
+  imports: [RouterLink, DatePipe, ReactiveFormsModule, LucideAngularModule],
   templateUrl: './blog-list.page.html',
   styleUrl: './blog-list.page.css',
 })
@@ -48,10 +59,20 @@ export class BlogListPage {
   private readonly analytics = inject(AnalyticsService);
   private readonly seo = inject(SeoService);
 
+  private readonly injector = inject(Injector);
+  private readonly listState = inject(BlogListStateService);
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+  private readonly resultsStatus = viewChild<ElementRef<HTMLElement>>('resultsStatus');
+
+  protected readonly successIcon = CircleCheck;
+  protected readonly errorIcon = CircleAlert;
+
   readonly posts = signal<BlogPostSummary[]>([]);
   readonly errorMessage = signal('');
-  readonly searchQuery = signal('');
-  readonly sortOrder = signal<'newest' | 'oldest'>('newest');
+  readonly isLoading = signal(false);
+  readonly hasLoaded = signal(false);
+  readonly searchQuery = this.listState.searchQuery.asReadonly();
+  readonly sortOrder = this.listState.sortOrder.asReadonly();
   readonly subscriptionState = signal<SubscriptionState>(IDLE_SUBSCRIPTION_STATE);
 
   readonly subscriptionEmailControl = new FormControl<string>('', {
@@ -85,7 +106,10 @@ export class BlogListPage {
   });
 
   readonly resultsLabel = computed(() => {
+    if (this.isLoading()) return 'Cargando posts…';
+    if (this.errorMessage()) return 'No pudimos cargar los posts.';
     const count = this.filteredPosts().length;
+    if (count === 0) return 'Sin resultados';
     return count === 1 ? '1 post' : `${count} posts`;
   });
 
@@ -108,38 +132,61 @@ export class BlogListPage {
       type: 'website',
     });
 
+    this.loadPosts();
+  }
+
+  /** Carga el índice; ignora repeticiones mientras hay una lectura pendiente. */
+  loadPosts(): void {
+    if (this.isLoading()) {
+      return;
+    }
+
+    const isRetry = !!this.errorMessage();
+    this.isLoading.set(true);
+
     this.blogContent
       .getPosts()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (posts) => {
           this.posts.set(posts);
+          this.errorMessage.set('');
+          this.hasLoaded.set(true);
+          this.isLoading.set(false);
           this.analytics.trackEvent('view_blog_index', {
             post_count: posts.length,
           });
+          // El botón de reintento deja de mostrarse: el foco pasa al recuento.
+          if (isRetry) this.focusAfterRender(this.resultsStatus);
         },
         error: (error: unknown) => {
           const message =
             error instanceof Error ? error.message : 'Unexpected error loading blog posts.';
           this.errorMessage.set(message);
+          this.isLoading.set(false);
         },
       });
   }
 
+  clearSearch(): void {
+    this.updateSearchQuery('');
+    this.searchInput()?.nativeElement.focus();
+  }
+
   updateSearchQuery(query: string): void {
-    this.searchQuery.set(query);
+    this.listState.searchQuery.set(query);
     this.analytics.trackEvent('search_blog_posts', {
       query_length: query.trim().length,
       result_count: this.filteredPosts().length,
     });
   }
 
-  updateSortOrder(order: 'newest' | 'oldest'): void {
+  updateSortOrder(order: BlogSortOrder): void {
     if (this.sortOrder() === order) {
       return;
     }
 
-    this.sortOrder.set(order);
+    this.listState.sortOrder.set(order);
     this.analytics.trackEvent('sort_blog_posts', {
       sort_order: order,
       result_count: this.filteredPosts().length,
@@ -199,6 +246,10 @@ export class BlogListPage {
       post_title: post.title,
       position,
     });
+  }
+
+  private focusAfterRender(target: () => ElementRef<HTMLElement> | undefined): void {
+    afterNextRender({ write: () => target()?.nativeElement.focus() }, { injector: this.injector });
   }
 
   private normalizeSearch(value: string): string {

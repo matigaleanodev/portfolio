@@ -13,21 +13,27 @@ export class BlogContentService {
   private readonly transferState = inject(TransferState);
 
   getPosts() {
-    return this.getContent<BlogPostSummary[]>(
+    return this.getTransferable<BlogPostSummary[]>(
+      'blog-posts',
       ['src', 'assets', 'blog', 'posts.json'],
       '/assets/blog/posts.json',
     );
   }
 
   getPostBySlug(slug: string) {
-    const stateKey = makeStateKey<BlogPost | null>(`blog-post:${slug}`);
-    const content$ = this.getContent<BlogPost>(
+    return this.getTransferable<BlogPost>(
+      `blog-post:${slug}`,
       ['src', 'assets', 'blog', 'posts', `${slug}.json`],
       `/assets/blog/posts/${slug}.json`,
     );
+  }
+
+  private getTransferable<T>(key: string, fileSegments: string[], assetUrl: string) {
+    const stateKey = makeStateKey<T | null>(key);
+    const content$ = this.getContent<T>(fileSegments, assetUrl);
 
     if (isPlatformServer(this.platformId)) {
-      return content$.pipe(tap((post) => this.transferState.set(stateKey, post)));
+      return content$.pipe(tap((content) => this.transferState.set(stateKey, content)));
     }
 
     // El estado del prerender se usa una sola vez y emite en forma síncrona para conservar el DOM.
@@ -77,9 +83,11 @@ function loadNodePath(): Promise<NodePathModule> {
 }
 
 function getProcessCwd(): string {
-  const processRef = (globalThis as typeof globalThis & {
-    process?: { cwd?: () => string };
-  }).process;
+  const processRef = (
+    globalThis as typeof globalThis & {
+      process?: { cwd?: () => string };
+    }
+  ).process;
 
   if (!processRef?.cwd) {
     throw new Error('Process cwd is not available in the current runtime.');

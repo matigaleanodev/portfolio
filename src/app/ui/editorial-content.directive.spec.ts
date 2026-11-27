@@ -17,6 +17,18 @@ class EditorialFixture {
   };
 }
 
+@Component({
+  imports: [EditorialContentDirective],
+  template: '<div [appEditorialContent]="post"></div>',
+})
+class CodeFixture {
+  readonly post = {
+    contentHtml:
+      '<pre><code class="language-bash">ls</code></pre><div class="table-scroll"><table><tbody><tr><td>a</td></tr></tbody></table></div><pre><code class="language-mermaid">flowchart LR</code></pre>',
+    headings: [],
+  };
+}
+
 describe('EditorialContentDirective', () => {
   it('debería conservar IDs seguros sin permitir scripts ni atributos ejecutables', () => {
     const fixture = TestBed.createComponent(EditorialFixture);
@@ -26,5 +38,23 @@ describe('EditorialContentDirective', () => {
     expect(element.querySelector('h3')?.id).toBe('');
     expect(element.querySelector('script')).toBeNull();
     expect(element.querySelector('[onclick]')).toBeNull();
+  });
+
+  it('deberia preparar codigo y tablas en el HTML, antes de cualquier tarea del navegador', () => {
+    const fixture = TestBed.createComponent(CodeFixture);
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    const pre = element.querySelector('.code-block > pre')!;
+    expect(pre.getAttribute('role')).toBe('region');
+    expect(pre.getAttribute('tabindex')).toBe('0');
+    expect(pre.getAttribute('aria-label')).toBe('Código bash');
+    const button = element.querySelector<HTMLButtonElement>('.code-toolbar button.code-copy')!;
+    expect(button.type).toBe('button');
+    expect(element.querySelector('.code-toolbar [role="status"]')).not.toBeNull();
+    const table = element.querySelector('.table-scroll')!;
+    expect(table.getAttribute('role')).toBe('region');
+    expect(table.getAttribute('tabindex')).toBe('0');
+    expect(table.getAttribute('aria-label')).toBeTruthy();
+    expect(element.querySelector('.language-mermaid')!.closest('.code-block')).toBeNull();
   });
 });

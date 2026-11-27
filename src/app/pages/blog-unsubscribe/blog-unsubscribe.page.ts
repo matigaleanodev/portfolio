@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { LucideAngularModule, CircleAlert, CircleCheck } from 'lucide-angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { AnalyticsService } from '../../services/analytics.service';
@@ -18,9 +19,8 @@ import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 
 @Component({
-  host: { class: 'legacy-light' },
   selector: 'app-blog-unsubscribe-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, LucideAngularModule],
   templateUrl: './blog-unsubscribe.page.html',
   styleUrl: './blog-unsubscribe.page.css',
 })
@@ -34,6 +34,9 @@ export class BlogUnsubscribePage {
   private readonly emailInput = viewChild<ElementRef<HTMLInputElement>>('emailInput');
   private readonly errorFeedback = viewChild<ElementRef<HTMLElement>>('errorFeedback');
   private readonly successHeading = viewChild<ElementRef<HTMLElement>>('successHeading');
+
+  protected readonly successIcon = CircleCheck;
+  protected readonly errorIcon = CircleAlert;
 
   readonly emailControl = new FormControl<string>('', {
     nonNullable: true,

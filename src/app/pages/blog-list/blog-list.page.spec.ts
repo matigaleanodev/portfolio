@@ -367,7 +367,9 @@ describe('BlogListPage', () => {
       expect(subscribeToBlogMock).toHaveBeenCalledTimes(1);
       expect(submitButton().disabled).toBe(false);
       expect(submitButton().getAttribute('aria-disabled')).toBe('true');
-      expect(submitButton().textContent?.trim()).toBe('Enviando…');
+      expect(
+        submitButton().querySelector('.btn__label [data-idle="true"]')?.textContent?.trim(),
+      ).toBe('Enviando…');
       expect(emailInput().readOnly).toBe(true);
       expect(feedbackText()).toBe(MESSAGES.submitting);
 
@@ -549,5 +551,67 @@ describe('BlogListPage', () => {
     expect(trackEventMock).toHaveBeenCalledWith('blog_subscription_already_subscribed', {
       location: 'blog_index_subscription',
     });
+  });
+
+  it('deberia conservar busqueda y orden al volver a crear la pagina', () => {
+    const first = TestBed.createComponent(BlogListPage);
+    first.componentInstance.updateSearchQuery('angular');
+    first.componentInstance.updateSortOrder('oldest');
+    first.destroy();
+
+    fixture = TestBed.createComponent(BlogListPage);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector<HTMLInputElement>('#blog-search')!.value).toBe('angular');
+    expect(host.querySelector<HTMLInputElement>('input[value="oldest"]')!.checked).toBe(true);
+  });
+
+  it('no deberia mostrar el estado vacio mientras carga', () => {
+    getPostsMock.mockReturnValue(new Subject<BlogPostSummary[]>());
+    fixture = TestBed.createComponent(BlogListPage);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.blog-empty-state')).toBeNull();
+    expect(host.querySelector('.blog-toolbar__results')?.textContent).toContain('Cargando posts');
+  });
+
+  it('deberia ofrecer limpiar la busqueda sin resultados y devolver el foco', () => {
+    fixture = TestBed.createComponent(BlogListPage);
+    document.body.appendChild(fixture.nativeElement);
+    fixture.componentInstance.updateSearchQuery('xyz');
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+
+    host.querySelector<HTMLButtonElement>('.blog-empty-state button')!.click();
+    fixture.detectChanges();
+
+    expect(host.querySelectorAll('.blog-card').length).toBe(3);
+    expect(document.activeElement?.id).toBe('blog-search');
+    fixture.nativeElement.remove();
+  });
+
+  it('deberia informar el error de carga en espanol y permitir reintentar una sola vez', () => {
+    const retry = new Subject<BlogPostSummary[]>();
+    getPostsMock.mockReturnValueOnce(throwError(() => new Error('Http failure response')));
+    fixture = TestBed.createComponent(BlogListPage);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('No pudimos cargar los posts');
+    expect(host.textContent).not.toContain('Http failure');
+    getPostsMock.mockReturnValue(retry);
+    const button = host.querySelector<HTMLButtonElement>('.blog-load-error button')!;
+
+    button.click();
+    fixture.detectChanges();
+    button.click();
+
+    expect(getPostsMock).toHaveBeenCalledTimes(2);
+    expect(button.getAttribute('aria-busy')).toBe('true');
+    expect(button.disabled).toBe(false);
+    retry.next(postsMock);
+    fixture.detectChanges();
+    expect(host.querySelectorAll('.blog-card').length).toBe(3);
   });
 });

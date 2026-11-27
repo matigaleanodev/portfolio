@@ -1,178 +1,236 @@
 <main class="blog-page">
-  <section class="blog-hero-surface bg-(--color-text) text-(--color-bg) py-8 md:py-12">
-    <div class="max-w-6xl mx-auto px-6 blog-hero-shell hero-shell">
-      <div class="hero-accent inline-flex items-center" aria-hidden="true">
-        <span class="hero-accent__line" aria-hidden="true"></span>
+  <section class="page-container blog-opening">
+    <h1 class="blog-opening__title">Arquitectura, producto e infraestructura desde la práctica.</h1>
+    <p class="blog-opening__lead">
+      Posts técnicos en español, escritos desde proyectos reales: Angular, NestJS, AWS y decisiones
+      de arquitectura.
+    </p>
+
+    <div class="blog-toolbar" role="search" aria-label="Exploración del blog">
+      <div class="field">
+        <label class="field__label" for="blog-search">Buscar posts</label>
+        <input
+          id="blog-search"
+          type="search"
+          class="field__control"
+          [value]="searchQuery()"
+          (input)="updateSearchQuery(searchInput.value)"
+          #searchInput
+          placeholder="Buscar por tema, stack o post"
+        />
       </div>
 
-      <p class="blog-hero-kicker">Blog Técnico</p>
-
-      <div class="blog-hero-grid">
-        <div class="blog-hero__copy">
-          <h1 class="blog-hero-title">
-            Arquitectura, producto e infraestructura desde la práctica.
-          </h1>
-          <p class="text-base md:text-lg opacity-78 leading-relaxed max-w-3xl">
-            Posts técnicos en español, escritos desde proyectos reales: Angular, NestJS, AWS y
-            decisiones de arquitectura.
-          </p>
-        </div>
-      </div>
-
-      <div class="blog-toolbar" aria-label="Exploración del blog">
-        <div class="blog-toolbar__explore">
-          <div class="blog-toolbar__field">
-            <label class="blog-toolbar__label" for="blog-search">Buscar posts</label>
+      <fieldset class="blog-sort">
+        <legend class="field__label">Orden</legend>
+        <div class="blog-sort__options">
+          <span class="segment">
             <input
-              id="blog-search"
-              type="search"
-              class="blog-toolbar__input"
-              [value]="searchQuery()"
-              (input)="updateSearchQuery(searchInput.value)"
-              #searchInput
-              placeholder="Buscar por tema, stack o post"
+              id="blog-order-newest"
+              type="radio"
+              name="blog-order"
+              value="newest"
+              [checked]="sortOrder() === 'newest'"
+              (change)="updateSortOrder('newest')"
             />
-          </div>
-
-          <fieldset class="blog-toolbar__field blog-toolbar__field--sort">
-            <legend class="blog-toolbar__label">Orden</legend>
-            <div class="blog-toolbar__sort">
-              <label class="blog-toolbar__sort-option">
-                <input
-                  type="radio"
-                  name="blog-order"
-                  value="newest"
-                  [checked]="sortOrder() === 'newest'"
-                  (change)="updateSortOrder('newest')"
-                />
-                <span>Más nuevos</span>
-              </label>
-              <label class="blog-toolbar__sort-option">
-                <input
-                  type="radio"
-                  name="blog-order"
-                  value="oldest"
-                  [checked]="sortOrder() === 'oldest'"
-                  (change)="updateSortOrder('oldest')"
-                />
-                <span>Más viejos</span>
-              </label>
-            </div>
-          </fieldset>
-
-          <p class="blog-toolbar__results" role="status" aria-atomic="true">{{ resultsLabel() }}</p>
+            <label class="btn btn--toggle" for="blog-order-newest">
+              <span class="btn__slot segment__check" aria-hidden="true"></span>
+              Más nuevos
+            </label>
+          </span>
+          <span class="segment">
+            <input
+              id="blog-order-oldest"
+              type="radio"
+              name="blog-order"
+              value="oldest"
+              [checked]="sortOrder() === 'oldest'"
+              (change)="updateSortOrder('oldest')"
+            />
+            <label class="btn btn--toggle" for="blog-order-oldest">
+              <span class="btn__slot segment__check" aria-hidden="true"></span>
+              Más viejos
+            </label>
+          </span>
         </div>
-      </div>
+      </fieldset>
+
+      <p
+        #resultsStatus
+        class="blog-toolbar__results"
+        role="status"
+        aria-atomic="true"
+        tabindex="-1"
+      >
+        {{ resultsLabel() }}
+      </p>
     </div>
   </section>
 
-  <section class="blog-list-surface py-8 md:py-12">
-    <div class="max-w-6xl mx-auto px-6 space-y-10">
-      @if (errorMessage() && !filteredPosts().length) {
-        <div class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-          No se pudieron cargar los posts.
-          <span class="block opacity-80">{{ errorMessage() }}</span>
-        </div>
-      } @else {
-        @if (!filteredPosts().length) {
-          <div class="blog-empty-state">
-            <p class="blog-empty-state__kicker">Sin resultados</p>
-            <h2>No encontré posts para esa búsqueda.</h2>
-            <p>Probá con otra tecnología, concepto o etiqueta.</p>
-          </div>
-        } @else {
-          <div class="blog-cards-grid">
-            @for (post of filteredPosts(); track post.slug; let i = $index) {
-              <article class="blog-card" [style.--blog-delay]="i * 120 + 'ms'">
-                <a
-                  [routerLink]="['/blog', post.slug]"
-                  (click)="trackPostClick(post, i + 1)"
-                  class="blog-card__link"
-                  [attr.aria-label]="'Leer ' + post.title"
-                >
-                  <div class="blog-card__meta">
-                    <time [attr.datetime]="post.date">{{
-                      post.date | date: 'd MMM y' : '' : 'es-AR'
-                    }}</time>
-                    <span>{{ post.readingTimeMinutes }} min</span>
-                  </div>
-
-                  <h2 class="blog-card__title">{{ post.title }}</h2>
-                  <p class="blog-card__excerpt">{{ post.excerpt }}</p>
-
-                  <ul class="blog-card__tags" aria-label="Etiquetas del post">
-                    @for (tag of post.tags; track tag) {
-                      <li>{{ tag }}</li>
-                    }
-                  </ul>
-
-                  <div class="blog-card__footer">
-                    <span class="blog-card__cta">Leer post</span>
-                    <span class="blog-card__pulse" aria-hidden="true"></span>
-                  </div>
-                </a>
-              </article>
-            }
-          </div>
-        }
-      }
-    </div>
-  </section>
-  <section class="blog-subscription-surface bg-(--color-text) text-(--color-bg) py-8 md:py-12">
-    <div class="max-w-6xl mx-auto px-6">
-      <aside class="blog-toolbar__subscribe" aria-label="Suscripción al blog">
-        <div class="blog-toolbar__subscribe-copy">
-          <span class="blog-toolbar__subscribe-kicker">Suscripción</span>
-          <h2>Recibí nuevos posts sin perder el hilo.</h2>
-          <p>Un mail por publicación. Arquitectura, backend, cloud y producto.</p>
-        </div>
-
-        <form
-          class="blog-toolbar__subscribe-form"
-          novalidate
-          (submit)="$event.preventDefault(); submitSubscription()"
+  <section
+    class="page-container blog-results"
+    [class.blog-results--loading]="isLoading()"
+    aria-label="Resultados"
+  >
+    @if (errorMessage() && !posts().length) {
+      <div class="blog-load-error feedback feedback--danger">
+        <p role="alert">
+          <strong>No pudimos cargar los posts.</strong>
+          Revisá tu conexión y volvé a intentar.
+        </p>
+        <button
+          type="button"
+          class="btn btn--secondary"
+          [attr.aria-disabled]="isLoading() ? 'true' : null"
+          [attr.aria-busy]="isLoading() ? 'true' : null"
+          (click)="loadPosts()"
         >
-          <label class="blog-toolbar__label" for="blog-subscription-email">Email</label>
-          <div class="blog-toolbar__subscribe-row">
-            <input
-              id="blog-subscription-email"
-              type="email"
-              class="blog-toolbar__input blog-toolbar__input--subscribe"
-              [formControl]="subscriptionEmailControl"
-              placeholder="tu@email.com"
-              autocomplete="email"
-              required
-              [readOnly]="isSubmittingSubscription()"
-              [attr.aria-invalid]="isSubscriptionInvalid() ? 'true' : 'false'"
-              [attr.aria-describedby]="
-                isSubscriptionInvalid() ? 'blog-subscription-feedback' : null
-              "
-            />
-            <button
-              type="submit"
-              class="blog-toolbar__subscribe-button"
-              [attr.aria-disabled]="isSubmittingSubscription() ? 'true' : null"
+          <span class="btn__slot" aria-hidden="true">
+            @if (isLoading()) {
+              <span class="btn__spinner"></span>
+            }
+          </span>
+          <span class="btn__label">
+            <span [attr.data-idle]="!isLoading()" [attr.aria-hidden]="isLoading() ? 'true' : null"
+              >Reintentar</span
             >
-              {{ isSubmittingSubscription() ? 'Enviando…' : 'Suscribirme' }}
-            </button>
-          </div>
+            <span [attr.data-idle]="isLoading()" [attr.aria-hidden]="isLoading() ? null : 'true'"
+              >Reintentando…</span
+            >
+          </span>
+        </button>
+      </div>
+    } @else if (filteredPosts().length) {
+      <div class="blog-cards-grid">
+        @for (post of filteredPosts(); track post.slug; let i = $index) {
+          <article class="blog-card">
+            <p class="blog-card__meta">
+              <time [attr.datetime]="post.date">{{
+                post.date | date: 'd MMM y' : '' : 'es-AR'
+              }}</time>
+              <span>{{ post.readingTimeMinutes }} min</span>
+            </p>
 
+            <h2 class="blog-card__title">
+              <a
+                class="blog-card__link"
+                [routerLink]="['/blog', post.slug]"
+                (click)="trackPostClick(post, i + 1)"
+                >{{ post.title }}</a
+              >
+            </h2>
+            <p class="blog-card__excerpt">{{ post.excerpt }}</p>
+
+            <ul class="tags" aria-label="Etiquetas del post">
+              @for (tag of post.tags; track tag) {
+                <li>{{ tag }}</li>
+              }
+            </ul>
+
+            <span class="blog-card__cta" aria-hidden="true">Leer post →</span>
+          </article>
+        }
+      </div>
+    } @else if (hasLoaded()) {
+      <div class="blog-empty-state">
+        @if (posts().length) {
+          <h2>No encontré posts para esa búsqueda.</h2>
+          <p>Probá con otra tecnología, concepto o etiqueta.</p>
+          <button type="button" class="btn btn--secondary" (click)="clearSearch()">
+            Limpiar búsqueda
+          </button>
+        } @else {
+          <h2>Todavía no hay posts publicados.</h2>
+          <p>Mientras tanto podés recorrer los proyectos.</p>
+          <a class="link" routerLink="/">Ir a la portada</a>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="page-container blog-subscription-surface">
+    <aside class="blog-toolbar__subscribe" aria-label="Suscripción al blog">
+      <div class="blog-toolbar__subscribe-copy">
+        <h2>Recibí nuevos posts sin perder el hilo.</h2>
+        <p>Un mail por publicación. Arquitectura, backend, cloud y producto.</p>
+      </div>
+
+      <form
+        class="blog-toolbar__subscribe-form"
+        novalidate
+        (submit)="$event.preventDefault(); submitSubscription()"
+      >
+        <label class="field__label" for="blog-subscription-email">Email</label>
+        <div class="blog-toolbar__subscribe-row">
+          <input
+            id="blog-subscription-email"
+            type="email"
+            class="field__control"
+            [formControl]="subscriptionEmailControl"
+            placeholder="tu@email.com"
+            autocomplete="email"
+            required
+            [readOnly]="isSubmittingSubscription()"
+            [attr.aria-invalid]="isSubscriptionInvalid() ? 'true' : 'false'"
+            [attr.aria-describedby]="isSubscriptionInvalid() ? 'blog-subscription-feedback' : null"
+          />
+          <button
+            type="submit"
+            class="btn btn--primary blog-toolbar__subscribe-button"
+            [attr.aria-disabled]="isSubmittingSubscription() ? 'true' : null"
+            [attr.aria-busy]="isSubmittingSubscription() ? 'true' : null"
+          >
+            <span class="btn__slot" aria-hidden="true">
+              @if (isSubmittingSubscription()) {
+                <span class="btn__spinner"></span>
+              }
+            </span>
+            <span class="btn__label">
+              <span
+                [attr.data-idle]="!isSubmittingSubscription()"
+                [attr.aria-hidden]="isSubmittingSubscription() ? 'true' : null"
+                >Suscribirme</span
+              >
+              <span
+                [attr.data-idle]="isSubmittingSubscription()"
+                [attr.aria-hidden]="isSubmittingSubscription() ? null : 'true'"
+                >Enviando…</span
+              >
+            </span>
+          </button>
+        </div>
+
+        <div
+          class="blog-toolbar__feedback-slot"
+          [class.blog-toolbar__feedback--invalid]="subscriptionState().status === 'invalid'"
+          [class.blog-toolbar__feedback--error]="subscriptionState().status === 'error'"
+          [class.blog-toolbar__feedback--success]="
+            subscriptionState().status === 'success' || subscriptionState().status === 'already'
+          "
+        >
+          @switch (subscriptionState().status) {
+            @case ('success') {
+              <lucide-icon [img]="successIcon" size="16" aria-hidden="true" />
+            }
+            @case ('already') {
+              <lucide-icon [img]="successIcon" size="16" aria-hidden="true" />
+            }
+            @case ('error') {
+              <lucide-icon [img]="errorIcon" size="16" aria-hidden="true" />
+            }
+            @case ('invalid') {
+              <lucide-icon [img]="errorIcon" size="16" aria-hidden="true" />
+            }
+          }
           <p
             id="blog-subscription-feedback"
             class="blog-toolbar__feedback"
             role="status"
             aria-atomic="true"
-            [class.blog-toolbar__feedback--error]="
-              subscriptionState().status === 'invalid' || subscriptionState().status === 'error'
-            "
-            [class.blog-toolbar__feedback--success]="
-              subscriptionState().status === 'success' || subscriptionState().status === 'already'
-            "
           >
             {{ subscriptionState().message }}
           </p>
-        </form>
-      </aside>
-    </div>
+        </div>
+      </form>
+    </aside>
   </section>
 </main>
