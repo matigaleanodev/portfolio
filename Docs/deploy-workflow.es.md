@@ -30,15 +30,16 @@ Esas piezas siguen siendo responsabilidad de `portfolio-cloud` y `portfolio-api`
 
 El flujo actual de GitHub Actions es:
 
-1. `npm ci`
-2. `npm run build:content`
-3. `npm run build`
-4. `npm run build:release-manifest`
-5. `npm run build:chat-knowledge-payload`
-6. deploy de `dist/portfolio/browser` a Firebase Hosting
-7. invocacion de `portfolio-cloud-<stage>-process-release` con `.generated/release-manifest.json`
-8. invocacion de `portfolio-cloud-<stage>-publish-chat-knowledge` con `.generated/chat/knowledge-payload.json`
-9. subida del release manifest, del artifact de conocimiento editorial, del payload de invocacion y de las respuestas de Lambdas como artifacts del workflow
+1. `npm ci` y `npm run build:content`
+2. confirmar que la revisión es la cabeza de `main` y decidir si Firebase necesita un deploy
+3. `npm run build:app` (build de Angular y `404.html`) y marca de publicación
+4. `npm run build:release-manifest` y `npm run build:chat-knowledge-payload`
+5. instalar la CLI de Firebase fijada en `tools/firebase-cli` y desplegar `dist/portfolio/browser`
+6. invocación de `portfolio-cloud-<stage>-process-release` con `.generated/release-manifest.json`
+7. invocación de `portfolio-cloud-<stage>-publish-chat-knowledge` con `.generated/chat/knowledge-payload.json`
+8. subida del release manifest, del artifact de conocimiento editorial, del payload de invocación y de las respuestas de Lambdas como artifacts del workflow
+
+La versión de `firebase-tools` es exacta y se resuelve con el lockfile de `tools/firebase-cli`, separado del de la aplicación. Para actualizarla se cambian la versión y el lockfile en un PR; el CI la usa como emulador de Hosting.
 
 ## Estrategia de Firebase Hosting
 
@@ -50,7 +51,10 @@ Reglas principales:
 - los assets XML no hasheados (`rss.xml`, `sitemap.xml`, `sitemap-blog.xml`) mantienen una política de cache sensible a cambios
 - los índices JSON generados mantienen un cache corto
 - el JS/CSS hasheado y las imágenes estáticas siguen siendo inmutables
-- el rewrite global a `/index.html` queda solo como fallback del router cliente; los archivos prerenderizados siguen teniendo prioridad cuando existen
+- no hay rewrite global: cada ruta publicable tiene su HTML prerenderizado y el resto responde HTTP 404 con `404.html` (`noindex`, sin canónica). Una ruta nueva debe agregarse a `app.routes.server.ts` o Hosting la responderá como inexistente
+- `404.html` sale de la ruta `404`, prerenderizada y movida por `scripts/build-not-found.mjs`
+- el único rewrite sirve la confirmación de baja para el enlace con parámetro de matriz (`/blog/unsubscribe;email=`)
+- `index.html` declara el feed RSS con `rel="alternate"` y `robots.txt` declara `sitemap.xml` y `sitemap-blog.xml`
 
 Esto permite desplegar páginas estáticas del blog sin reintroducir fetch dinámico de contenido contra el backend.
 
@@ -116,7 +120,17 @@ Una rama `release/vX.Y.Z` contiene la versión correspondiente del paquete y las
 
 El generador del conocimiento del chat resuelve los enlaces de proyectos contra el origen público del sitio. El generador del payload rechaza enlaces relativos, con protocolos distintos de HTTP(S) o con credenciales antes del paso de Firebase, evitando publicar un artifact que rechacen Cloud/API.
 
-El CI de pull requests construye el sitio, instala Chromium y ejecuta Playwright contra la salida estática compilada (`PORTFOLIO_E2E_BUILD=true`). El comando local `npm run test:e2e` sigue levantando el servidor de desarrollo; usar la variable después de `npm run build` permite reproducir el CI desde WSL. El servidor estático de pruebas usa Python 3 disponible en el runner Ubuntu. Los tests fallidos suben las trazas retenidas.
+## Revisión vigente, reintentos y rollback
+
+Solo la cabeza de `main` publica. `scripts/current-revision.mjs` la consulta en la API de GitHub al decidir el deploy y otra vez justo antes de Firebase, `process-release` y `publish-chat-knowledge`. Si la revisión quedó atrás o GitHub no la confirma, el job falla sin ejecutar ese efecto ni los que dependen de él. La comprobación no es atómica con el efecto; las publicaciones están serializadas, de modo que la corrida de la revisión nueva se ejecuta después.
+
+Para reintentar: usar **Run workflow** sobre `main`, o volver a ejecutar la corrida de la cabeza actual. Una corrida anterior falla a propósito. Si `main` avanzó durante una corrida, la siguiente completa lo pendiente.
+
+Para volver atrás:
+
+1. Revertir el cambio en `main` mediante un PR. El revert es una cabeza nueva y se publica por el camino normal.
+2. No revertir el soporte de `#email=` en la baja (`src/index.html` y la página de baja): los avisos ya enviados usan ese enlace.
+3. El rollback desde la consola de Firebase es solo una medida de emergencia para el sitio: restaura también la marca de publicación y la ejecución programada volverá a desplegar `main`. Completar el revert antes de esa ejecución o deshabilitar el workflow mientras tanto. No revierte avisos ni conocimiento del chat, y no debe elegir una versión sin soporte de `#email=`.
 
 ## Destino de producción verificado el 2026-10-09
 
