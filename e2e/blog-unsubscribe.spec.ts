@@ -118,7 +118,9 @@ test('Enter confirma la baja y anuncia cuando el email ya estaba dado de baja', 
   const email = page.getByLabel('Email');
   await email.fill(fixtureEmail);
   await email.press('Enter');
-  await expect(page.getByRole('heading', { name: 'Tu email ya estaba dado de baja.' })).toBeFocused();
+  await expect(
+    page.getByRole('heading', { name: 'Tu email ya estaba dado de baja.' }),
+  ).toBeFocused();
   expect(requests.map(requestContract)).toEqual([expectedRequest]);
   await expect(page).toHaveURL(/\/blog\/unsubscribe\/?$/);
 });
@@ -152,7 +154,9 @@ test('la confirmación espera a Angular antes de habilitar el formulario prerend
       if (request.isNavigationRequest()) documents.push(request);
     });
     await expect.poll(() => bundleHeld).toBe(true);
-    await expect(page.getByRole('heading', { name: 'Confirmá la baja de la suscripción.' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Confirmá la baja de la suscripción.' }),
+    ).toBeVisible();
     await expect(email).toBeDisabled({ timeout: 2000 });
     await expect(confirm).toBeDisabled();
     expect(await email.evaluate((input) => input.matches(':disabled'))).toBe(true);
@@ -169,7 +173,9 @@ test('la confirmación espera a Angular antes de habilitar el formulario prerend
   await expect(email).toBeEnabled();
   await expect(confirm).toBeEnabled();
   await email.press('Enter');
-  await expect(page.getByRole('heading', { name: 'Tu suscripción fue dada de baja.' })).toBeFocused();
+  await expect(
+    page.getByRole('heading', { name: 'Tu suscripción fue dada de baja.' }),
+  ).toBeFocused();
   expect(requests.map(requestContract)).toEqual([expectedRequest]);
 });
 
@@ -198,7 +204,9 @@ test('el email inválido conserva el campo y el documento sin enviar la baja', a
   await email.press('Enter');
   await expect(email).toHaveValue('sin-arroba');
   await expect(email).toBeFocused();
-  await expect(page.getByRole('alert')).toHaveText('Ingresá un email válido para confirmar la baja.');
+  await expect(page.getByRole('alert')).toHaveText(
+    'Ingresá un email válido para confirmar la baja.',
+  );
   await expect(page).toHaveURL(/\/blog\/unsubscribe\/?$/);
   expect(documents).toHaveLength(0);
   expect(requests).toHaveLength(0);
@@ -221,17 +229,25 @@ test('el doble click mantiene el foco y envía una sola baja mientras espera', a
   try {
     await page.goto(legacyLink);
     await expect(page.getByLabel('Email')).toHaveValue(normalizedEmail);
-    const confirm = page.getByRole('button', { name: 'Confirmar baja' });
+    // El nombre accesible cambia con el estado Loading, así que se ubica por tipo.
+    const confirm = page.locator('#main-content button[type="submit"]');
+    await expect(confirm).toHaveAccessibleName('Confirmar baja');
     await confirm.dblclick();
-    await expect(page.locator('#main-content').getByRole('status')).toHaveText('Confirmando la baja…');
+    await expect(page.locator('#main-content').getByRole('status')).toHaveText(
+      'Confirmando la baja…',
+    );
     await expect(confirm).toBeDisabled();
     await expect(confirm).toBeFocused();
+    await expect(confirm).toHaveAccessibleName('Confirmando…');
+    await expect(confirm).toHaveAttribute('aria-busy', 'true');
     await confirm.press('Enter');
     await expect.poll(() => requests.length).toBe(1);
   } finally {
     finishResponse();
   }
-  await expect(page.getByRole('heading', { name: 'Tu suscripción fue dada de baja.' })).toBeFocused();
+  await expect(
+    page.getByRole('heading', { name: 'Tu suscripción fue dada de baja.' }),
+  ).toBeFocused();
   expect(requests.map(requestContract)).toEqual([expectedRequest]);
 });
 
@@ -265,7 +281,9 @@ for (const [status, copy] of [
     await expect(confirm).toBeEnabled();
     expect(requests.map(requestContract)).toEqual([expectedRequest]);
     await confirm.click();
-    await expect(page.getByRole('heading', { name: 'Tu suscripción fue dada de baja.' })).toBeFocused();
+    await expect(
+      page.getByRole('heading', { name: 'Tu suscripción fue dada de baja.' }),
+    ).toBeFocused();
     expect(requests.map(requestContract)).toEqual([expectedRequest, expectedRequest]);
   });
 }
@@ -284,7 +302,9 @@ test.describe('GET de un escáner de enlaces', () => {
     const response = await page.goto(legacyLink);
     expect(response?.status()).toBe(200);
     expect(response?.request().method()).toBe('GET');
-    await expect(page.getByRole('heading', { name: 'Confirmá la baja de la suscripción.' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Confirmá la baja de la suscripción.' }),
+    ).toBeVisible();
     expect(subscriptionRequests).toHaveLength(0);
     const subresources = requests.filter((request) => !request.isNavigationRequest());
     expect(
@@ -381,6 +401,8 @@ test('el documento con el enlace heredado y su navegación no exponen el email a
     }),
   );
   expect(
-    footprints.filter((footprint) => JSON.stringify(footprint).toLowerCase().includes(privateMarker)),
+    footprints.filter((footprint) =>
+      JSON.stringify(footprint).toLowerCase().includes(privateMarker),
+    ),
   ).toEqual([]);
 });

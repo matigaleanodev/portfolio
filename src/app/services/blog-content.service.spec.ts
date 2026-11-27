@@ -227,6 +227,20 @@ describe('BlogContentService', () => {
     expect(received).toEqual([postMock('b')]);
     expect(state.hasKey(stateKey('a'))).toBe(true);
   });
+
+  it('deberia transferir el indice del blog y usarlo una sola vez sin request', () => {
+    const state = TestBed.inject(TransferState);
+    state.set(makeStateKey<ReturnType<typeof postsMock>>('blog-posts'), postsMock());
+    const received: unknown[] = [];
+
+    service.getPosts().subscribe((posts) => received.push(posts));
+
+    expect(received).toEqual([postsMock()]);
+    httpMock.expectNone('/assets/blog/posts.json');
+    service.getPosts().subscribe();
+    httpMock.expectOne('/assets/blog/posts.json').flush(postsMock());
+  });
+
 });
 
 function stateKey(slug: string) {

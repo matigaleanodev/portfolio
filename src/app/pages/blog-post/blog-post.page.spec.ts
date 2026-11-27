@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
@@ -132,8 +133,9 @@ describe('BlogPostPage', () => {
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
-    expect(host.textContent).toContain('No se pudo cargar el post.');
-    expect(host.textContent).toContain('Fallo simulado');
+    expect(host.querySelector('h1')?.textContent).toContain('No pudimos cargar el artículo');
+    expect(host.textContent).not.toContain('Fallo simulado');
+    expect(host.querySelector('a[href="/blog"]')?.textContent).toContain('Volver al blog');
     expect(host.querySelector('.blog-post-loading')).toBeNull();
   });
 
@@ -162,5 +164,98 @@ describe('BlogPostPage', () => {
     expect(host.querySelector('.mermaid-diagram svg')).not.toBeNull();
     expect(host.querySelector('pre code.language-mermaid')).toBeNull();
     expect(mermaid.render).toHaveBeenCalled();
+  });
+
+  it('deberia recuperarse al navegar de una ruta inexistente a una valida', () => {
+    getPostBySlugMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 404 })));
+    const fixture = TestBed.createComponent(BlogPostPage);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('h1')?.textContent).toContain('No encontramos este artículo');
+    expect(setPageSeoMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: 'Artículo no encontrado | Matias Galeano' }),
+    );
+
+    getPostBySlugMock.mockReturnValue(of(postMock));
+    paramMap$.next(convertToParamMap({ slug: postMock.slug }));
+    fixture.detectChanges();
+
+    expect(host.querySelector('h1')?.textContent).toContain(postMock.title);
+  });
+
+  it('deberia llevar el foco al titulo si el reintento termina en no encontrado', async () => {
+    getPostBySlugMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 503 })));
+    const fixture = TestBed.createComponent(BlogPostPage);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const retry = host.querySelector<HTMLButtonElement>('.blog-post-state button')!;
+    retry.focus();
+
+    getPostBySlugMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 404 })));
+    retry.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const title = host.querySelector('h1')!;
+    expect(title.textContent).toContain('No encontramos este artículo');
+    expect(document.activeElement).toBe(title);
+  });
+
+  describe('copiar codigo', () => {
+    const withCode = {
+      ...postMock,
+      contentHtml: '<pre><code class="language-bash">ls -la</code></pre>',
+    };
+    let writeText: ReturnType<typeof vi.fn>;
+    let settle: { resolve: () => void; reject: () => void };
+
+    const setup = () => {
+      writeText = vi.fn(
+        () =>
+          new Promise<void>((resolve, reject) => {
+            settle = { resolve, reject: () => reject(new Error('denegado')) };
+          }),
+      );
+      Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+      getPostBySlugMock.mockReturnValue(of(withCode));
+      const fixture = TestBed.createComponent(BlogPostPage);
+      document.body.appendChild(fixture.nativeElement);
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      return {
+        host,
+        button: host.querySelector<HTMLButtonElement>('.code-copy')!,
+        status: host.querySelector<HTMLElement>('.code-toolbar [role="status"]')!,
+      };
+    };
+
+    for (const outcome of ['resolve', 'reject'] as const) {
+      it(`deberia mantener Loading y el foco hasta ${outcome}, sin duplicar`, async () => {
+        const { host, button, status } = setup();
+        button.focus();
+
+        button.click();
+        button.click();
+
+        expect(writeText).toHaveBeenCalledTimes(1);
+        expect(button.getAttribute('aria-busy')).toBe('true');
+        expect(button.getAttribute('aria-disabled')).toBe('true');
+        expect(button.disabled).toBe(false);
+        expect(button.getAttribute('aria-label')).toContain('Copiando…');
+        expect(status.textContent).toContain('Copiando…');
+
+        settle[outcome]();
+        await new Promise((done) => setTimeout(done));
+
+        expect(button.hasAttribute('aria-busy')).toBe(false);
+        expect(button.hasAttribute('aria-disabled')).toBe(false);
+        expect(status.textContent).toContain(
+          outcome === 'resolve' ? 'Código copiado.' : 'No se pudo copiar',
+        );
+        expect(status.dataset['result']).toBe(outcome === 'resolve' ? 'success' : 'error');
+        expect(document.activeElement).toBe(button);
+        host.remove();
+      });
+    }
   });
 });

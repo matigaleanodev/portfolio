@@ -69,8 +69,7 @@ describe('BlogUnsubscribePage', () => {
 
     expect(setPageSeoMock).toHaveBeenCalledWith({
       title: 'Baja de suscripción | Blog de Matias Galeano',
-      description:
-        'Confirmación de baja para la suscripción del blog técnico de Matias Galeano.',
+      description: 'Confirmación de baja para la suscripción del blog técnico de Matias Galeano.',
       canonicalUrl: 'https://matiasgaleano.dev/blog/unsubscribe',
       ogImage: 'https://matiasgaleano.dev/assets/icons/icon-512.webp',
       type: 'website',
@@ -188,7 +187,9 @@ describe('BlogUnsubscribePage', () => {
 
     component.submit();
 
-    expect(component.submitError()).toBe('Hay demasiados intentos de baja. Probá de nuevo más tarde.');
+    expect(component.submitError()).toBe(
+      'Hay demasiados intentos de baja. Probá de nuevo más tarde.',
+    );
     expect(trackEventMock).toHaveBeenCalledWith('blog_unsubscribe_error', {
       email_prefilled: true,
       status: 429,

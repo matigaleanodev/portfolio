@@ -7,16 +7,28 @@ test.beforeEach(async ({ page }) => {
 
 test('diagrama real y separación de texto sin overflow', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
-  for (const route of ['/', '/blog', '/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion']) {
+  for (const route of [
+    '/',
+    '/blog',
+    '/blog/cuando-docker-logs-dejo-de-ser-suficiente-en-produccion',
+  ]) {
     await page.goto(route);
     await expect(page.locator('h1')).toBeVisible();
     if (route.includes('docker-logs')) {
       const preview = page.getByRole('img', { name: 'De los logs de Docker a Grafana' });
       await expect(preview).toBeVisible();
-      await expect(preview.locator('..')).toHaveAttribute('href', '/diagrams/docker-observability.html');
+      await expect(preview.locator('..')).toHaveAttribute(
+        'href',
+        '/diagrams/docker-observability.html',
+      );
     }
-    await page.addStyleTag({ content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-bottom: 2em !important; }' });
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.addStyleTag({
+      content:
+        '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-bottom: 2em !important; }',
+    });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
   }
 });
 
@@ -43,7 +55,9 @@ test('contenido y destinos editoriales disponibles sin JavaScript', async ({
 test('el chat funciona cuando el navegador bloquea el almacenamiento', async ({ page }) => {
   await page.addInitScript(() => {
     for (const method of ['getItem', 'setItem'] as const) {
-      Storage.prototype[method] = () => { throw new DOMException('Storage bloqueado', 'SecurityError'); };
+      Storage.prototype[method] = () => {
+        throw new DOMException('Storage bloqueado', 'SecurityError');
+      };
     }
   });
   const errors: string[] = [];
@@ -51,9 +65,11 @@ test('el chat funciona cuando el navegador bloquea el almacenamiento', async ({ 
   await page.goto('/');
   await page.locator('.chat-fab').click();
   await expect(page.locator('.chat-widget')).toBeVisible();
-  await page.route('**/api/chat', (route) => route.fulfill({
-    json: { answer: 'Respuesta sin almacenamiento', suggestedQuestions: [], source: 'ai' },
-  }));
+  await page.route('**/api/chat', (route) =>
+    route.fulfill({
+      json: { answer: 'Respuesta sin almacenamiento', suggestedQuestions: [], source: 'ai' },
+    }),
+  );
   await page.locator('#chat-input').fill('¿Qué hace Modo Playa?');
   await page.locator('#chat-input').press('Enter');
   await expect(page.getByText('Respuesta sin almacenamiento', { exact: true })).toBeVisible();
@@ -163,7 +179,9 @@ test('contacto y suscripción con errores asociados sin efectos externos', async
   await expect(page.locator('#blog-subscription-feedback')).toBeVisible();
 });
 
-test('chat modal en móvil, teclado, loading, respuesta extensa y error simulados', async ({ page }) => {
+test('chat modal en móvil, teclado, loading, respuesta extensa y error simulados', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   const launcher = page.getByRole('button', { name: 'Abrir chatbot asistente' });
@@ -219,7 +237,8 @@ test('índice, listas, copiar código y fixtures editoriales sin overflow', asyn
   await page.goto('/blog/desplegar-apis-docker-ec2');
   await expect(page.locator('.code-copy').first()).toBeVisible();
   await page.locator('.code-copy').first().click();
-  await expect(page.locator('#main-content').getByRole('status')).toContainText('Código copiado');
+  const copyStatus = page.locator('.code-block').first().getByRole('status');
+  await expect(copyStatus).toContainText('Código copiado');
   await page.evaluate(() =>
     Object.defineProperty(navigator.clipboard, 'writeText', {
       configurable: true,
@@ -227,7 +246,7 @@ test('índice, listas, copiar código y fixtures editoriales sin overflow', asyn
     }),
   );
   await page.locator('.code-copy').first().click();
-  await expect(page.locator('#main-content').getByRole('status')).toContainText('No se pudo copiar');
+  await expect(copyStatus).toContainText('No se pudo copiar');
   await page.goto('/blog/jerarquia-visual-importa-mas-de-lo-que-parece');
   await page.getByText('En este artículo', { exact: true }).click();
   const tocLink = page.locator('.blog-post-toc a').first();
