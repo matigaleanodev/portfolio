@@ -48,6 +48,7 @@ for (const width of [390, 1280]) {
         items.map(({ clientWidth, clientHeight }) => [clientWidth, clientHeight]),
       );
     const initialDimensions = await dimensions();
+    expect(initialDimensions[0]).toEqual(initialDimensions[1]);
     const textOffsets = await labels.evaluateAll((items) =>
       items.map((label) => {
         const range = document.createRange();

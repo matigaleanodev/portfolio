@@ -448,7 +448,7 @@ El orden es presentación profesional, Proyectos y contacto.
 - Una columna bajo 960px, dos desde 960px, separación de 24px; las tarjetas de una fila se estiran y alinean la última línea.
 - Búsqueda y orden preceden a los resultados, con recuento anunciado de forma `polite`; cero, uno y varios resultados son estados diseñados. La suscripción va después del listado.
 
-- Las opciones de orden son radios con rótulos centrados, el mismo alto y sin espacio para iconos. Cada ancho se ajusta al rótulo y se mantiene al seleccionar. La selección se distingue por el fondo, el texto y el borde de acento. El orden anima cada tarjeta existente durante 300ms y continúa desde la posición visible si se invierte. Con movimiento reducido, el orden se aplica de inmediato.
+- Las opciones de orden son radios sin espacio para iconos, con rótulos centrados e iguales en ancho y alto. Ambos se ajustan al rótulo más largo y mantienen sus dimensiones al seleccionar. La selección se distingue por el fondo, el texto y el borde de acento. El orden anima cada tarjeta existente durante 300ms y continúa desde la posición visible si se invierte. Con movimiento reducido, el orden se aplica de inmediato.
 
 ### Páginas: artículo
 

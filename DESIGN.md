@@ -694,7 +694,7 @@ The page opens with the professional introduction, followed by “Proyectos” a
 - One column below 960px, two from 960px, 24px gap; cards in a row stretch and align the last line.
 - Search and order precede results, with a polite result count; zero, one and many results are designed states. Subscription follows the list.
 
-- The sort options are centered radio labels with the same height and no icon slot. Their widths follow their labels and stay stable on selection. The selected option uses the accent background, text and border treatments. Reordering moves the existing cards individually over 300ms and continues from their visible positions on interruption. Reduced motion applies the order immediately.
+- The sort options are centered radio labels of equal width and height, with no icon slot. Both fit the longer label and keep their dimensions on selection. The selected option uses the accent background, text and border treatments. Reordering moves the existing cards individually over 300ms and continues from their visible positions on interruption. Reduced motion applies the order immediately.
 
 ### Pages: article
 

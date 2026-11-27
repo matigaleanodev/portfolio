@@ -41,12 +41,16 @@
   padding: 0;
 }
 .blog-sort__options {
-  display: flex;
-  flex-wrap: wrap;
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-inline-size: 100%;
   gap: var(--space-2);
 }
 .blog-sort .btn {
+  flex: 1;
+  min-inline-size: 0;
   min-height: 3rem;
+  text-align: center;
 }
 .blog-toolbar__results {
   margin: 0;
