@@ -92,6 +92,14 @@
         </section>
       </div>
     </article>
+  } @else if (missing()) {
+    <app-not-found-state
+      heading="No encontramos este proyecto"
+      message="La dirección no corresponde a un proyecto publicado. Elegí otro desde la portada."
+      [takeFocus]="arrivedByNavigation"
+    >
+      <ng-container [ngTemplateOutlet]="back" />
+    </app-not-found-state>
   } @else {
     <div class="page-container project-state">
       <ng-container [ngTemplateOutlet]="back" />

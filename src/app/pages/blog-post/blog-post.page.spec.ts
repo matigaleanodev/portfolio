@@ -189,6 +189,22 @@ describe('BlogPostPage', () => {
     expect(host.querySelector('h1')?.textContent).toContain(postMock.title);
   });
 
+  it('presenta un articulo inexistente como 404, sin tono de falla', () => {
+    getPostBySlugMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 404 })));
+
+    const fixture = TestBed.createComponent(BlogPostPage);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('Error 404');
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain(
+      'La dirección no corresponde a un artículo publicado.',
+    );
+    expect(host.querySelector('.feedback--danger')).toBeNull();
+    expect(host.querySelector('button')).toBeNull();
+    expect(host.querySelector('a[href="/blog"]')?.textContent?.trim()).toBe('Volver');
+  });
+
   it('no excluye del indice un articulo que fallo al cargar', () => {
     getPostBySlugMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 503 })));
     TestBed.createComponent(BlogPostPage);
@@ -202,6 +218,8 @@ describe('BlogPostPage', () => {
   });
 
   it('deberia llevar el foco al titulo si el reintento termina en no encontrado', async () => {
+    // jsdom no implementa el desplazamiento.
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
     getPostBySlugMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 503 })));
     const fixture = TestBed.createComponent(BlogPostPage);
     fixture.detectChanges();
@@ -217,6 +235,7 @@ describe('BlogPostPage', () => {
     const title = host.querySelector('h1')!;
     expect(title.textContent).toContain('No encontramos este artículo');
     expect(document.activeElement).toBe(title);
+    scrollTo.mockRestore();
   });
 
   describe('copiar codigo', () => {

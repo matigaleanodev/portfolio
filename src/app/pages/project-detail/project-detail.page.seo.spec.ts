@@ -64,10 +64,45 @@ describe('ProjectDetailPage · metadatos', () => {
     paramMap$.next(convertToParamMap({ slug: 'no-existe' }));
 
     expect(render()).toEqual({
-      title: 'Proyecto no disponible | Matias Galeano',
+      title: 'Proyecto no encontrado | Matias Galeano',
       description: 'Explorá los proyectos de Matias Galeano.',
       noIndex: true,
     });
+  });
+
+  it('restaura los metadatos al pasar de un proyecto inexistente a uno valido', () => {
+    paramMap$.next(convertToParamMap({ slug: 'no-existe' }));
+    const fixture = TestBed.createComponent(ProjectDetailPage);
+    fixture.detectChanges();
+
+    paramMap$.next(convertToParamMap({ slug: 'nora' }));
+    fixture.detectChanges();
+
+    expect(setPageSeo.mock.lastCall![0].canonicalUrl).toBe(
+      'https://matiasgaleano.dev/projects/nora',
+    );
+    expect(setPageSeo.mock.lastCall![0].noIndex).toBeUndefined();
+  });
+
+  it('presenta un proyecto inexistente como 404 con regreso a proyectos', () => {
+    paramMap$.next(convertToParamMap({ slug: 'no-existe' }));
+    const fixture = TestBed.createComponent(ProjectDetailPage);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe('No encontramos este proyecto');
+    expect(host.textContent).toContain('Error 404');
+    expect(host.querySelector('a[href="/#projects-title"]')?.textContent?.trim()).toBe('Volver');
+  });
+
+  it('no presenta como 404 un proyecto cuyo contenido fallo al cargar', () => {
+    getProjects.mockReturnValue(throwError(() => new Error('sin red')));
+    const fixture = TestBed.createComponent(ProjectDetailPage);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe('No pudimos abrir este proyecto');
+    expect(host.textContent).not.toContain('Error 404');
   });
 
   it('no excluye del indice un proyecto cuyo contenido fallo al cargar', () => {
