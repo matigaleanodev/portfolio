@@ -116,7 +116,7 @@ The deploy workflow now expects these GitHub secrets or variables in `portfolio`
 
 The package version and notes in both languages (`Docs/releases/vX.Y.Z.es.md` and `Docs/releases/vX.Y.Z.md`) are prepared on a `release/vX.Y.Z` branch with a PR into `dev`. Promotion is a pull request from `dev` into `main` (see [pull request integration](#pull-request-integration)).
 
-The tag and GitHub release are created after production is validated, from the web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, title `Portfolio vX.Y.Z`, the notes from `Docs/releases/vX.Y.Z.es.md` and **Set as the latest release**. Under **Target**, pick `main`, which must still point at the validated revision: the one `gitSha` reports in `publication-state.json`. If `main` moved, validate the new revision before creating the tag. Before publishing, check that `package.json` at that revision declares version `X.Y.Z` and that the tag does not exist. If validation fails, do not create it.
+The tag and GitHub release are created after production is validated, from the web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, title `Portfolio vX.Y.Z`, the notes from `Docs/releases/vX.Y.Z.es.md` and **Set as the latest release**. Under **Target**, pick the validated commit, the one `gitSha` reports in `publication-state.json`; `main` only works while it still points at that revision. If the web list does not offer it, create the release with `gh release create vX.Y.Z --target <validated-sha>`. Before publishing, check that `package.json` at that revision declares version `X.Y.Z` and that the tag does not exist. If validation fails, do not create it.
 
 `release.yml` only acts when a PR whose branch starts with `release/v` is merged into `main`, and it publishes the tag and release at that moment, without waiting for the deployment. This flow does not use it: do not open a PR into `main` from a `release/` branch. The Firebase deployment and the `dev` sync run independently on the push to `main`.
 
@@ -171,15 +171,15 @@ Auto-merge is GitHub's native feature and is optional: enable it on each pull re
 Cases that need an extra action:
 
 - Branch behind: **Update branch**. Auto-merge does not update the branch; if the target moves while it waits, the button has to be pressed.
-- `CodeRabbit` check missing or cancelled: comment `@coderabbitai review` on the pull request.
+- `CodeRabbit` check missing or cancelled: comment `@coderabbitai full review` on the pull request.
 
-The `CodeRabbit` check means its review finished, not that it approved. It also passes when the review is skipped and, with the default configuration, when it fails or hits its usage limit. Its findings block while their conversations remain unresolved.
+The `CodeRabbit` check means its review finished, not that it approved. It also passes when the review is skipped, paused or rate limited and, with the default configuration, when it fails. Findings opened as conversations block until resolved; those listed only in the review body do not: read them before merging.
 
 Merging into `main` deploys automatically: see [current pipeline](#current-pipeline).
 
 ### Synchronizing `main` into `dev`
 
-After each push to `main`, `sync-dev.yml` opens a pull request from `fix/sync-main-<sha>` into `dev` if `dev` lacks that revision. It merges nothing. It uses `DEV_SYNC_PAT`, which needs contents and pull request write access: with `GITHUB_TOKEN` the pull request would not trigger CI.
+After each push to `main`, `sync-dev.yml` opens a pull request from `fix/sync-main-<sha>` into `dev` if `dev` lacks that revision. It merges nothing. It uses `DEV_SYNC_PAT`, which needs contents and pull request write access: with `GITHUB_TOKEN`, CI on the pull request would wait for manual approval.
 
 Merge that pull request with the same button. If it is behind or has conflicts, **Update branch** or **Resolve conflicts** update the sync branch. While `dev` lacks `main`, a pull request from `dev` into `main` is out of date and cannot be merged.
 

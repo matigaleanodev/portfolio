@@ -116,7 +116,7 @@ El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
 
 La versión del paquete y las notas en ambos idiomas (`Docs/releases/vX.Y.Z.es.md` y `Docs/releases/vX.Y.Z.md`) se preparan en una rama `release/vX.Y.Z` con un PR hacia `dev`. La promoción es un pull request de `dev` a `main` (ver [integración de pull requests](#integración-de-pull-requests)).
 
-El tag y la release de GitHub se crean después de validar producción, desde la web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, título `Portfolio vX.Y.Z`, las notas de `Docs/releases/vX.Y.Z.es.md` y **Set as the latest release**. En **Target** se elige `main`, que debe seguir en la revisión validada: la que informa `gitSha` en `publication-state.json`. Si `main` avanzó, validar la revisión nueva antes de crear el tag. Antes de publicar, comprobar que `package.json` en esa revisión declare la versión `X.Y.Z` y que el tag no exista. Si la validación falla, no se crea.
+El tag y la release de GitHub se crean después de validar producción, desde la web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, título `Portfolio vX.Y.Z`, las notas de `Docs/releases/vX.Y.Z.es.md` y **Set as the latest release**. En **Target** se elige el commit validado, el que informa `gitSha` en `publication-state.json`; `main` sirve solo si sigue en esa revisión. Si la lista de la web no lo ofrece, crear la release con `gh release create vX.Y.Z --target <sha-validado>`. Antes de publicar, comprobar que `package.json` en esa revisión declare la versión `X.Y.Z` y que el tag no exista. Si la validación falla, no se crea.
 
 `release.yml` solo actúa cuando se integra en `main` un PR cuya rama empieza con `release/v`, y publica el tag y la release en ese momento, sin esperar el deploy. Este flujo no lo usa: no abrir hacia `main` un PR desde una rama `release/`. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.
 
@@ -171,15 +171,15 @@ El auto-merge es el nativo de GitHub y es opcional: se activa en cada pull reque
 Casos que requieren una acción adicional:
 
 - Rama atrasada: **Update branch**. El auto-merge no actualiza la rama; si el destino avanza mientras espera, hay que pulsarlo.
-- Check `CodeRabbit` ausente o cancelado: comentar `@coderabbitai review` en el pull request.
+- Check `CodeRabbit` ausente o cancelado: comentar `@coderabbitai full review` en el pull request.
 
-El check `CodeRabbit` indica que su revisión terminó, no que aprobó. También pasa cuando la omite y, con la configuración predeterminada, cuando falla o alcanza su límite de uso. Sus observaciones bloquean mientras sus conversaciones sigan sin resolver.
+El check `CodeRabbit` indica que su revisión terminó, no que aprobó. También pasa cuando la omite, cuando la pausa o alcanza su límite de uso y, con la configuración predeterminada, cuando falla. Las observaciones abiertas como conversación bloquean hasta resolverlas; las incluidas solo en el cuerpo de la revisión no bloquean: leerlas antes de integrar.
 
 Integrar en `main` despliega automáticamente: ver [pipeline actual](#pipeline-actual).
 
 ### Sincronización de `main` hacia `dev`
 
-Después de cada push a `main`, `sync-dev.yml` abre un pull request desde `fix/sync-main-<sha>` hacia `dev` si `dev` no contiene esa revisión. No integra nada. Usa `DEV_SYNC_PAT`, que necesita escritura de contenido y de pull requests: con `GITHUB_TOKEN` el pull request no dispararía la CI.
+Después de cada push a `main`, `sync-dev.yml` abre un pull request desde `fix/sync-main-<sha>` hacia `dev` si `dev` no contiene esa revisión. No integra nada. Usa `DEV_SYNC_PAT`, que necesita escritura de contenido y de pull requests: con `GITHUB_TOKEN`, la CI del pull request quedaría esperando aprobación manual.
 
 Ese pull request se integra con el mismo botón. Si está atrasado o tiene conflictos, **Update branch** o **Resolve conflicts** actualizan la rama de sincronización. Mientras `dev` no contenga `main`, un pull request de `dev` a `main` queda desactualizado y no se puede integrar.
 
