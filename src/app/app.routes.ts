@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 
+const loadNotFoundPage = () =>
+  import('./pages/not-found/not-found.page').then((module) => module.NotFoundPage);
+
 export const routes: Routes = [
   {
     path: '',
@@ -30,8 +33,12 @@ export const routes: Routes = [
       import('./pages/blog-post/blog-post.page').then((module) => module.BlogPostPage),
   },
   {
+    // Se prerenderiza para generar el 404.html que Hosting entrega con las rutas inexistentes.
+    path: '404',
+    loadComponent: loadNotFoundPage,
+  },
+  {
     path: '**',
-    loadComponent: () =>
-      import('./pages/not-found/not-found.page').then((module) => module.NotFoundPage),
+    loadComponent: loadNotFoundPage,
   },
 ];

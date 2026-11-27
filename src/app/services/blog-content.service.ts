@@ -1,7 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
-import { inject, Injectable, makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
-import { defer, from, of, tap } from 'rxjs';
+import {
+  inject,
+  Injectable,
+  makeStateKey,
+  PendingTasks,
+  PLATFORM_ID,
+  TransferState,
+} from '@angular/core';
+import { defer, finalize, from, of, tap } from 'rxjs';
 import { BlogPost, BlogPostSummary } from '../models/blog.model';
 
 @Injectable({
@@ -11,6 +18,7 @@ export class BlogContentService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly transferState = inject(TransferState);
+  private readonly pendingTasks = inject(PendingTasks);
 
   getPosts() {
     return this.getTransferable<BlogPostSummary[]>(
@@ -33,7 +41,14 @@ export class BlogContentService {
     const content$ = this.getContent<T>(fileSegments, assetUrl);
 
     if (isPlatformServer(this.platformId)) {
-      return content$.pipe(tap((content) => this.transferState.set(stateKey, content)));
+      // El prerender espera esta tarea: sin ella serializa la vista antes de leer el archivo.
+      return defer(() => {
+        const finish = this.pendingTasks.add();
+        return content$.pipe(
+          tap((content) => this.transferState.set(stateKey, content)),
+          finalize(finish),
+        );
+      });
     }
 
     // El estado del prerender se usa una sola vez y emite en forma síncrona para conservar el DOM.

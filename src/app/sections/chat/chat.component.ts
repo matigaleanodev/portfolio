@@ -114,7 +114,8 @@ export class ChatComponent {
     this.syncMessageCounter();
     this.setupEffects();
     this.watchViewport();
-    this.loadStarters();
+    // Solo en el navegador: el prerender no depende de la API ni la consulta.
+    afterNextRender(() => this.loadStarters());
   }
 
   @HostListener('document:keydown', ['$event'])

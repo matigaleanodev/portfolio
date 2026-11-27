@@ -483,12 +483,6 @@ for (const variant of [
     await isolateRequests(page, baseURL, (route) => route.fulfill({ json: unsubscribed }));
     const telemetry = await collectTelemetry(page);
     const origin = new URL(baseURL!).origin;
-    // Como el rewrite de Hosting: las rutas sin archivo propio reciben el index.
-    await page.route(
-      (url) => /^\/(?:ruta-inexistente|blog\/Unsubscribe|blog\/unsubscribe;)/.test(url.pathname),
-      async (route) =>
-        route.fulfill({ response: await route.fetch({ url: `${origin}/index.html` }) }),
-    );
 
     await page.goto(`${origin}${variant}${encodeURIComponent(fixtureEmail)}`);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

@@ -1,10 +1,12 @@
-name: Auto sync main to dev
+name: Sync main to dev
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+
+permissions: {}
 
 concurrency:
   group: sync-dev-from-main-${{ github.repository }}
@@ -13,57 +15,42 @@ concurrency:
 jobs:
   sync-dev:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-
+    timeout-minutes: 5
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Sync main into dev with force fallback
+      - name: Open the sync pull request
         env:
-          DEV_SYNC_PAT: ${{ secrets.DEV_SYNC_PAT }}
+          GH_TOKEN: ${{ secrets.DEV_SYNC_PAT }}
+          GH_REPO: ${{ github.repository }}
         run: |
-          if [ -z "$DEV_SYNC_PAT" ]; then
+          set -euo pipefail
+
+          if [ -z "$GH_TOKEN" ]; then
             echo "Falta configurar el secret DEV_SYNC_PAT"
             exit 1
           fi
 
-          git config --local --unset-all http.https://github.com/.extraheader || true
-          git remote set-url origin https://x-access-token:${DEV_SYNC_PAT}@github.com/${{ github.repository }}.git
-          git fetch origin main dev
-          git checkout dev
+          main_sha=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
+          pending=$(gh api "repos/$GH_REPO/compare/dev...$main_sha" --jq .ahead_by)
 
-          if git merge-base --is-ancestor HEAD origin/main; then
-            echo "Fast-forward disponible: se aplica el mismo commit de main en dev."
-            git merge --ff-only origin/main
-            git push origin dev
+          if [ "$pending" -eq 0 ]; then
+            echo "dev ya contiene main: no hay nada para sincronizar."
             exit 0
           fi
 
-          echo "Fast-forward no disponible: se intenta merge de sincronización."
-          set +e
-          git merge --no-ff origin/main -m "chore(branch-sync): sincronización automática main → dev"
-          MERGE_EXIT_CODE=$?
-          set -e
+          branch="fix/sync-main-${main_sha:0:12}"
 
-          if [ "$MERGE_EXIT_CODE" -eq 0 ]; then
-            echo "Merge de sincronización completado sin conflictos."
-            git push origin dev
-            exit 0
+          if ! gh api "repos/$GH_REPO/git/ref/heads/$branch" >/dev/null 2>&1; then
+            gh api "repos/$GH_REPO/git/refs" -f "ref=refs/heads/$branch" -f "sha=$main_sha" >/dev/null
           fi
 
-          echo "Conflictos detectados. Se aplica sincronización forzada (dev = main)."
-          git merge --abort || true
-          MAIN_SHA=$(git rev-parse origin/main)
-          git push --force-with-lease origin "$MAIN_SHA:dev"
-          echo "Sincronización forzada completada: dev ahora apunta a $MAIN_SHA"
+          url=$(gh pr list --base dev --head "$branch" --state open --json url --jq '.[0].url // empty')
+
+          if [ -z "$url" ]; then
+            body="Sincroniza \`dev\` con \`main\` ($main_sha).
+
+          Integrar con **merge commit**: squash o rebase no conservan la ascendencia y la próxima promoción quedaría desactualizada. Si la rama está atrasada o tiene conflictos, usar **Update branch** o **Resolve conflicts** y esperar \`verify\`."
+            url=$(gh pr create --base dev --head "$branch" \
+              --title "chore(branch-sync): sincronización main → dev" --body "$body")
+          fi
+
+          echo "Pull request de sincronización: $url" | tee -a "$GITHUB_STEP_SUMMARY"

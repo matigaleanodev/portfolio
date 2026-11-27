@@ -30,15 +30,16 @@ Those pieces remain owned by `portfolio-cloud` and `portfolio-api`.
 
 The current GitHub Actions flow is:
 
-1. `npm ci`
-2. `npm run build:content`
-3. `npm run build`
-4. `npm run build:release-manifest`
-5. `npm run build:chat-knowledge-payload`
-6. deploy `dist/portfolio/browser` to Firebase Hosting
-7. invoke `portfolio-cloud-<stage>-process-release` with `.generated/release-manifest.json`
-8. invoke `portfolio-cloud-<stage>-publish-chat-knowledge` with `.generated/chat/knowledge-payload.json`
-9. upload the release manifest, chat knowledge artifact, invoke payload, and Lambda responses as workflow artifacts
+1. `npm ci` and `npm run build:content`
+2. confirm the revision is the head of `main` and decide whether Firebase needs a deployment
+3. `npm run build:app` (Angular build and `404.html`) and publication marker
+4. `npm run build:release-manifest` and `npm run build:chat-knowledge-payload`
+5. install the Firebase CLI pinned in `tools/firebase-cli` and deploy `dist/portfolio/browser`
+6. invoke `portfolio-cloud-<stage>-process-release` with `.generated/release-manifest.json`
+7. invoke `portfolio-cloud-<stage>-publish-chat-knowledge` with `.generated/chat/knowledge-payload.json`
+8. upload the release manifest, chat knowledge artifact, invoke payload, and Lambda responses as workflow artifacts
+
+The `firebase-tools` version is exact and resolved by the lockfile in `tools/firebase-cli`, kept apart from the application one. Update it by changing the version and lockfile in a PR; CI uses it as the Hosting emulator.
 
 ## Firebase Hosting Strategy
 
@@ -50,7 +51,10 @@ Key rules:
 - non-hashed XML assets (`rss.xml`, `sitemap.xml`, `sitemap-blog.xml`) stay cache-sensitive
 - generated JSON indexes stay short-lived
 - hashed JS/CSS and static images remain immutable
-- the global rewrite to `/index.html` stays in place only as client-side fallback; prerendered files still win when the file exists
+- there is no global rewrite: every publishable route has its prerendered HTML and anything else returns HTTP 404 with `404.html` (`noindex`, no canonical). A new route must be added to `app.routes.server.ts` or Hosting answers it as missing
+- `404.html` comes from the `404` route, prerendered and moved by `scripts/build-not-found.mjs`
+- the only rewrite serves the unsubscribe confirmation for the matrix-parameter link (`/blog/unsubscribe;email=`)
+- `index.html` declares the RSS feed with `rel="alternate"` and `robots.txt` declares `sitemap.xml` and `sitemap-blog.xml`
 
 This keeps static blog pages deployable without reintroducing runtime content fetches from the backend.
 
@@ -116,7 +120,71 @@ A `release/vX.Y.Z` branch carries the matching package version and paired releas
 
 The chat knowledge generator resolves project links against the public site origin. The payload builder rejects relative, non-HTTP(S), or credential-bearing links before the Firebase deployment step, preventing publication of an artifact rejected by the Cloud/API consumers.
 
-Pull request CI builds the site, installs Chromium and runs Playwright against the compiled static output (`PORTFOLIO_E2E_BUILD=true`). The existing local `npm run test:e2e` still starts the development server; use the build flag after `npm run build` to reproduce CI in WSL. The static test server uses Python 3 available in the Ubuntu runner. Failed tests upload retained traces.
+## Continuous Validation
+
+`ci.yml` runs on pull requests and pushes to `dev` and `main`, without secrets and apart from deployment. It uses Node 22, lockfile dependencies, the npm cache, and cancels superseded runs of the same branch.
+
+| Job       | Contents                                                                                               |
+| --------- | ------------------------------------------------------------------------------------------------------ |
+| `quality` | formatting, lint, TypeScript and unit tests                                                            |
+| `build`   | production build, release manifest and knowledge payload                                               |
+| `browser` | against that same build: prerendered HTML without JavaScript, Hosting contract and Playwright Chromium |
+| `verify`  | requires the three previous jobs to succeed                                                            |
+
+The required check in the `dev` and `main` rules is `verify`; the repository does not configure it by itself. See [pull request integration](#pull-request-integration).
+
+The build and unit tests preload `e2e/support/offline-build.cjs`, which rejects non-local connections and answers the Google Fonts stylesheet with `e2e/fixtures/google-fonts.css`; update that copy when the fonts change. Browser tests use the Firebase Hosting emulator with the `demo-portfolio` project, intercept the API and resolve no external names.
+
+`.prettierignore` lists the files that predate the format check; remove each one from the list as it gets formatted.
+
+Local reproduction:
+
+```bash
+npm ci
+npm ci --prefix tools/firebase-cli --ignore-scripts
+npm run build:content
+npm run format:check && npm run lint && npm run typecheck && npm test -- --watch=false
+npm run build
+PORTFOLIO_E2E_BUILD=true npm run test:e2e
+```
+
+`npm run test:e2e` without the variable starts the development server and skips the HTML and Hosting tests.
+
+## Pull Request Integration
+
+`dev` and `main` receive changes only through pull requests, with the GitHub merge button. Required repository configuration, the same for both branches:
+
+- `verify` passing on a branch that is up to date with the target.
+- Resolved review conversations. No approval from another person is required.
+- No direct push, force push or deletion, for the owner either.
+- Only the owner merges: a restrict-updates rule with an exemption for that account.
+- Auto-merge is available; it is enabled by hand on each pull request.
+
+Work branches are merged with a merge commit, squash or rebase. Releases into `main` use squash.
+
+Auto-merge integrates whatever head exists once the conditions are met, including commits added after enabling it. To merge exactly the reviewed revision:
+
+```bash
+gh pr merge <number> --merge --match-head-commit <reviewed-sha>
+```
+
+### Synchronizing `main` into `dev`
+
+After each push to `main`, `sync-dev.yml` opens a pull request from `fix/sync-main-<sha>` into `dev` when `dev` does not contain that revision. It merges nothing. It uses `DEV_SYNC_PAT`, which needs contents and pull requests write access.
+
+Merge that pull request with a **merge commit**: squash or rebase do not preserve ancestry. If it is behind or has conflicts, **Update branch** or **Resolve conflicts** update the sync branch. While `dev` does not contain `main`, a pull request from `dev` to `main` stays out of date and cannot be merged.
+
+## Current Revision, Retries and Rollback
+
+Only the head of `main` publishes. `scripts/current-revision.mjs` asks the GitHub API when deciding the deployment and again right before Firebase, `process-release` and `publish-chat-knowledge`. If the revision fell behind or GitHub cannot confirm it, the job fails without running that effect or the ones depending on it. The check is not atomic with the effect; publications are serialized, so the run for the newer revision executes afterwards.
+
+To retry: use **Run workflow** on `main`, or re-run the run of the current head. An older run fails on purpose. If `main` moved during a run, the next one completes the pending work.
+
+To roll back:
+
+1. Revert the change on `main` through a PR. The revert is a new head and is published the normal way.
+2. Do not revert `#email=` support in unsubscription (`src/index.html` and the unsubscribe page): notifications already sent use that link.
+3. A rollback from the Firebase console is only an emergency measure for the site: it also restores the publication marker, and the scheduled run will deploy `main` again. Finish the revert before that run or disable the workflow meanwhile. It does not undo notifications or chat knowledge, and must not pick a version without `#email=` support.
 
 ## Production target verified on 2026-10-09
 
