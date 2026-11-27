@@ -2,7 +2,7 @@
 
 [English](DESIGN.md)
 
-Revisión 1. Este repositorio es la fuente de las decisiones visuales del ecosistema; los demás repositorios adaptan una revisión numerada y no la redefinen. Todo cambio de token o de regla obligatoria incrementa la revisión. Los tokens en formato legible por herramientas están en el encabezado de [DESIGN.md](DESIGN.md).
+Revisión 2. Este repositorio es la fuente de las decisiones visuales del ecosistema; los demás repositorios adaptan una revisión numerada y no la redefinen. Todo cambio de token o de regla obligatoria incrementa la revisión. Los tokens en formato legible por herramientas están en el encabezado de [DESIGN.md](DESIGN.md).
 
 Las reglas **DEBE** son criterios de aceptación. Las reglas **CONVIENE** son recomendaciones que admiten desvíos con motivo registrado. Los valores _derivados_ completan la paleta base y la identidad; ver Origen de los valores.
 
@@ -192,7 +192,7 @@ IBM Plex Sans (400, 500, 600) con respaldo `Segoe UI`, Arial; IBM Plex Mono (400
 - Escala de espaciado: 4, 8, 12, 16, 24, 32, 40, 48, 64, 80px. DEBE usar valores de la escala en separaciones y rellenos.
 - Contenedores (`box-sizing: border-box`, centrados): página `72rem`, formulario `48rem`, texto de artículo `38rem`, artículo ancho `46rem`. Relleno lateral 24px; 16px en artículos bajo 640px. Los máximos incluyen el relleno, salvo en las columnas de artículo.
 - Cortes: 640px y 960px (768px sólo para el panel de chat). Mobile first.
-- Ritmo de secciones: 48px bajo 768px, 80px desde 768px. Dentro de un bloque: 8–16px; entre bloques: 24–32px.
+- Ritmo de secciones: 48px bajo 768px, 80px desde 768px. Dentro de un bloque: 8–16px; entre bloques: 24–32px. Excepción, portada: entre la presentación con el proyecto destacado y el resto de los proyectos la separación es menor (ver Páginas: portada y proyectos).
 - DEBE reacomodarse a 320px sin desplazamiento horizontal de página; sólo código, tablas y diagramas se desplazan, dentro de una región enfocable.
 - El orden del DOM DEBE coincidir con el visual.
 - Las vistas a pantalla completa CONVIENE que usen `dvh` y safe areas.
@@ -206,7 +206,7 @@ IBM Plex Sans (400, 500, 600) con respaldo `Segoe UI`, Arial; IBM Plex Mono (400
 
 ## Bordes, radios, iconos e imágenes
 
-- Radios: botones y campos 5px; bloques de código y figuras 12px; tarjetas 16px; etiquetas en píldora; las sugerencias y el lanzador del chat van en píldora, únicas excepciones aprobadas al radio de 5px en botones; filetes editoriales y panel destacado 0.
+- Radios: botones y campos 5px; bloques de código y figuras 12px; tarjetas 16px; etiquetas en píldora; las sugerencias y el lanzador del chat van en píldora, únicas excepciones aprobadas al radio de 5px en botones; filetes editoriales 0. El panel del proyecto destacado usa el radio de tarjeta de 16px y conserva su filete inicial de identidad.
 - Bordes: 1px. Filete de identidad: 3px sólido `accent`, sobre la presentación de la portada y en el borde inicial del panel del proyecto destacado; las citas del artículo también llevan borde inicial `accent` de 3px. No agregarlo en otros lugares.
 - Iconos: Lucide, 16px en línea y 20px en botones de icono, trazo 2, `currentColor`; SVG de marca vigentes para perfiles externos. Iconos decorativos con `aria-hidden`; controles sólo con icono llevan nombre accesible. Sin emoji como icono.
 - Monograma: el vector M vigente, un color (`text`), 40px de alto en el encabezado, junto al nombre. Sin recuadro, degradado, sombra ni recoloreo; área libre mínima de 8px.
@@ -432,8 +432,12 @@ Esta revisión no fija la distribución del panel con poca altura ni la posició
 Orden: presentación y proyecto destacado, resto de los proyectos, contacto.
 
 - El primer bloque va sobre `canvas` (sin banda invertida a sangre): filete de identidad, nombre (`display`, único H1), rol, presentación profesional y luego “Ver proyectos” (enlace principal) y “Contactarme” (enlace de texto).
-- DEBE mostrar en la portada este texto, con Banco Comafi primero y Boreal IT como vínculo contractual: «Actualmente trabajo como desarrollador full stack en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos Comunes de Inversión.»
-- Proyecto destacado: composición editorial de texto, imagen y leyenda. Panel `surface` con el borde de identidad; texto (rótulo, título, aporte propio, enlace) en una columna `1fr` y un `figure` con `figcaption` en una columna `0.58fr` desde 640px; debajo se apilan, texto primero. Desde 960px, presentación y panel forman dos columnas `1.1fr 0.88fr` con 40px de separación. Nombre, rol y comienzo del caso CONVIENE que se vean juntos a 390×844.
+- DEBE mostrar en la portada este texto, con Banco Comafi primero y Boreal IT como vínculo contractual: «Actualmente trabajo en Banco Comafi, a través de Boreal IT, desarrollando soluciones para Fondos Comunes de Inversión.»
+- Proyecto destacado: composición editorial de texto, imagen y leyenda sobre un panel `surface` con el borde de identidad y el radio de tarjeta. Orden del DOM y visual: encabezado (rótulo, título, resumen), `figure` con `figcaption`, datos (decisión principal, cómo se usa, aporte propio), acciones (enlace principal y luego secundarios) y arquitectura y tecnologías.
+- Bajo 640px el panel es una columna en ese orden, así que la ilustración va antes de las acciones. Desde 640px el encabezado (`1fr`) y la figura (`0.58fr`) forman dos columnas; datos, acciones y detalle ocupan debajo todo el ancho.
+- Decisión principal, cómo se usa y aporte propio DEBEN quedar visibles; sólo arquitectura y tecnologías van colapsadas, en un `details` nativo. Desde 960px el rótulo de cada dato CONVIENE que vaya en línea con su texto, seguido de dos puntos.
+- Desde 960px, presentación y panel forman dos columnas `1.1fr 0.88fr` con 40px de separación. Nombre, rol y comienzo del caso CONVIENE que se vean juntos a 390×844.
+- Separaciones de la portada: bajo 960px el primer bloque tiene 32px arriba y 48px abajo; la sección de proyectos tiene 48px de relleno vertical bajo 768px, y 24px arriba y 80px abajo desde 768px. Desde 960px el primer bloque tiene 24px arriba y 16px abajo, la sección de proyectos empieza con 16px y usa 16px de separación, y su encabezado y bajada comparten renglón cuando entran. A 1440×900 las primeras tarjetas CONVIENE que empiecen dentro de la primera pantalla.
 - El proyecto destacado NO DEBE repetirse en la lista. Se conservan todos los casos publicados y sus enlaces.
 - Cada proyecto muestra, en este orden: tipo de producto, título, resumen, decisión principal, cómo se usa, aporte propio, enlace principal, enlaces secundarios, y arquitectura y tecnologías en un `details` nativo. Un caso sin imagen es válido.
 
@@ -484,16 +488,16 @@ Orden: presentación y proyecto destacado, resto de los proyectos, contacto.
 
 ## Origen de los valores
 
-| Grupo                                                                       | Origen y motivo                                                                                                                                                                                                               |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Colores                                                                     | Por token en Color.                                                                                                                                                                                                           |
-| Tipografías y monograma                                                     | Identidad aprobada.                                                                                                                                                                                                           |
-| Tamaños, pesos, interlineados y tracking                                    | Derivados: una jerarquía fluida limitada a tres pesos. La columna de lectura (38rem) y sus tamaños (18px, 17px en móvil) están aprobados.                                                                                     |
-| Espaciado, contenedores y cortes                                            | Derivados de la escala y los contenedores vigentes.                                                                                                                                                                           |
-| Radios                                                                      | Aprobado: 5px en botones y campos, con sugerencias y lanzador del chat en píldora como excepciones explícitas. Derivado: tarjetas 16px y código 12px, por continuidad.                                                        |
-| Composición de portada                                                      | Aprobado: dos columnas, filete, contacto como enlace, destacado con texto, imagen y leyenda, sin repetirlo en la lista.                                                                                                       |
-| Superficies por tema y feedback                                             | Aprobado: pie, apertura del listado y baja con tokens del tema; toast sólo de éxito de 5s o más; confirmaciones importantes también en contexto; errores en contexto; sin sombras en reposo ni animaciones de carga o scroll. |
-| Elevación, movimiento, estados de componentes, medidas de encabezado y chat | Derivados: accesibilidad, dimensiones estables y jerarquía plana.                                                                                                                                                             |
+| Grupo                                                                       | Origen y motivo                                                                                                                                                                                                                 |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Colores                                                                     | Por token en Color.                                                                                                                                                                                                             |
+| Tipografías y monograma                                                     | Identidad aprobada.                                                                                                                                                                                                             |
+| Tamaños, pesos, interlineados y tracking                                    | Derivados: una jerarquía fluida limitada a tres pesos. La columna de lectura (38rem) y sus tamaños (18px, 17px en móvil) están aprobados.                                                                                       |
+| Espaciado, contenedores y cortes                                            | Derivados de la escala y los contenedores vigentes.                                                                                                                                                                             |
+| Radios                                                                      | Aprobado: 5px en botones y campos, con sugerencias y lanzador del chat en píldora como excepciones explícitas, y el panel destacado con el radio de tarjeta. Derivado: tarjetas 16px y código 12px, por continuidad.            |
+| Composición de portada                                                      | Aprobado: dos columnas, filete, contacto como enlace, destacado con texto, imagen y leyenda, sin repetirlo en la lista; revisión 2: orden del panel, dos columnas desde 640px, datos visibles y menos separación en escritorio. |
+| Superficies por tema y feedback                                             | Aprobado: pie, apertura del listado y baja con tokens del tema; toast sólo de éxito de 5s o más; confirmaciones importantes también en contexto; errores en contexto; sin sombras en reposo ni animaciones de carga o scroll.   |
+| Elevación, movimiento, estados de componentes, medidas de encabezado y chat | Derivados: accesibilidad, dimensiones estables y jerarquía plana.                                                                                                                                                               |
 
 ## Qué hacer y qué evitar
 
