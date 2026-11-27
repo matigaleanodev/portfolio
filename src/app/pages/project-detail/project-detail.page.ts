@@ -1,9 +1,17 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { afterNextRender, Component, effect, ElementRef, inject, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArrowLeft, LucideAngularModule } from 'lucide-angular';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 
 import { ProjectLinkComponent } from '../../sections/projects/project-link.component';
 import { projectLinks } from '../../sections/projects/project-links';
@@ -26,16 +34,21 @@ export class ProjectDetailPage {
     requireSync: true,
   });
 
+  /** El contenido cargó y el slug no figura; una falla de lectura no cuenta. */
+  private readonly missing = signal(false);
+
   protected readonly project = toSignal(
     this.route.paramMap.pipe(
-      switchMap((params) =>
-        this.content.getProjects().pipe(
+      switchMap((params) => {
+        this.missing.set(false);
+        return this.content.getProjects().pipe(
           map(
             (projects) => projects.find((project) => project.slug === params.get('slug')) ?? null,
           ),
+          tap((project) => this.missing.set(!project)),
           catchError(() => of(null)),
-        ),
-      ),
+        );
+      }),
     ),
   );
 
@@ -47,14 +60,28 @@ export class ProjectDetailPage {
       const project = this.project();
       if (project === undefined) return;
 
+      const title = project
+        ? project.title + ' | Matias Galeano'
+        : 'Proyecto no disponible | Matias Galeano';
+      const description = project?.excerpt ?? 'Explorá los proyectos de Matias Galeano.';
+
+      if (this.missing()) {
+        seo.setPageSeo({ title, description, noIndex: true });
+        return;
+      }
+
       seo.setPageSeo({
-        title: project
-          ? project.title + ' | Matias Galeano'
-          : 'Proyecto no disponible | Matias Galeano',
-        description: project?.excerpt ?? 'Explorá los proyectos de Matias Galeano.',
+        title,
+        description,
         canonicalUrl: 'https://matiasgaleano.dev/projects/' + encodeURIComponent(this.slug() ?? ''),
-        ogImage:
-          'https://matiasgaleano.dev' + (project?.coverImage ?? '/assets/icons/icon-512.webp'),
+        ...(project
+          ? {
+              image: {
+                url: 'https://matiasgaleano.dev' + project.coverImage,
+                alt: 'Imagen del proyecto ' + project.title,
+              },
+            }
+          : {}),
         type: 'website',
       });
     });
