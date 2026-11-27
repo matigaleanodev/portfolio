@@ -114,7 +114,20 @@ The deploy workflow now expects these GitHub secrets or variables in `portfolio`
 
 ## Versioned Releases
 
-A `release/vX.Y.Z` branch carries the matching package version and paired release notes in `Docs/releases/`. Merge its PR to `main` using squash. After the merge, `release.yml` validates the branch/version match, creates an annotated `vX.Y.Z` tag on the merged commit, and publishes the GitHub release from the Spanish notes. An existing draft release is published automatically. Existing tags are accepted only when they already point to that same commit. Firebase deployment and `dev` synchronization run independently on the `main` push.
+The package version and paired release notes (`Docs/releases/vX.Y.Z.es.md` and `Docs/releases/vX.Y.Z.md`) are prepared on a `release/vX.Y.Z` branch with a PR into `dev`. Promotion is a pull request from `dev` to `main`, without auto-merge, integrated with a **merge commit**.
+
+The tag and the GitHub release are created after production has been validated. From a checkout that contains the notes, on the promotion merge commit:
+
+```bash
+git fetch origin
+git tag -a vX.Y.Z <merge-sha> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
+git push origin refs/tags/vX.Y.Z
+gh release create vX.Y.Z --verify-tag --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest
+```
+
+If validation fails, the tag is not created.
+
+`release.yml` only acts when a PR whose branch starts with `release/v` is merged into `main`, and it publishes the tag and release at that moment, without waiting for the deployment. This flow does not use it: do not open a PR into `main` from a `release/` branch. Firebase deployment and `dev` synchronization run independently on the `main` push.
 
 ## Pre-deployment contract and browser checks
 
@@ -160,7 +173,7 @@ PORTFOLIO_E2E_BUILD=true npm run test:e2e
 - Only the owner merges: a restrict-updates rule with an exemption for that account.
 - Auto-merge is available; it is enabled by hand on each pull request.
 
-Work branches are merged with a merge commit, squash or rebase. Releases into `main` use squash.
+Work branches are merged with a merge commit, squash or rebase. Promotions from `dev` to `main` use a merge commit.
 
 Auto-merge integrates whatever head exists once the conditions are met, including commits added after enabling it. To merge exactly the reviewed revision:
 

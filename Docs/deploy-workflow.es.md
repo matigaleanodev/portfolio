@@ -114,7 +114,20 @@ El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
 
 ## Releases versionadas
 
-Una rama `release/vX.Y.Z` contiene la versión correspondiente del paquete y las notas en ambos idiomas en `Docs/releases/`. Su PR a `main` se integra mediante squash. Después del merge, `release.yml` valida la correspondencia entre rama y versión, crea un tag anotado `vX.Y.Z` sobre el commit integrado y publica la release de GitHub con las notas en español. Si existe un borrador, se publica automáticamente. Solo se aceptan tags existentes cuando ya apuntan a ese mismo commit. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.
+La versión del paquete y las notas en ambos idiomas (`Docs/releases/vX.Y.Z.es.md` y `Docs/releases/vX.Y.Z.md`) se preparan en una rama `release/vX.Y.Z` con un PR hacia `dev`. La promoción es un pull request de `dev` a `main`, sin auto-merge, integrado con **merge commit**.
+
+El tag y la release de GitHub se crean después de validar producción. Desde un checkout que contenga las notas, sobre el merge commit de la promoción:
+
+```bash
+git fetch origin
+git tag -a vX.Y.Z <sha-del-merge> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
+git push origin refs/tags/vX.Y.Z
+gh release create vX.Y.Z --verify-tag --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest
+```
+
+Si la validación falla, no se crea el tag.
+
+`release.yml` solo actúa cuando se integra en `main` un PR cuya rama empieza con `release/v`, y publica el tag y la release en ese momento, sin esperar el deploy. Este flujo no lo usa: no abrir hacia `main` un PR desde una rama `release/`. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.
 
 ## Contrato y pruebas de navegador antes del deploy
 
@@ -160,7 +173,7 @@ PORTFOLIO_E2E_BUILD=true npm run test:e2e
 - Solo el propietario integra: una regla de actualización restringida con exención para su cuenta.
 - Auto-merge disponible; se activa a mano en cada pull request.
 
-Las ramas de trabajo se integran con merge commit, squash o rebase. Las releases a `main` usan squash.
+Las ramas de trabajo se integran con merge commit, squash o rebase. Las promociones de `dev` a `main` usan merge commit.
 
 El auto-merge integra el head que exista cuando se cumplan las condiciones, incluidos commits agregados después de activarlo. Para integrar exactamente la revisión mirada:
 
