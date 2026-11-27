@@ -146,6 +146,11 @@
 .chat-typing span:nth-child(3) {
   animation-delay: 240ms;
 }
+@media (forced-colors: active) {
+  .chat-typing span {
+    background: CanvasText;
+  }
+}
 .chat-suggestions {
   display: flex;
   flex-wrap: wrap;
