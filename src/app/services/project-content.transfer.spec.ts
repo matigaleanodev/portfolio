@@ -35,7 +35,7 @@ describe('ProjectContentService: estado transferido', () => {
     expect(await result).toEqual([]);
   });
 
-  it('comparte una sola carga entre el destacado y la lista', () => {
+  it('comparte una sola carga entre la lista y las fichas', () => {
     const service = TestBed.inject(ProjectContentService);
     const received: Project[][] = [];
 

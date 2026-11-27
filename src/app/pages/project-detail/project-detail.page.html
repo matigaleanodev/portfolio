@@ -1,0 +1,105 @@
+<main>
+  <ng-template #back>
+    <a href="/#projects-title" class="link project-back" aria-label="Volver a proyectos">
+      <lucide-icon [img]="backIcon" size="16" aria-hidden="true" />
+      Volver
+    </a>
+  </ng-template>
+
+  @if (project(); as current) {
+    <article>
+      <header class="site-band project-hero">
+        <div class="page-container project-hero__layout">
+          <div class="project-hero__copy">
+            <div class="project-hero__heading">
+              <ng-container [ngTemplateOutlet]="back" />
+
+              <p class="project-label">{{ current.productType }}</p>
+              <h1 #title tabindex="-1">{{ current.title }}</h1>
+            </div>
+
+            <div class="project-hero__intro">
+              <p class="project-hero__excerpt">{{ current.excerpt }}</p>
+
+              @if (links().hero.length) {
+                <div class="project-hero__actions">
+                  @for (link of links().hero; track link.url; let first = $first) {
+                    <app-project-link
+                      [link]="link"
+                      [projectTitle]="current.title"
+                      [appearance]="first ? 'filled' : 'outline'"
+                    />
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="project-hero__art" aria-hidden="true">
+            <svg viewBox="0 0 320 320" width="320" height="320" focusable="false">
+              <g fill="none" stroke="currentColor">
+                <circle cx="160" cy="160" r="131" opacity=".26" />
+                <circle cx="160" cy="160" r="150" opacity=".18" stroke-dasharray="3 5" />
+                <path d="M2 160h316M160 2v316" opacity=".12" />
+              </g>
+              <g fill="currentColor" opacity=".32">
+                <circle cx="29" cy="160" r="2.5" />
+                <circle cx="291" cy="160" r="2.5" />
+                <circle cx="160" cy="29" r="2.5" />
+                <circle cx="160" cy="291" r="2.5" />
+              </g>
+            </svg>
+            <img [src]="current.coverImage" alt="" width="192" height="192" decoding="async" />
+          </div>
+        </div>
+      </header>
+
+      <div class="page-container project-detail">
+        <section class="project-decision">
+          <p class="project-label">Decisión principal</p>
+          <h2 class="section-title">{{ current.primarySignal }}</h2>
+        </section>
+
+        <div class="project-facts">
+          <section>
+            <h2>Cómo se usa</h2>
+            <p>{{ current.proof }}</p>
+          </section>
+          <section>
+            <h2>Mi aporte</h2>
+            <p>{{ current.role }}</p>
+          </section>
+        </div>
+
+        <section class="project-architecture">
+          <h2>Arquitectura y tecnologías</h2>
+          @if (current.stack.length) {
+            <ul class="project-stack" aria-label="Tecnologías">
+              @for (tech of current.stack; track tech) {
+                <li class="project-tech-chip">{{ tech }}</li>
+              }
+            </ul>
+          }
+          <p>{{ current.architecture }}</p>
+
+          @if (links().related.length) {
+            <ul class="project-links" [attr.aria-label]="'Más enlaces de ' + current.title">
+              @for (link of links().related; track link.url) {
+                <li><app-project-link [link]="link" [projectTitle]="current.title" /></li>
+              }
+            </ul>
+          }
+        </section>
+      </div>
+    </article>
+  } @else {
+    <div class="page-container project-state">
+      <ng-container [ngTemplateOutlet]="back" />
+      @if (project() === null) {
+        <h1 #title class="section-title" tabindex="-1">No pudimos abrir este proyecto</h1>
+      } @else {
+        <p role="status">Cargando proyecto…</p>
+      }
+    </div>
+  }
+</main>

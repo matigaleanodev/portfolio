@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { RenderMode, ServerRoute } from '@angular/ssr';
 
-interface PrerenderPostEntry {
+interface PrerenderEntry {
   slug: string;
 }
 
@@ -10,6 +10,11 @@ export const serverRoutes: ServerRoute[] = [
   {
     path: '',
     renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'projects/:slug',
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: () => loadSlugs('projects.json'),
   },
   {
     path: 'blog',
@@ -22,10 +27,7 @@ export const serverRoutes: ServerRoute[] = [
   {
     path: 'blog/:slug',
     renderMode: RenderMode.Prerender,
-    async getPrerenderParams() {
-      const posts = await loadPostEntries();
-      return posts.map((post) => ({ slug: post.slug }));
-    },
+    getPrerenderParams: () => loadSlugs('blog/posts.json'),
   },
   {
     path: '**',
@@ -33,8 +35,7 @@ export const serverRoutes: ServerRoute[] = [
   },
 ];
 
-async function loadPostEntries(): Promise<PrerenderPostEntry[]> {
-  const postsIndexPath = join(process.cwd(), 'src', 'assets', 'blog', 'posts.json');
-  const raw = await readFile(postsIndexPath, 'utf8');
-  return JSON.parse(raw) as PrerenderPostEntry[];
+async function loadSlugs(asset: string): Promise<Record<string, string>[]> {
+  const raw = await readFile(join(process.cwd(), 'src', 'assets', asset), 'utf8');
+  return (JSON.parse(raw) as PrerenderEntry[]).map(({ slug }) => ({ slug }));
 }

@@ -15,7 +15,7 @@ test('con movimiento reducido el progreso del chat se ve como texto', async ({ p
   await expect(page.locator('#chat-status')).toHaveCSS('position', 'static');
 });
 
-for (const width of [768, 1024, 1200]) {
+for (const width of [768, 1024, 1280]) {
   test(`el lanzador no tapa la última acción del pie a ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
     await page.goto('/');
@@ -52,27 +52,43 @@ test('con poca altura y 320px el campo del chat ocupa todo el ancho', async ({ p
   await expect(page.locator('#chat-counter')).toBeInViewport({ ratio: 1 });
 });
 
-test('a 1440 × 900 se ven las primeras tarjetas', async ({ page }) => {
+test('el header y el hero completan el primer pantallazo en escritorio', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
-  const card = (await page.locator('.project-card').first().boundingBox())!;
-  expect(card.y).toBeLessThanOrEqual(860);
-});
+  const projects = page.locator('#projects');
+  await expect.poll(async () => (await projects.boundingBox())!.y).toBeCloseTo(900, 0);
+  await expect(page.locator('.hero-art')).toBeVisible();
+  await expect(page.locator('#projects-title')).not.toBeInViewport();
 
-test('el destacado comparte el radio de las tarjetas y conserva su filete', async ({ page }) => {
-  await page.goto('/');
-  const featured = page.locator('.featured');
-  await expect(featured).toHaveCSS('border-top-right-radius', '16px');
-  await expect(featured).toHaveCSS('border-left-width', '3px');
-});
+  await page.locator('app-header').evaluate((header) => {
+    header.style.paddingBottom = '18px';
+  });
+  await expect.poll(async () => (await projects.boundingBox())!.y).toBeCloseTo(900, 0);
 
-test('en móvil la ilustración va antes de las acciones', async ({ page }) => {
+  await page.getByRole('link', { name: 'Desplazarse a proyectos' }).click();
+  await expect(projects).toBeFocused();
+  await expect(page.locator('#projects-title')).toBeInViewport();
+
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  const figure = (await page.locator('.featured figure').boundingBox())!;
-  const action = (await page.locator('.featured .link-primary').boundingBox())!;
-  expect(figure.y + figure.height).toBeLessThanOrEqual(action.y);
+  await expect(page.locator('.hero-art')).toBeHidden();
+});
+
+test('Modo Playa comparte la grilla de proyectos y abre su ficha', async ({ page }) => {
+  await page.goto('/');
+  const projects = page.locator('#projects');
+  await expect(projects.getByRole('heading', { name: 'Proyectos', exact: true })).toBeVisible();
+  const card = projects.locator('.project-card').filter({ hasText: 'Modo Playa' });
+  await expect(card).toHaveCount(1);
+  await expect(card.getByRole('link')).toHaveCount(1);
+  await expect(card.getByText('Decisión principal')).toHaveCount(0);
+  await card.getByRole('link').click();
+  await expect(page).toHaveURL(/\/projects\/modo-playa$/);
+  await expect(page.getByRole('heading', { name: 'Modo Playa', level: 1 })).toBeFocused();
+  await page.getByRole('link', { name: 'Volver a proyectos' }).click();
+  await expect(page).toHaveURL(/#projects-title$/);
+  await expect(page.locator('#projects')).not.toBeFocused();
 });
 
 test('con poca altura las sugerencias indican que se desplazan', async ({ page }) => {
@@ -96,17 +112,21 @@ for (const [width, height] of [
   [768, 300],
   [1440, 900],
 ] as const) {
-  test(`el anillo del campo no toca Enviar a ${width} × ${height}`, async ({ page }) => {
+  test(`el compositor mantiene el foco y Enviar visible a ${width} × ${height}`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width, height });
     await page.goto('/');
     await page.getByRole('button', { name: 'Abrir chatbot asistente' }).click();
     await page.locator('#chat-widget').evaluate(async (element) => {
       await Promise.all(element.getAnimations().map((animation) => animation.finished));
     });
-    const input = (await page.locator('#chat-input').boundingBox())!;
-    const send = (await page.locator('.chat-submit').boundingBox())!;
-    const gap = Math.max(send.x - (input.x + input.width), send.y - (input.y + input.height));
-    expect(gap).toBeGreaterThanOrEqual(11);
+    const composer = page.locator('.chat-composer');
+    await expect(composer).toHaveCSS('outline-width', '2px');
+    const counter = (await composer.locator('#chat-counter').boundingBox())!;
+    const send = (await composer.getByRole('button', { name: 'Enviar' }).boundingBox())!;
+    expect(counter.x + counter.width).toBeLessThan(send.x);
+    expect(counter.y + counter.height).toBeCloseTo(send.y + send.height, 0);
     expect((await page.locator('.chat-messages').boundingBox())!.height).toBeGreaterThanOrEqual(80);
     await expect(page.locator('.chat-submit')).toBeInViewport({ ratio: 1 });
   });

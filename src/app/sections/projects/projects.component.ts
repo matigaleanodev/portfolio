@@ -33,10 +33,5 @@ export class ProjectsComponent {
       });
   }
 
-  readonly sortedProjects = computed(() =>
-    // Se excluye solo el que muestra el destacado: el primero marcado según el orden.
-    [...this.projects()]
-      .sort((a, b) => a.order - b.order)
-      .filter((project, _, sorted) => project !== sorted.find((item) => item.featured)),
-  );
+  readonly sortedProjects = computed(() => [...this.projects()].sort((a, b) => a.order - b.order));
 }

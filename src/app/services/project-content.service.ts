@@ -1,7 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
-import { inject, Injectable, makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
-import { defer, from, of, shareReplay, tap } from 'rxjs';
+import {
+  inject,
+  Injectable,
+  makeStateKey,
+  PendingTasks,
+  PLATFORM_ID,
+  TransferState,
+} from '@angular/core';
+import { defer, finalize, from, of, shareReplay, tap } from 'rxjs';
 import { Project } from '../models/project.model';
 
 const PROJECTS_KEY = makeStateKey<Project[]>('projects');
@@ -14,17 +21,22 @@ export class ProjectContentService {
   private readonly platformId = inject(PLATFORM_ID);
 
   private readonly transferState = inject(TransferState);
+  private readonly pendingTasks = inject(PendingTasks);
 
-  // El destacado y la lista comparten la carga; tras un error se vuelve a pedir.
+  // La lista y las fichas comparten la carga; tras un error se vuelve a pedir.
   private readonly request$ = this.http
     .get<Project[]>('/assets/projects.json')
     .pipe(shareReplay({ bufferSize: 1, refCount: false }));
 
   getProjects() {
     if (isPlatformServer(this.platformId)) {
-      return defer(() => from(this.readProjectsFile())).pipe(
-        tap((projects) => this.transferState.set(PROJECTS_KEY, projects)),
-      );
+      return defer(() => {
+        const finish = this.pendingTasks.add();
+        return from(this.readProjectsFile()).pipe(
+          tap((projects) => this.transferState.set(PROJECTS_KEY, projects)),
+          finalize(finish),
+        );
+      });
     }
 
     // La hidratación necesita los datos en forma síncrona para conservar el prerender.

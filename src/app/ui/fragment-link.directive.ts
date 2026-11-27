@@ -22,6 +22,9 @@ export class FragmentLinkDirective {
     event.preventDefault();
     if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
     target.focus({ preventScroll: true });
-    target.scrollIntoView({ block: 'start', behavior: 'instant' });
+    const reducedMotion = this.document.defaultView?.matchMedia?.(
+      '(prefers-reduced-motion: reduce)',
+    );
+    target.scrollIntoView({ block: 'start', behavior: reducedMotion?.matches ? 'auto' : 'smooth' });
   }
 }

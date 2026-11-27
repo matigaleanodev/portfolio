@@ -135,7 +135,7 @@ describe('BlogPostPage', () => {
     const host = fixture.nativeElement as HTMLElement;
     expect(host.querySelector('h1')?.textContent).toContain('No pudimos cargar el artículo');
     expect(host.textContent).not.toContain('Fallo simulado');
-    expect(host.querySelector('a[href="/blog"]')?.textContent).toContain('Volver al blog');
+    expect(host.querySelector('a[href="/blog"]')?.textContent?.trim()).toBe('Volver');
     expect(host.querySelector('.blog-post-loading')).toBeNull();
   });
 

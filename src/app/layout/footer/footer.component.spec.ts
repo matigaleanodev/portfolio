@@ -72,7 +72,7 @@ describe('FooterComponent', () => {
     );
   });
 
-  it('backToTop debería llamar a window.scrollTo con smooth', () => {
+  it('backToTop debería desplazar la página al inicio', () => {
     const scrollSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {
       /* empty */
     });

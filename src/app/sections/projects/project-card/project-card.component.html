@@ -3,8 +3,8 @@
     <img
       [src]="project().coverImage"
       [alt]="'Ilustración del producto: ' + project().title"
-      width="96"
-      height="96"
+      width="64"
+      height="64"
       loading="lazy"
       decoding="async"
       class="project-card__image"
@@ -18,68 +18,19 @@
 
   <p class="project-card__excerpt">{{ project().excerpt }}</p>
 
-  <dl class="project-card__details">
-    <div>
-      <dt>Decisión principal</dt>
-      <dd>{{ project().primarySignal }}</dd>
-    </div>
-    <div>
-      <dt>Cómo se usa</dt>
-      <dd>{{ project().proof }}</dd>
-    </div>
-    <div>
-      <dt>Mi aporte</dt>
-      <dd>{{ project().role }}</dd>
-    </div>
-  </dl>
+  @if (project().stack.length) {
+    <ul class="project-card__stack" aria-label="Tecnologías principales">
+      @for (tech of project().stack.slice(0, 3); track tech) {
+        <li class="project-tech-chip">{{ tech }}</li>
+      }
+    </ul>
+  }
 
-  <div class="project-card__actions">
-    @if (links.primary(); as link) {
-      <a
-        [href]="link.url"
-        target="_blank"
-        rel="noopener noreferrer"
-        (click)="links.track(link.label)"
-        [attr.aria-label]="link.label + ' de ' + project().title + ' (abre en una pestaña nueva)'"
-        class="link-primary"
-      >
-        <lucide-icon [img]="links.iconFor(link.icon)" size="16" aria-hidden="true" />
-        {{ link.label }}
-      </a>
-    }
-    @if (links.secondary().length) {
-      <ul class="project-links" [attr.aria-label]="'Más enlaces de ' + project().title">
-        @for (link of links.secondary(); track link.url) {
-          <li>
-            <a
-              [href]="link.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              (click)="links.track(link.label)"
-              [attr.aria-label]="
-                link.label + ' de ' + project().title + ' (abre en una pestaña nueva)'
-              "
-              class="link"
-            >
-              <lucide-icon [img]="links.iconFor(link.icon)" size="16" aria-hidden="true" />
-              {{ link.label }}
-            </a>
-          </li>
-        }
-      </ul>
-    }
-  </div>
-
-  <details class="project-card__architecture">
-    <summary>Arquitectura y tecnologías</summary>
-    <p>{{ project().architecture }}</p>
-    @if (project().stack.length) {
-      <div class="project-card__stack">
-        <span class="sr-only">{{ project().stack.join(' · ') }}</span>
-        @for (tech of project().stack; track tech) {
-          <span class="project-tech-chip" aria-hidden="true">{{ tech }}</span>
-        }
-      </div>
-    }
-  </details>
+  <a
+    [routerLink]="['/projects', project().slug]"
+    [attr.aria-label]="'Ver proyecto ' + project().title"
+    class="link-primary project-card__action"
+  >
+    Ver proyecto
+  </a>
 </article>

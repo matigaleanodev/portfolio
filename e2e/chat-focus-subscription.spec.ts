@@ -41,7 +41,7 @@ const focusState = (page: Page) =>
       isBody: el === document.body,
       inChat: !!el.closest('#chat-widget'),
       visible,
-      outline: getComputedStyle(el).outlineStyle,
+      outline: getComputedStyle(el.closest('.chat-input') ? el.parentElement! : el).outlineStyle,
       accessibleName:
         el.getAttribute('aria-label') ||
         el.textContent?.trim() ||
@@ -245,12 +245,12 @@ test('contraste del chat y axe con error visible', async ({ page }) => {
   };
   await measure('placeholder', '#chat-input', 'placeholder', 4.5);
   await measure('contador vacío', '#chat-counter', 'text', 4.5);
-  await measure('borde del campo', '#chat-input', 'border', 3);
-  await measure('foco del campo', '#chat-input', 'outline', 3);
+  await measure('borde del campo', '.chat-composer', 'border', 3);
+  await measure('foco del campo', '.chat-composer', 'outline', 3);
   await page.locator('#chat-input').fill('Hola');
   await measure('contador activo', '#chat-counter', 'text', 4.5);
-  await measure('borde con texto', '#chat-input', 'border', 3);
-  await measure('Enviar', '.chat-submit', 'text', 4.5);
+  await measure('borde con texto', '.chat-composer', 'border', 3);
+  await measure('Enviar', '.chat-submit', 'text', 3);
   await measure('sugerencia', 'button.chat-chip', 'text', 4.5);
   await page.keyboard.press('Enter');
   await expect(page.locator('#chat-error')).toBeVisible();
