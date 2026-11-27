@@ -1,0 +1,8 @@
+{
+  "name": "portfolio-firebase-cli",
+  "private": true,
+  "description": "Firebase CLI fijada para el despliegue y el emulador de Hosting.",
+  "devDependencies": {
+    "firebase-tools": "15.37.0"
+  }
+}

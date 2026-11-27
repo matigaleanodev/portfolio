@@ -33,4 +33,23 @@ describe('workflow de publicación', () => {
   it('mantiene process-release condicionado al éxito de los pasos anteriores', () => {
     expect(step('Invoke portfolio-cloud process-release')).not.toMatch(/\n\s+if:/);
   });
+
+  it('despliega solo con la CLI de Firebase fijada por lockfile', () => {
+    const read = (file: string) =>
+      JSON.parse(readFileSync(join(process.cwd(), 'tools/firebase-cli', file), 'utf8'));
+    const version: string = read('package.json').devDependencies['firebase-tools'];
+
+    expect(version).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(read('package-lock.json').packages['node_modules/firebase-tools'].version).toBe(version);
+    expect(step('Install pinned Firebase CLI')).toContain(
+      'npm ci --prefix tools/firebase-cli --ignore-scripts',
+    );
+    expect(workflow).not.toContain('npx firebase');
+    expect(workflow).not.toMatch(/firebase-tools@/);
+  });
+
+  it('no concede más que lectura y OIDC, ni deja el token en el checkout', () => {
+    expect(workflow).toContain('permissions:\n  contents: read\n  id-token: write\n\n');
+    expect(step('Checkout repository')).toContain('persist-credentials: false');
+  });
 });

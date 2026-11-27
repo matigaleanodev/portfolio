@@ -30,6 +30,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -61,9 +63,13 @@ jobs:
       - name: Build chat knowledge payload
         run: npm run build:chat-knowledge-payload
 
+      - name: Install pinned Firebase CLI
+        if: steps.publication.outputs.deploy == 'true'
+        run: npm ci --prefix tools/firebase-cli --ignore-scripts --no-audit --no-fund
+
       - name: Deploy to Firebase Hosting
         if: steps.publication.outputs.deploy == 'true'
-        run: npx firebase-tools deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
+        run: tools/firebase-cli/node_modules/.bin/firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
