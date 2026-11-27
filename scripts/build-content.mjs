@@ -282,7 +282,7 @@ export function renderMarkdown(markdown) {
 
 // Reserva el alto de cada imagen antes de que cargue.
 function declareImageSizes(html, sizes) {
-  return html.replace(/<img src="([^"]+)"/g, (tag, source) => {
+  return html.replace(/<img\b[^>]*?\ssrc="([^"]+)"/g, (tag, source) => {
     const size = sizes.get(source);
     return size ? `${tag} width="${size.width}" height="${size.height}"` : tag;
   });
