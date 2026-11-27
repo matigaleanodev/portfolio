@@ -1,6 +1,6 @@
 ---
 name: Índigo de taller
-revision: 4
+revision: 5
 description: Visual system of matiasgaleano.dev, light and dark.
 colors:
   light-canvas: '#F3F4F7'
@@ -248,7 +248,7 @@ components:
 
 [Español](DESIGN.es.md)
 
-Revision 4. This repository is the source of the visual decisions of the ecosystem; other repositories adapt a numbered revision and do not redefine it. Any change to a token or a mandatory rule increases the revision. The token front matter lives in this file.
+Revision 5. This repository is the source of the visual decisions of the ecosystem; other repositories adapt a numbered revision and do not redefine it. Any change to a token or a mandatory rule increases the revision. The token front matter lives in this file.
 
 **MUST** rules are acceptance criteria. **SHOULD** rules are recommendations that may be deviated from with a recorded reason. Values marked _derived_ complete the base palette and identity; see Value origin.
 
@@ -651,16 +651,16 @@ Placeholders are examples in `text-muted`, never the label. Counters use `meta`.
 
 ### Chat
 
-- Panel: `surface`, level 1, 400×575px from 768px as height permits and full screen below. Short viewports use tighter spacing and a single row of horizontally scrollable suggestions. The header contains the title and close icon button.
+- Panel: `surface`, level 1, 400×575px from 768px as height permits and full screen below. The header contains the title, the “Sugerencias” disclosure and the close button. The conversation MUST fill the remaining height and scroll independently. The greeting fits at normal viewport heights.
 - Assistant messages on `canvas` with `divider` border; user messages on `accent-subtle`; each shows its author in text. No bubble shadows.
-- Suggestions use their own variant. The composer integrates the message field, the counter at bottom left and a 44×44px primary action at bottom right with an up arrow and the accessible name “Enviar”. While sending, the spinner occupies the same space.
+- Suggestions use compact labels in at most two rows. Each button exposes and sends the full question. Sending a message collapses the suggestions. The header control reopens them and reports its state with `aria-expanded`. Below 600px in height, the chat opens with suggestions collapsed.
+- The message field starts at one line and grows with the draft up to the smaller of `6rem` and `15dvh`. The counter sits at the bottom left and the 44×44px “Enviar” button at the bottom right. Its up arrow gives way to a spinner while sending.
 - The panel uses 2px focus outlines with a 2px offset. The field focus outline surrounds the composer. Scrollable chat areas use thin scrollbars with the control border token.
-- Starter errors align the message with the “Reintentar” action.
 - Modal below 768px (`aria-modal`, focus contained, background inert); non-modal dialog above. Escape closes and returns focus to the launcher; the launcher leaves the tab order while open.
 - The panel is a `role="dialog"` named with `aria-labelledby`. On open, focus goes to the message field. After sending from the field, the send button or a suggestion, focus moves to the message field; suggestions are Disabled while the reply is pending and may then be replaced. The message list is a named `role="log"`: each message added to it, from the user or the assistant, is announced politely without rereading the history. The typing placeholder is hidden from assistive technology and progress is announced in a separate `role="status"` region. Escape closes the non-modal panel only while focus is inside it. Crossing 768px while open updates `aria-modal` and `inert`.
 - If focus moves under the non-modal panel, close the panel or scroll the focused element into view.
 - Focus MUST never be hidden by the panel or launcher. At any viewport height, including 200% zoom, every control MUST stay reachable and operable by keyboard and touch, with the focused one visible.
-- Loading starters use static-size placeholders; errors offer retry; fallback answers are labelled as before.
+- Loading starters use fixed-size placeholders. If loading fails, local suggestions are available immediately without an error announcement. Fallback answers in the conversation retain their source label.
 
 ### Feedback, empty, error and confirmation states
 

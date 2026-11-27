@@ -2,7 +2,7 @@
 
 [English](DESIGN.md)
 
-Revisión 4. Este repositorio es la fuente de las decisiones visuales del ecosistema; los demás repositorios adaptan una revisión numerada y no la redefinen. Todo cambio de token o de regla obligatoria incrementa la revisión. Los tokens en formato legible por herramientas están en el encabezado de [DESIGN.md](DESIGN.md).
+Revisión 5. Este repositorio es la fuente de las decisiones visuales del ecosistema; los demás repositorios adaptan una revisión numerada y no la redefinen. Todo cambio de token o de regla obligatoria incrementa la revisión. Los tokens en formato legible por herramientas están en el encabezado de [DESIGN.md](DESIGN.md).
 
 Las reglas **DEBE** son criterios de aceptación. Las reglas **CONVIENE** son recomendaciones que admiten desvíos con motivo registrado. Los valores _derivados_ completan la paleta base y la identidad; ver Origen de los valores.
 
@@ -405,16 +405,16 @@ Los placeholders son ejemplos en `text-muted`, nunca el rótulo. Los contadores 
 
 ### Chat
 
-- Panel: `surface`, nivel 1, 400×575px desde 768px si el alto lo permite y pantalla completa debajo. Las pantallas bajas usan espaciado compacto y una fila de sugerencias con desplazamiento horizontal. El encabezado contiene el título y el botón con icono para cerrar.
+- Panel: `surface`, nivel 1, 400×575px desde 768px si el alto lo permite y pantalla completa debajo. El encabezado contiene el título, el control «Sugerencias» y el botón de cierre. La conversación DEBE ocupar el alto restante y tener desplazamiento independiente. Con una altura de pantalla habitual, la bienvenida se lee completa.
 - Mensajes del asistente sobre `canvas` con borde `divider`; mensajes del usuario sobre `accent-subtle`; cada uno muestra su autor en texto. Sin sombras en las burbujas.
-- Las sugerencias usan su variante. El área de composición integra el campo de mensaje, el contador abajo a la izquierda y la acción principal de 44×44px abajo a la derecha, con flecha hacia arriba y nombre accesible «Enviar». Durante el envío muestra el spinner en el mismo espacio.
+- Las sugerencias se presentan como etiquetas breves en un máximo de dos filas. Cada botón permite conocer la pregunta completa y la envía al activarse. Enviar un mensaje contrae las sugerencias. El control del encabezado permite volver a desplegarlas e indica su estado con `aria-expanded`. Por debajo de 600px de alto, el chat abre con las sugerencias contraídas.
+- El campo de mensaje comienza con una línea y crece con el borrador hasta el menor valor entre `6rem` y `15dvh`. El contador queda abajo a la izquierda y el botón «Enviar», de 44×44px, abajo a la derecha. Durante el envío, el indicador de carga ocupa el lugar de la flecha.
 - El panel usa contornos de foco de 2px con 2px de separación. El foco del campo se dibuja alrededor del contenedor de composición. Las zonas desplazables del chat usan barras finas con el token de borde de controles.
-- Los errores de sugerencias alinean el mensaje con «Reintentar».
 - Modal bajo 768px (`aria-modal`, foco contenido, fondo inerte); diálogo no modal arriba. Escape cierra y devuelve el foco al lanzador; el lanzador sale del orden de tabulación mientras está abierto.
 - El panel es un `role="dialog"` nombrado con `aria-labelledby`. Al abrir, el foco va al campo de mensaje. Tras enviar desde el campo, el botón de envío o una sugerencia, el foco pasa al campo de mensaje; las sugerencias quedan en Disabled mientras la respuesta está pendiente y luego pueden reemplazarse. La lista de mensajes es un `role="log"` con nombre: cada mensaje que se agrega, del usuario o del asistente, se anuncia de forma `polite` sin releer el historial. El indicador de escritura se oculta a la tecnología de asistencia y el progreso se anuncia en una región `role="status"` aparte. Escape cierra el panel no modal sólo con el foco dentro. Cruzar 768px abierto actualiza `aria-modal` e `inert`.
 - Si el foco pasa debajo del panel no modal, cerrar el panel o desplazar el elemento enfocado a la vista.
 - El foco NUNCA DEBE quedar oculto por el panel o el lanzador. Con cualquier altura de pantalla, también con zoom 200 %, todos los controles DEBEN seguir alcanzables y operables por teclado y táctil, con el enfocado visible.
-- Las sugerencias en carga usan marcadores de tamaño fijo; los errores ofrecen reintentar; las respuestas de respaldo conservan su etiqueta.
+- La carga de sugerencias usa marcadores de tamaño fijo. Si falla, las preguntas locales quedan disponibles de inmediato sin anunciar un error. Las respuestas de respaldo en la conversación conservan su etiqueta de origen.
 
 ### Feedback, vacíos, errores y confirmaciones
 

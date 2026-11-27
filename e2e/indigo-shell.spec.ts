@@ -91,7 +91,9 @@ test('Modo Playa comparte la grilla de proyectos y abre su ficha', async ({ page
   await expect(page.locator('#projects')).not.toBeFocused();
 });
 
-test('con poca altura las sugerencias indican que se desplazan', async ({ page }) => {
+test('con poca altura las sugerencias empiezan contraídas y se abren con teclado', async ({
+  page,
+}) => {
   await page.route('**/api/chat/starters', (route) =>
     route.fulfill({
       json: { suggestedQuestions: ['¿Qué tecnologías usás?', '¿Qué proyecto destacás?'] },
@@ -100,10 +102,13 @@ test('con poca altura las sugerencias indican que se desplazan', async ({ page }
   await page.setViewportSize({ width: 320, height: 400 });
   await page.goto('/');
   await page.getByRole('button', { name: 'Abrir chatbot asistente' }).click();
-  const more = page.locator('.chat-suggestions__more');
-  await expect(more).toBeVisible();
-  await page.locator('.chat-suggestions').evaluate((el) => (el.scrollLeft = el.scrollWidth));
-  await expect(more).toBeHidden();
+  const toggle = page.getByRole('button', { name: 'Sugerencias', exact: true });
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('.chat-chip')).toHaveCount(0);
+  await toggle.press('Enter');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.chat-chip')).toHaveCount(2);
+  await expect(page.locator('.chat-submit')).toBeInViewport({ ratio: 1 });
 });
 
 for (const [width, height] of [

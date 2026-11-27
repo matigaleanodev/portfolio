@@ -49,6 +49,40 @@ const focusState = (page: Page) =>
     };
   });
 
+for (const viewport of [
+  { width: 1440, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`la bienvenida, las etiquetas y la escritura comparten el panel a ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.route('**/api/chat/starters', (route) => route.fulfill({ status: 503, json: {} }));
+    await page.goto('/');
+    await openChat(page);
+    const log = page.getByRole('log');
+    const input = page.locator('#chat-input');
+    await expect(page.locator('.chat-chip')).toHaveCount(4);
+    await expect(page.locator('.chat-error')).toHaveCount(0);
+    const rows = await page
+      .locator('.chat-chip')
+      .evaluateAll((chips) => new Set(chips.map((chip) => chip.getBoundingClientRect().top)).size);
+    expect(rows).toBeLessThanOrEqual(2);
+    expect(await log.evaluate((el) => el.scrollHeight <= el.clientHeight)).toBe(true);
+    expect((await log.boundingBox())!.height).toBeGreaterThan(
+      (await page.getByRole('dialog').boundingBox())!.height / 2,
+    );
+    const initial = (await input.boundingBox())!.height;
+    await input.fill('Primera línea\nSegunda línea');
+    expect((await input.boundingBox())!.height).toBeGreaterThan(initial);
+    await input.fill('Una línea\n'.repeat(40));
+    expect(await input.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
+    await expect(page.locator('.chat-submit')).toBeInViewport({ ratio: 1 });
+    await input.fill('');
+    expect((await input.boundingBox())!.height).toBe(initial);
+  });
+}
+
 for (const [width, height] of [
   [320, 568],
   [390, 844],

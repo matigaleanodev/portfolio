@@ -33,6 +33,18 @@
         Podés hacer preguntas sobre experiencia, stack, proyectos y disponibilidad.
       </p>
 
+      @if (loadingStarters() || visibleSuggestions().length) {
+        <button
+          type="button"
+          class="btn btn--text chat-disclosure"
+          aria-controls="chat-suggestions"
+          [attr.aria-expanded]="suggestionsExpanded()"
+          (click)="toggleSuggestions()"
+        >
+          Sugerencias
+          <lucide-icon [img]="disclosureIcon" size="16" aria-hidden="true" />
+        </button>
+      }
       <button
         type="button"
         class="btn btn--icon chat-icon-btn"
@@ -92,54 +104,36 @@
         {{ sending() ? 'El asistente está escribiendo' : '' }}
       </p>
 
-      <div class="chat-suggestions-row">
-        <div
-          #suggestions
-          class="chat-suggestions"
-          (scroll)="updateSuggestionsOverflow()"
-          role="group"
-          aria-label="Preguntas sugeridas"
-          [attr.aria-busy]="loadingStarters() && !hasConversation()"
-        >
+      <div
+        id="chat-suggestions"
+        class="chat-suggestions"
+        role="group"
+        aria-label="Preguntas sugeridas"
+        [attr.aria-busy]="loadingStarters() && !hasConversation()"
+      >
+        @if (suggestionsExpanded()) {
           @if (loadingStarters() && !hasConversation()) {
             @for (i of [1, 2, 3, 4]; track i) {
               <span class="chat-chip--loading" aria-hidden="true"></span>
             }
           } @else if (visibleSuggestions().length > 0) {
-            @for (question of visibleSuggestions(); track question) {
+            @for (item of visibleSuggestions(); track item.question) {
               <button
                 type="button"
                 class="btn btn--suggestion chat-chip"
-                (click)="useSuggestion(question)"
+                (click)="useSuggestion(item.question)"
+                [attr.title]="item.question"
+                [attr.aria-label]="
+                  item.label === item.question ? item.question : item.label + '. ' + item.question
+                "
                 [disabled]="sending()"
               >
-                {{ question }}
+                <span>{{ item.label }}</span>
               </button>
             }
           }
-        </div>
-        @if (moreSuggestions()) {
-          <span class="chat-suggestions__more" aria-hidden="true">
-            <lucide-icon [img]="moreIcon" size="20" />
-          </span>
         }
       </div>
-
-      @if (startersError() && !hasConversation()) {
-        <div class="chat-retry" aria-live="polite">
-          <p class="chat-error">
-            {{ startersError() }}
-          </p>
-          <button
-            type="button"
-            class="btn btn--text"
-            (click)="retryStarters()"
-            [disabled]="loadingStarters()"
-          >
-            Reintentar
-          </button>
-        </div>
-      }
 
       <form class="chat-form" (ngSubmit)="submit()">
         <label for="chat-input" class="sr-only">Escribí tu pregunta</label>
@@ -147,7 +141,7 @@
         <div class="chat-composer">
           <textarea
             id="chat-input"
-            rows="2"
+            rows="1"
             maxlength="500"
             autocomplete="off"
             [value]="draft()"
