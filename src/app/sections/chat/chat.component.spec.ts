@@ -96,8 +96,7 @@ describe('ChatComponent', () => {
     const chips = Array.from(el.querySelectorAll('.chat-chip')).map((chip) =>
       chip.textContent?.trim(),
     );
-    expect(chips).toContain('¿Qué tecnologías usás?');
-    expect(chips).toContain('¿Cuál es tu experiencia laboral?');
+    expect(chips).toEqual(['Tecnologías', 'Experiencia laboral']);
   });
 
   it('debería enviar una pregunta sugerida y renderizar mensajes + respuesta', () => {
@@ -125,6 +124,14 @@ describe('ChatComponent', () => {
       bubbles.some((text) => text?.includes('Trabajo con TypeScript, Angular y NestJS.')),
     ).toBe(true);
     expect(el.textContent).toContain('FAQ');
+    expect(el.querySelector('.chat-chip')).toBeNull();
+    const disclosure = el.querySelector<HTMLButtonElement>('[aria-controls="chat-suggestions"]')!;
+    expect(disclosure.getAttribute('aria-expanded')).toBe('false');
+    disclosure.click();
+    fixture.detectChanges();
+    expect(disclosure.getAttribute('aria-expanded')).toBe('true');
+    el.querySelector<HTMLButtonElement>('.chat-chip')!.click();
+    expect(sendChatMessageMock.mock.calls[1][0].message).toBe('¿Usás MongoDB?');
     expect(trackEventMock).toHaveBeenCalledWith(
       'chat_click_suggestion',
       expect.objectContaining({ length: '¿Qué tecnologías usás?'.length }),
@@ -208,16 +215,10 @@ describe('ChatComponent', () => {
     expect(trackEventMock).toHaveBeenCalledWith('chat_receive_error');
   });
 
-  it('debería mostrar estado de error y permitir reintentar starters', () => {
+  it('ofrece preguntas de respaldo sin anunciar un error de carga', () => {
     fixture.destroy();
     getChatStartersMock.mockReset();
-    getChatStartersMock
-      .mockReturnValueOnce(throwError(() => ({ status: 503 })))
-      .mockReturnValueOnce(
-        of({
-          suggestedQuestions: ['¿Qué tecnologías usás?'],
-        }),
-      );
+    getChatStartersMock.mockReturnValueOnce(throwError(() => ({ status: 503 })));
 
     fixture = TestBed.createComponent(ChatComponent);
     component = fixture.componentInstance;
@@ -227,25 +228,15 @@ describe('ChatComponent', () => {
     (el.querySelector('.chat-fab') as HTMLButtonElement).click();
     fixture.detectChanges();
 
-    expect(el.textContent).toContain('No pude cargar las sugerencias ahora');
+    expect(el.querySelector('.chat-error')).toBeNull();
+    expect(el.querySelectorAll('button.chat-chip')).toHaveLength(4);
     expect(trackEventMock).toHaveBeenCalledWith(
       'chat_starters_error',
       expect.objectContaining({ status: 503 }),
     );
 
-    const retryButton = Array.from(el.querySelectorAll('button')).find((button) =>
-      button.textContent?.includes('Reintentar'),
-    ) as HTMLButtonElement | undefined;
-
-    retryButton?.click();
-    fixture.detectChanges();
-
-    expect(getChatStartersMock).toHaveBeenCalledTimes(2);
-    expect(trackEventMock).toHaveBeenCalledWith('chat_retry_starters');
-    expect(trackEventMock).toHaveBeenCalledWith(
-      'chat_starters_loaded',
-      expect.objectContaining({ count: 1 }),
-    );
+    el.querySelector<HTMLButtonElement>('.chat-chip')!.click();
+    expect(sendChatMessageMock.mock.calls[0][0].message).toBe('¿Qué tecnologías usás?');
   });
 
   describe('carga de sugerencias', () => {
@@ -428,13 +419,13 @@ describe('ChatComponent', () => {
     it('en modo modal Tab y Shift+Tab circulan dentro del diálogo', async () => {
       const { el } = mount(true);
       await open(el);
-      const first = el.querySelector<HTMLElement>('.chat-icon-btn')!;
-      const input = el.querySelector<HTMLTextAreaElement>('#chat-input')!;
-      input.focus();
+      const first = el.querySelector<HTMLElement>('.chat-disclosure')!;
+      const last = el.querySelector<HTMLButtonElement>('button[aria-pressed]')!;
+      last.focus();
       expect(press('Tab').defaultPrevented).toBe(true);
       expect(document.activeElement).toBe(first);
       expect(press('Tab', true).defaultPrevented).toBe(true);
-      expect(document.activeElement).toBe(input);
+      expect(document.activeElement).toBe(last);
     });
 
     it('en modo no modal no intercepta Tab', async () => {

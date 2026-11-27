@@ -6,7 +6,6 @@ import {
   HostListener,
   Injector,
   afterNextRender,
-  afterRenderEffect,
   computed,
   effect,
   inject,
@@ -16,7 +15,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { ArrowUp, Bot, ChevronRight, LucideAngularModule, X } from 'lucide-angular';
+import { ArrowUp, Bot, ChevronDown, LucideAngularModule, X } from 'lucide-angular';
 import { ApiService } from '../../services/api.service';
 import { ChatSource } from '../../models/chat.model';
 import { AnalyticsService } from '../../services/analytics.service';
@@ -27,6 +26,14 @@ type CloseReason = 'button' | 'overlay' | 'escape' | 'focus_obscured';
 
 /** Por debajo de este ancho el chat cubre la pantalla y se comporta como diálogo modal. */
 const MODAL_MEDIA_QUERY = '(max-width: 767.98px)';
+const SUGGESTION_LABELS = new Map([
+  ['¿Quién sos y a qué te dedicás?', 'Sobre mí'],
+  ['¿Qué tecnologías usás?', 'Tecnologías'],
+  ['¿Cuál es tu experiencia laboral?', 'Experiencia laboral'],
+  ['¿Qué proyecto destacás?', 'Proyectos'],
+  ['¿Tenés experiencia con NestJS?', 'NestJS'],
+  ['¿Cómo te puedo contactar?', 'Contacto'],
+]);
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -53,21 +60,9 @@ export class ChatComponent {
   private readonly idCounter = signal(0);
   private readonly messagesStorageKey = 'portfolio-chat-messages';
 
-  protected readonly moreIcon = ChevronRight;
-  private readonly suggestions = viewChild<ElementRef<HTMLDivElement>>('suggestions');
-  /** Quedan sugerencias fuera de la vista hacia la derecha. */
-  protected readonly moreSuggestions = signal(false);
-  private readonly watchSuggestions = afterRenderEffect((onCleanup) => {
-    const element = this.suggestions()?.nativeElement;
-    this.visibleSuggestions();
-    this.loadingStarters();
-    this.updateSuggestionsOverflow();
-    if (!element || typeof ResizeObserver === 'undefined') return;
-
-    const observer = new ResizeObserver(() => this.updateSuggestionsOverflow());
-    observer.observe(element);
-    onCleanup(() => observer.disconnect());
-  });
+  protected readonly disclosureIcon = ChevronDown;
+  protected readonly suggestionView = signal<'closed' | 'labels' | 'questions'>('closed');
+  protected readonly suggestionsExpanded = computed(() => this.suggestionView() !== 'closed');
   protected readonly messagesViewport = viewChild<ElementRef<HTMLDivElement>>('messagesViewport');
   readonly modalChange = output<boolean>();
 
@@ -89,7 +84,6 @@ export class ChatComponent {
   protected readonly starters = signal<string[]>([]);
   protected readonly suggestedQuestions = signal<string[]>([]);
   protected readonly loadingStarters = signal(true);
-  protected readonly startersError = signal<string | null>(null);
   protected readonly sending = signal(false);
   protected readonly apiError = signal<string | null>(null);
 
@@ -101,8 +95,12 @@ export class ChatComponent {
   protected readonly hasConversation = computed(() => this.messages().length > 1);
 
   protected readonly visibleSuggestions = computed(() => {
-    const source = this.hasConversation() ? this.suggestedQuestions() : this.starters();
-    return source.slice(0, 4);
+    const followUps = this.suggestedQuestions();
+    const source = followUps.length ? followUps : this.starters();
+    return source.slice(0, 4).map((question) => ({
+      question,
+      label: SUGGESTION_LABELS.get(question) ?? question,
+    }));
   });
 
   private shouldAutoScroll = false;
@@ -149,6 +147,9 @@ export class ChatComponent {
   protected openChat() {
     if (this.isOpen()) return;
 
+    this.suggestionView.set(
+      !this.hasConversation() && window.innerHeight >= 600 ? 'labels' : 'closed',
+    );
     this.isOpen.set(true);
     this.shouldAutoScroll = true;
     this.lastOpenTimestamp = Date.now();
@@ -175,9 +176,12 @@ export class ChatComponent {
     if (reason !== 'focus_obscured') this.scheduleDomTask(() => this.focusFabButton());
   }
 
-  protected toggleChat() {
-    this.isOpen.update((current) => !current);
-    if (this.isOpen()) this.shouldAutoScroll = true;
+  protected toggleSuggestions() {
+    this.suggestionView.set(this.suggestionsExpanded() ? 'closed' : 'labels');
+  }
+
+  protected toggleFullQuestions() {
+    this.suggestionView.update((view) => (view === 'questions' ? 'labels' : 'questions'));
   }
 
   protected updateDraft(value: string) {
@@ -222,7 +226,6 @@ export class ChatComponent {
 
   private loadStarters() {
     this.loadingStarters.set(true);
-    this.startersError.set(null);
 
     this.api
       .getChatStarters()
@@ -237,9 +240,6 @@ export class ChatComponent {
         },
         error: (error: unknown) => {
           this.starters.set(this.getFallbackStarters());
-          this.startersError.set(
-            'No pude cargar las sugerencias ahora. Podés reintentar o escribir directo.',
-          );
           this.analytics.trackEvent('chat_starters_error', {
             status: this.getErrorStatus(error),
           });
@@ -260,6 +260,7 @@ export class ChatComponent {
       via: this.draft().trim() ? 'manual' : 'suggestion',
     });
     this.appendMessage({ role: 'user', text: message });
+    this.suggestionView.set('closed');
     this.draft.set('');
     this.apiError.set(null);
     this.sending.set(true);
@@ -297,14 +298,6 @@ export class ChatComponent {
     this.idCounter.set(id);
     this.messages.update((current) => [...current, { id, ...message }]);
     this.shouldAutoScroll = true;
-  }
-
-  protected retryStarters() {
-    if (this.loadingStarters()) return;
-
-    this.analytics.trackEvent('chat_retry_starters');
-    this.focusTextarea();
-    this.loadStarters();
   }
 
   private get host(): HTMLElement {
@@ -508,11 +501,5 @@ export class ChatComponent {
       // El chat conserva una sesión en memoria cuando el navegador bloquea Storage.
     }
     return generated;
-  }
-  protected updateSuggestionsOverflow() {
-    const element = this.suggestions()?.nativeElement;
-    this.moreSuggestions.set(
-      !!element && element.scrollWidth - element.clientWidth - element.scrollLeft > 1,
-    );
   }
 }

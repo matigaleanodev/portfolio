@@ -1,5 +1,20 @@
 [
   {
+    "slug": "procesamiento-asincrono-sqs-lambda",
+    "title": "Procesamiento asíncrono con SQS y Lambda: orden, reintentos y fallos",
+    "excerpt": "Aceptar un pedido no significa completarlo. Un recorrido técnico por SQS, FIFO y Lambda: identidad del proceso, idempotencia, fallos parciales, DLQ y consulta de estado desde el cliente.",
+    "date": "2026-11-12",
+    "tags": [
+      "aws",
+      "sqs",
+      "lambda",
+      "backend",
+      "architecture"
+    ],
+    "coverImage": "/assets/blog/procesamiento-asincrono-sqs-lambda/cover.webp",
+    "readingTimeMinutes": 8
+  },
+  {
     "slug": "tarjetitas-versiones-y-correcciones-urgentes-en-jira",
     "title": "Tarjetitas de Jira, versiones y correcciones urgentes: cómo mantengo la trazabilidad",
     "excerpt": "Un incidente de producción puede terminar en asistencia, una corrección de datos o un despliegue de emergencia. Cómo relacionar ese recorrido con tarjetitas de Jira, versiones y evidencia sin confundir una release de Jira con el deploy.",

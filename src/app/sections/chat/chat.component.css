@@ -38,7 +38,7 @@
   flex: none;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-1);
   padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
   border-bottom: 1px solid var(--color-divider);
 }
@@ -47,6 +47,15 @@
   align-items: center;
   gap: var(--space-2);
   font-weight: 600;
+  margin-inline-end: auto;
+}
+.chat-disclosure {
+  gap: var(--space-1);
+  padding-inline: var(--space-1);
+  font-size: 0.875rem;
+}
+.chat-disclosure[aria-expanded='true'] lucide-icon {
+  transform: rotate(180deg);
 }
 .chat-widget__body {
   display: flex;
@@ -74,11 +83,12 @@
 .chat-messages {
   display: grid;
   min-height: 5rem;
-  flex: 1 1 5rem;
+  flex: 1 1 0;
   align-content: start;
   justify-items: start;
   gap: var(--space-3);
   overflow: auto;
+  overscroll-behavior: contain;
   padding: var(--space-2);
   scroll-behavior: smooth;
 }
@@ -154,25 +164,40 @@
 .chat-suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
-}
-.chat-suggestions-row {
-  display: flex;
-  align-items: center;
   gap: var(--space-1);
 }
-.chat-suggestions-row > .chat-suggestions {
-  min-width: 0;
-  flex: 1;
-}
-.chat-suggestions-row:has(.chat-suggestions:empty) {
+.chat-suggestions:empty {
   display: none;
 }
-/* Solo se desplazan en pantallas bajas: ahí se muestra el indicador. */
-.chat-suggestions__more {
-  display: none;
-  flex: none;
-  color: var(--color-accent);
+.chat-suggestions > * {
+  max-width: calc((100% - var(--space-1)) / 2);
+}
+.chat-chip {
+  padding-inline: var(--space-3);
+  min-width: 2.75rem;
+}
+.chat-chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chat-suggestions--full {
+  display: grid;
+  max-height: min(8rem, 30dvh);
+  overflow-y: auto;
+  padding: var(--space-1);
+}
+.chat-suggestions--full .chat-chip {
+  max-width: 100%;
+  justify-content: flex-start;
+}
+.chat-suggestions--full .chat-chip span {
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.chat-disclosure[aria-pressed='true'] {
+  background: var(--color-accent-subtle);
 }
 .chat-chip--loading {
   width: 8rem;
@@ -180,15 +205,6 @@
   border: 1px solid var(--color-divider);
   border-radius: var(--radius-pill);
   background: var(--color-surface-sunken);
-}
-.chat-retry {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-.chat-retry .btn {
-  flex: none;
-  padding-inline: var(--space-2);
 }
 .chat-form {
   display: grid;
@@ -210,6 +226,9 @@
   outline-offset: 2px;
 }
 .chat-widget .chat-input {
+  field-sizing: content;
+  min-height: 1.5rem;
+  max-height: min(6rem, 15dvh);
   width: 100%;
   padding-inline: var(--space-1);
   border: 0;
@@ -258,9 +277,6 @@
   }
 }
 
-/*
- * Poca altura: sugerencias en una fila desplazable y campo compacto para dejar espacio a la conversación.
- */
 @media (max-height: 599px) {
   .chat-widget__header {
     padding-block: var(--space-1);
@@ -269,23 +285,9 @@
     gap: var(--space-1);
     padding: var(--space-1) var(--space-3);
   }
-  .chat-suggestions {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: var(--space-1);
-  }
-  .chat-suggestions__more {
-    display: inline-flex;
-  }
-  .chat-suggestions > * {
-    flex: none;
-  }
   .chat-composer {
     gap: 0;
     padding-block: var(--space-1);
-  }
-  .chat-input {
-    height: 1.5rem;
   }
   .chat-input:placeholder-shown {
     overflow: hidden;

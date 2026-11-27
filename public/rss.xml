@@ -6,6 +6,13 @@
   <description>Posts tecnicos en español sobre Angular, NestJS, AWS, arquitectura y producto.</description>
   <language>es-ar</language>
   <item>
+    <title>Procesamiento asíncrono con SQS y Lambda: orden, reintentos y fallos</title>
+    <link>https://matiasgaleano.dev/blog/procesamiento-asincrono-sqs-lambda</link>
+    <guid>https://matiasgaleano.dev/blog/procesamiento-asincrono-sqs-lambda</guid>
+    <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
+    <description>Aceptar un pedido no significa completarlo. Un recorrido técnico por SQS, FIFO y Lambda: identidad del proceso, idempotencia, fallos parciales, DLQ y consulta de estado desde el cliente.</description>
+  </item>
+  <item>
     <title>Tarjetitas de Jira, versiones y correcciones urgentes: cómo mantengo la trazabilidad</title>
     <link>https://matiasgaleano.dev/blog/tarjetitas-versiones-y-correcciones-urgentes-en-jira</link>
     <guid>https://matiasgaleano.dev/blog/tarjetitas-versiones-y-correcciones-urgentes-en-jira</guid>

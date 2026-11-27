@@ -49,6 +49,95 @@ const focusState = (page: Page) =>
     };
   });
 
+test('la conversación conserva altura al desplegar cuatro sugerencias a 320 × 240', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 240 });
+  await page.route('**/api/chat/starters', (route) => route.fulfill({ status: 503, json: {} }));
+  await page.goto('/');
+  await openChat(page);
+  await page.getByRole('button', { name: 'Sugerencias', exact: true }).press('Enter');
+  await expect(page.locator('.chat-chip')).toHaveCount(4);
+  const log = page.getByRole('log');
+  expect((await log.boundingBox())!.height).toBeGreaterThanOrEqual(80);
+  await log.focus();
+  await expect(log).toBeInViewport();
+  await page.locator('#chat-input').fill('Hola');
+  await page.getByRole('button', { name: 'Enviar', exact: true }).focus();
+  await expect(page.locator('.chat-submit')).toBeInViewport({ ratio: 1 });
+});
+
+test.describe('lectura de sugerencias', () => {
+  test.use({ hasTouch: true, viewport: { width: 320, height: 640 } });
+
+  test('permite leer una sugerencia larga antes de enviarla con teclado o tacto', async ({
+    page,
+  }) => {
+    const question =
+      '¿Qué decisiones tomaste para publicar las actualizaciones del portfolio y de sus servicios?';
+    const sent: string[] = [];
+    await page.route('**/api/chat/starters', (route) =>
+      route.fulfill({ json: { suggestedQuestions: ['¿Qué tecnologías usás?', question] } }),
+    );
+    await page.route('**/api/chat', (route) => {
+      sent.push(route.request().postDataJSON().message);
+      return route.fulfill({ json: { answer: 'Respuesta', source: 'faq' } });
+    });
+    await page.goto('/');
+    await openChat(page);
+    const read = page.getByRole('button', { name: 'Preguntas completas', exact: true });
+    await expect(read).toBeVisible();
+    await read.press('Enter');
+    await expect(read).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.chat-chip').first()).toHaveText('¿Qué tecnologías usás?');
+    const long = page.locator('.chat-chip').last();
+    expect(await long.locator('span').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
+      true,
+    );
+    await read.tap();
+    await expect(page.locator('.chat-chip').first()).toHaveText('Tecnologías');
+    await read.tap();
+    expect(sent).toEqual([]);
+    await long.tap();
+    await expect(page.getByRole('log')).toContainText(question);
+    expect(sent).toEqual([question]);
+  });
+});
+
+for (const viewport of [
+  { width: 1440, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`la bienvenida, las etiquetas y la escritura comparten el panel a ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.route('**/api/chat/starters', (route) => route.fulfill({ status: 503, json: {} }));
+    await page.goto('/');
+    await openChat(page);
+    const log = page.getByRole('log');
+    const input = page.locator('#chat-input');
+    await expect(page.locator('.chat-chip')).toHaveCount(4);
+    await expect(page.locator('.chat-error')).toHaveCount(0);
+    const rows = await page
+      .locator('.chat-chip')
+      .evaluateAll((chips) => new Set(chips.map((chip) => chip.getBoundingClientRect().top)).size);
+    expect(rows).toBeLessThanOrEqual(2);
+    expect(await log.evaluate((el) => el.scrollHeight <= el.clientHeight)).toBe(true);
+    expect((await log.boundingBox())!.height).toBeGreaterThan(
+      (await page.getByRole('dialog').boundingBox())!.height / 2,
+    );
+    const initial = (await input.boundingBox())!.height;
+    await input.fill('Primera línea\nSegunda línea');
+    expect((await input.boundingBox())!.height).toBeGreaterThan(initial);
+    await input.fill('Una línea\n'.repeat(40));
+    expect(await input.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
+    await expect(page.locator('.chat-submit')).toBeInViewport({ ratio: 1 });
+    await input.fill('');
+    expect((await input.boundingBox())!.height).toBe(initial);
+  });
+}
+
 for (const [width, height] of [
   [320, 568],
   [390, 844],
