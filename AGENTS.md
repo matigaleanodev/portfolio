@@ -25,6 +25,7 @@ Si existe un workspace con AGENTS.md en los directorios padre, leerlo explícita
 
 ## Restricciones
 
+- Integrar solo por PR con el merge nativo de GitHub (ver Docs/deploy-workflow). No activar auto-merge hacia main sin autorización expresa del propietario: integrar en main despliega.
 - No introducir CMS ni API runtime para posts o proyectos estáticos.
 - Respetar publicación programada y exclusión de borradores/fechas futuras.
 - Validar cambios de contratos dinámicos contra la API y de publicación contra portfolio-cloud.

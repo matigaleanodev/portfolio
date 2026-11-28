@@ -114,21 +114,11 @@ The deploy workflow now expects these GitHub secrets or variables in `portfolio`
 
 ## Versioned Releases
 
-The package version and paired release notes (`Docs/releases/vX.Y.Z.es.md` and `Docs/releases/vX.Y.Z.md`) are prepared on a `release/vX.Y.Z` branch with a PR into `dev`. Promotion is a pull request from `dev` to `main`, without auto-merge, integrated with a **merge commit**.
+The package version and notes in both languages (`Docs/releases/vX.Y.Z.es.md` and `Docs/releases/vX.Y.Z.md`) are prepared on a `release/vX.Y.Z` branch with a PR into `dev`. Promotion is a pull request from `dev` into `main` (see [pull request integration](#pull-request-integration)).
 
-The tag and the GitHub release are created after production has been validated, on the validated revision: the one reported as `gitSha` in `publication-state.json`, normally the promotion merge commit. With a clean working tree, the notes are read from that same revision:
+The tag and GitHub release are created after production is validated, from the web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, title `Portfolio vX.Y.Z`, the notes from `Docs/releases/vX.Y.Z.es.md` and **Set as the latest release**. Under **Target**, pick the validated commit, the one `gitSha` reports in `publication-state.json`, not the `main` branch, which can move before publishing. If the web list does not offer it, create the release with `gh release create vX.Y.Z --target <validated-sha> --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest`. Before publishing, check that `package.json` at that revision declares version `X.Y.Z` and that the tag does not exist. If validation fails, do not create it.
 
-```bash
-git fetch origin
-git switch --detach <validated-sha>
-git tag -a vX.Y.Z <validated-sha> --cleanup=verbatim -F Docs/releases/vX.Y.Z.es.md
-git push origin refs/tags/vX.Y.Z
-gh release create vX.Y.Z --verify-tag --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest
-```
-
-If validation fails, the tag is not created. Before creating it, check that `package.json` at that revision declares version `X.Y.Z` and that `vX.Y.Z` exists neither locally nor on `origin`. Run the commands one at a time and stop on any error.
-
-`release.yml` only acts when a PR whose branch starts with `release/v` is merged into `main`, and it publishes the tag and release at that moment, without waiting for the deployment. This flow does not use it: do not open a PR into `main` from a `release/` branch. Firebase deployment and `dev` synchronization run independently on the `main` push.
+`release.yml` only acts when a PR whose branch starts with `release/v` is merged into `main`, and it publishes the tag and release at that moment, without waiting for the deployment. This flow does not use it: do not open a PR into `main` from a `release/` branch. The Firebase deployment and the `dev` sync run independently on the push to `main`.
 
 ## Pre-deployment contract and browser checks
 
@@ -145,7 +135,7 @@ The chat knowledge generator resolves project links against the public site orig
 | `browser` | against that same build: prerendered HTML without JavaScript, Hosting contract and Playwright Chromium |
 | `verify`  | requires the three previous jobs to succeed                                                            |
 
-The required check in the `dev` and `main` rules is `verify`; the repository does not configure it by itself. See [pull request integration](#pull-request-integration).
+The `dev` and `main` rules require `verify` and the `CodeRabbit` check; they are configured in GitHub, not in the repository. See [pull request integration](#pull-request-integration).
 
 The build and unit tests preload `e2e/support/offline-build.cjs`, which rejects non-local connections and answers the Google Fonts stylesheet with `e2e/fixtures/google-fonts.css`; update that copy when the fonts change. Browser tests use the Firebase Hosting emulator with the `demo-portfolio` project, intercept the API and resolve no external names.
 
@@ -167,27 +157,31 @@ PORTFOLIO_E2E_BUILD=true npm run test:e2e
 
 ## Pull Request Integration
 
-`dev` and `main` receive changes only through pull requests, with the GitHub merge button. Required repository configuration, the same for both branches:
+To merge a pull request: review it, check that GitHub enables **Merge pull request** and press it. No commands or workflow runs are needed.
 
-- `verify` passing on a branch that is up to date with the target.
-- Resolved review conversations. No approval from another person is required.
-- No direct push, force push or deletion, for the owner either.
-- Only the owner merges: a restrict-updates rule with an exemption for that account.
-- Auto-merge is available; it is enabled by hand on each pull request.
+Rules for `dev` and `main`, with no bypass for anyone:
 
-Work branches are merged with a merge commit, squash or rebase. Promotions from `dev` to `main` use a merge commit.
+- Pull requests only: no direct pushes, force pushes or deletion.
+- `verify` (GitHub Actions) and `CodeRabbit` passing on a branch that is up to date with the target.
+- Review conversations resolved. No approval from another person is required.
+- Single merge method: merge commit.
 
-Auto-merge integrates whatever head exists once the conditions are met, including commits added after enabling it. To merge exactly the reviewed revision:
+Auto-merge is GitHub's native feature and is optional: enable it on each pull request with **Enable auto-merge** and GitHub merges once every rule is met. Into `main` it is only enabled with the owner's explicit authorization; GitHub does not enforce that restriction. It merges whatever head exists at that point, including commits added after enabling it.
 
-```bash
-gh pr merge <number> --merge --match-head-commit <reviewed-sha>
-```
+Cases that need an extra action:
+
+- Branch behind: **Update branch**. Auto-merge does not update the branch; if the target moves while it waits, the button has to be pressed.
+- `CodeRabbit` check missing or cancelled: comment `@coderabbitai full review` on the pull request.
+
+The `CodeRabbit` check means its review finished, not that it approved. It also passes when the review is skipped, paused or rate limited and, with the default configuration, when it fails. Findings opened as conversations block until resolved; those listed only in the review body do not block, and auto-merge does not wait for them to be read, including those on commits added after enabling it. To review them before merging, merge manually.
+
+Merging into `main` deploys automatically: see [current pipeline](#current-pipeline).
 
 ### Synchronizing `main` into `dev`
 
-After each push to `main`, `sync-dev.yml` opens a pull request from `fix/sync-main-<sha>` into `dev` when `dev` does not contain that revision. It merges nothing. It uses `DEV_SYNC_PAT`, which needs contents and pull requests write access.
+After each push to `main`, `sync-dev.yml` opens a pull request from `fix/sync-main-<sha>` into `dev` if `dev` lacks that revision. It merges nothing. It uses `DEV_SYNC_PAT`, which needs contents and pull request write access: with `GITHUB_TOKEN`, CI on the pull request would wait for manual approval.
 
-Merge that pull request with a **merge commit**: squash or rebase do not preserve ancestry. If it is behind or has conflicts, **Update branch** or **Resolve conflicts** update the sync branch. While `dev` does not contain `main`, a pull request from `dev` to `main` stays out of date and cannot be merged.
+Merge that pull request with the same button. If it is behind or has conflicts, **Update branch** or **Resolve conflicts** update the sync branch. While `dev` lacks `main`, a pull request from `dev` into `main` is out of date and cannot be merged.
 
 ## Current Revision, Retries and Rollback
 
