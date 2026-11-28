@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   release:
-    if: github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.event.pull_request.head.ref, 'release/v')
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Checkout merged release
@@ -29,20 +29,36 @@ jobs:
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
+          PREVIOUS=$(git show "$MERGE_SHA^1:package.json" |
+            node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).version")
+          if [ "$(printf '%s\n' "$PREVIOUS" "$VERSION" | sort -V | tail -n 1)" != "$VERSION" ]; then
+            echo "La versión baja de $PREVIOUS a $VERSION: no se publica."
+            exit 0
+          fi
           TAG="v${VERSION}"
-          test "$RELEASE_BRANCH" = "release/$TAG"
+          # Sin cambio de versión solo se publica una release que haya quedado pendiente.
+          # Un tag en esta misma revisión es un reintento: se completa la publicación.
+          if [ "$VERSION" = "$PREVIOUS" ] && git rev-parse -q --verify "refs/tags/$TAG" >/dev/null &&
+            [ "$(git rev-list -n 1 "$TAG")" != "$MERGE_SHA" ]; then
+            echo "La versión $VERSION ya tiene release: no hay nada para publicar."
+            exit 0
+          fi
+          if [[ "$RELEASE_BRANCH" == release/* ]]; then
+            test "$RELEASE_BRANCH" = "release/$TAG"
+          fi
           test -f "Docs/releases/$TAG.es.md"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git rev-parse --verify "refs/tags/$TAG" >/dev/null 2>&1; then
             test "$(git rev-list -n 1 "$TAG")" = "$MERGE_SHA"
           else
-            git tag -a "$TAG" "$MERGE_SHA" -F "Docs/releases/$TAG.es.md"
+            git tag -a --cleanup=verbatim "$TAG" "$MERGE_SHA" -F "Docs/releases/$TAG.es.md"
             git push origin "refs/tags/$TAG"
           fi
           echo "RELEASE_TAG=$TAG" >> "$GITHUB_ENV"
 
       - name: Publish GitHub release
+        if: env.RELEASE_TAG != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
