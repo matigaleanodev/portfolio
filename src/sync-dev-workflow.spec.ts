@@ -15,7 +15,9 @@ const fakeGh = `#!/usr/bin/env bash
 echo "$GH_TOKEN $*" >> "$GH_LOG"
 case "$*" in
   "api repos/owner/site/git/ref/heads/main "*) echo "$MAIN_SHA" ;;
-  "api repos/owner/site/compare/dev...fix/"*) echo "$BEHIND" ;;
+  "api repos/owner/site/compare/dev...fix/"*)
+    [[ "$COMPARE_FAILS" != true ]] || exit 1
+    echo "$BEHIND" ;;
   "api repos/owner/site/compare/dev..."*) echo "$PENDING" ;;
   "api repos/owner/site/git/ref/heads/fix/"*) [[ "$BRANCH_EXISTS" == true ]] ;;
   "api repos/owner/site/git/refs "*) ;;
@@ -28,7 +30,9 @@ case "$*" in
     echo "$line" ;;
   "pr merge "*) [[ "$AUTO_FAILS" != true ]] ;;
   "api -X PUT repos/owner/site/pulls/9/update-branch"*) [[ "$UPDATE_FAILS" != true ]] ;;
-  "api graphql "*) echo "$THREADS" ;;
+  "api graphql "*)
+    [[ "$THREADS_FAILS" != true ]] || exit 1
+    echo "$THREADS" ;;
   *) exit 99 ;;
 esac
 `;
@@ -71,6 +75,8 @@ function run(env: Record<string, string> = {}, views: string[] = merged) {
       AUTO_FAILS: 'false',
       UPDATE_FAILS: 'false',
       VIEW_FAILS: 'false',
+      COMPARE_FAILS: 'false',
+      THREADS_FAILS: 'false',
       BRANCH_EXISTS: 'false',
       OPEN_PR: '',
       VIEWS: join(directory, 'views'),
@@ -178,6 +184,26 @@ describe('sincronización de main hacia dev', () => {
     expect(status).toBe(1);
     expect(called(calls, ' pr view ')).toHaveLength(10);
     expect(output).toContain('no se pudo leer el estado');
+  });
+
+  it('se detiene cuando no puede comparar la rama con dev', () => {
+    const { status, calls, output } = run({ COMPARE_FAILS: 'true', SYNC_ATTEMPTS: '20' }, [
+      'OPEN|MERGEABLE|true||0',
+    ]);
+
+    expect(status).toBe(1);
+    expect(called(calls, 'compare/dev...fix/')).toHaveLength(10);
+    expect(output).toContain('no se pudo comparar');
+  });
+
+  it('se detiene cuando no puede consultar las conversaciones', () => {
+    const { status, calls, output } = run({ THREADS_FAILS: 'true', SYNC_ATTEMPTS: '20' }, [
+      'OPEN|MERGEABLE|true||2',
+    ]);
+
+    expect(status).toBe(1);
+    expect(called(calls, 'api graphql')).toHaveLength(10);
+    expect(output).toContain('no se pudieron consultar las conversaciones');
   });
 
   it('falla si el pull request se cierra sin integrar', () => {

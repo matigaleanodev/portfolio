@@ -37,7 +37,9 @@ jobs:
           fi
           TAG="v${VERSION}"
           # Sin cambio de versión solo se publica una release que haya quedado pendiente.
-          if [ "$VERSION" = "$PREVIOUS" ] && git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+          # Un tag en esta misma revisión es un reintento: se completa la publicación.
+          if [ "$VERSION" = "$PREVIOUS" ] && git rev-parse -q --verify "refs/tags/$TAG" >/dev/null &&
+            [ "$(git rev-list -n 1 "$TAG")" != "$MERGE_SHA" ]; then
             echo "La versión $VERSION ya tiene release: no hay nada para publicar."
             exit 0
           fi

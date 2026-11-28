@@ -93,6 +93,8 @@ jobs:
           read_errors=0
           auto_errors=0
           update_errors=0
+          compare_errors=0
+          threads_errors=0
           for ((attempt = 1; attempt <= ${SYNC_ATTEMPTS:-80}; attempt++)); do
             if [ "$attempt" -gt 1 ]; then
               sleep "${SYNC_INTERVAL:-30}"
@@ -126,7 +128,12 @@ jobs:
             fi
 
             # dev exige ramas al día: si avanzó, se incorpora a la rama de sincronización.
-            behind=$(gh api "repos/$GH_REPO/compare/dev...$branch" --jq .behind_by) || behind=0
+            if ! behind=$(gh api "repos/$GH_REPO/compare/dev...$branch" --jq .behind_by); then
+              compare_errors=$((compare_errors + 1))
+              [ "$compare_errors" -lt 10 ] || fail "no se pudo comparar la rama de sincronización con dev"
+              continue
+            fi
+            compare_errors=0
             if [ "$behind" -gt 0 ]; then
               if ! gh api -X PUT "repos/$GH_REPO/pulls/$number/update-branch" >/dev/null; then
                 update_errors=$((update_errors + 1))
@@ -136,10 +143,14 @@ jobs:
             fi
 
             if [ "$passed" -eq 2 ]; then
-              threads=$(GH_TOKEN="$READ_TOKEN" gh api graphql -f "query=$threads_query" \
+              if ! threads=$(GH_TOKEN="$READ_TOKEN" gh api graphql -f "query=$threads_query" \
                 -f "owner=${GH_REPO%/*}" -f "name=${GH_REPO#*/}" -F "number=$number" \
-                --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not)] | length') ||
-                threads=0
+                --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not)] | length'); then
+                threads_errors=$((threads_errors + 1))
+                [ "$threads_errors" -lt 10 ] || fail "no se pudieron consultar las conversaciones"
+                continue
+              fi
+              threads_errors=0
               [ "$threads" -eq 0 ] || fail "hay conversaciones sin resolver ($threads)"
             fi
           done

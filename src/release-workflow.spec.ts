@@ -134,6 +134,19 @@ describe('workflow de release', () => {
     expect(repo.published()).toContain(`${sha}\trefs/tags/v1.1.0^{}`);
   });
 
+  it('completa al reintentar una release pendiente que solo llegó a crear el tag', () => {
+    const repo = repository();
+    repo.commit('1.0.0');
+    repo.release(repo.commit('1.1.0', false));
+    const sha = repo.commit('1.1.0', true, 'agrega las notas');
+    repo.release(sha, 'fix/notas');
+
+    const { status, exported } = repo.release(sha, 'fix/notas');
+
+    expect(status).toBe(0);
+    expect(exported).toContain('RELEASE_TAG=v1.1.0');
+  });
+
   it('no publica cuando la versión baja', () => {
     const repo = repository();
     repo.commit('1.10.0');

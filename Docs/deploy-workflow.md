@@ -116,7 +116,7 @@ The deploy workflow now expects these GitHub secrets or variables in `portfolio`
 
 The package version (`package.json` and lockfile) and the notes in both languages (`Docs/releases/vX.Y.Z.es.md` and `Docs/releases/vX.Y.Z.md`) are prepared on a work branch with a PR into `dev`. Promotion is a pull request from `dev` into `main` (see [pull request integration](#pull-request-integration)).
 
-When a pull request from this repository that changes the version is merged into `main`, `release.yml` creates the annotated tag `vX.Y.Z` on the merge commit and publishes the GitHub release `Portfolio vX.Y.Z`, with the Spanish notes and marked as latest. Nothing is published if the version goes down, or if it does not change and already has a tag: a version left unpublished goes out with the next pull request merged into `main`. It fails without publishing if those notes are missing, if a `release/` branch does not match the version, or if the tag already exists at another revision.
+When a pull request from this repository that changes the version is merged into `main`, `release.yml` creates the annotated tag `vX.Y.Z` on the merge commit and publishes the GitHub release `Portfolio vX.Y.Z`, with the Spanish notes and marked as latest. Nothing is published if the version goes down, or if it does not change and already has a tag at another revision. A version without a tag goes out with the next pull request merged into `main`; if publication fails after the tag is created, running that run again completes it. It fails without publishing if those notes are missing, if a `release/` branch does not match the version, or if the tag already exists at another revision.
 
 The release is published on merge, without waiting for the deployment: production validation comes afterwards and a problem is fixed with a revert or a new version. The Firebase deployment and the `dev` sync run independently on the push to `main`.
 
@@ -126,7 +126,7 @@ The chat knowledge generator resolves project links against the public site orig
 
 ## Continuous Validation
 
-`ci.yml` runs on pull requests and pushes to `dev` and `main`, without secrets and apart from deployment. It uses Node 22, lockfile dependencies, the npm cache, and cancels superseded runs of the same pull request; push runs are not cancelled.
+`ci.yml` runs on pull requests and pushes to `dev` and `main`, without secrets and apart from deployment. It uses Node 22, lockfile dependencies, the npm cache, and cancels superseded runs of the same pull request; each push is validated separately.
 
 | Job       | Contents                                                                                               |
 | --------- | ------------------------------------------------------------------------------------------------------ |
@@ -181,7 +181,7 @@ Merging into `main` deploys automatically: see [current pipeline](#current-pipel
 
 After each push to `main`, `sync-dev.yml` opens a pull request from `fix/sync-main-<sha>` into `dev` if `dev` lacks that revision, enables native auto-merge with a merge commit, updates the branch if `dev` moves, and waits until it is merged. It needs no approval or manual action, and the `dev` rules apply without exceptions.
 
-The run fails and reports the pull request in its summary if there are conflicts, `verify` or `CodeRabbit` fails, conversations remain unresolved, the pull request is closed, its state cannot be read, auto-merge cannot be enabled or the branch cannot be updated, or it is not merged in time (80 reads 30 seconds apart, with a 50-minute limit for the job). If auto-merge was already enabled, GitHub merges once the cause is fixed; otherwise, running the workflow again resumes the same pull request.
+The run fails and reports the pull request in its summary if there are conflicts, `verify` or `CodeRabbit` fails, conversations remain unresolved, the pull request is closed, its state or conversations cannot be read, the branch cannot be compared or updated, auto-merge cannot be enabled, or it is not merged in time (80 reads 30 seconds apart, with a 50-minute limit for the job). If auto-merge was already enabled, GitHub merges once the cause is fixed; otherwise, running the workflow again resumes the same pull request.
 
 It uses `DEV_SYNC_PAT`, with contents and pull request write access, to create the pull request, enable auto-merge and update the branch: with `GITHUB_TOKEN`, CI would wait for manual approval. State is read with `GITHUB_TOKEN`. If `main` carries `.github/workflows/` changes that `dev` lacks, the token also needs workflows write access. While `dev` lacks `main`, a pull request from `dev` into `main` is out of date and cannot be merged.
 
