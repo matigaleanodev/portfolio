@@ -15,11 +15,19 @@ concurrency:
 jobs:
   sync-dev:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 50
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      pull-requests: read
+      statuses: read
+
     steps:
-      - name: Open the sync pull request
+      - name: Sync main into dev through a pull request
         env:
           GH_TOKEN: ${{ secrets.DEV_SYNC_PAT }}
+          READ_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
@@ -31,26 +39,109 @@ jobs:
 
           main_sha=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
           pending=$(gh api "repos/$GH_REPO/compare/dev...$main_sha" --jq .ahead_by)
-
           if [ "$pending" -eq 0 ]; then
             echo "dev ya contiene main: no hay nada para sincronizar."
             exit 0
           fi
 
           branch="fix/sync-main-${main_sha:0:12}"
-
           if ! gh api "repos/$GH_REPO/git/ref/heads/$branch" >/dev/null 2>&1; then
             gh api "repos/$GH_REPO/git/refs" -f "ref=refs/heads/$branch" -f "sha=$main_sha" >/dev/null
           fi
 
           url=$(gh pr list --base dev --head "$branch" --state open --json url --jq '.[0].url // empty')
-
           if [ -z "$url" ]; then
             body="Sincroniza \`dev\` con \`main\` ($main_sha).
 
-          Integrar con **merge commit**: squash o rebase no conservan la ascendencia y la próxima promoción quedaría desactualizada. Si la rama está atrasada o tiene conflictos, usar **Update branch** o **Resolve conflicts** y esperar \`verify\`."
+          Se integra solo, con el auto-merge nativo y un merge commit, cuando se cumplen las protecciones de \`dev\`."
             url=$(gh pr create --base dev --head "$branch" \
               --title "chore(branch-sync): sincronización main → dev" --body "$body")
           fi
 
           echo "Pull request de sincronización: $url" | tee -a "$GITHUB_STEP_SUMMARY"
+
+          fail() {
+            echo "::error::Sincronización detenida: $1. Revisar $url"
+            echo "Sincronización detenida: $1. Revisar $url" >>"$GITHUB_STEP_SUMMARY"
+            exit 1
+          }
+
+          # Resume el pull request como estado|mergeable|automerge|checks fallidos|checks aprobados.
+          # Un check obligatorio cuenta cuando terminaron todas sus ejecuciones sobre la revisión,
+          # que comparte los de main: con una fallida falla, y aprueba solo si pasaron todas.
+          filter='
+            ([.statusCheckRollup[]
+              | {name: (.name // .context), result: (.conclusion // .state)}
+              | select(.name == "verify" or .name == "CodeRabbit")]
+              | group_by(.name)
+              | map({name: .[0].name, results: map(.result)})
+              | map(select(.results | any(IN("", "PENDING", "EXPECTED")) | not))) as $checks
+            | [.state, .mergeable, (.autoMergeRequest != null),
+               ([$checks[]
+                 | select(.results
+                   | any(IN("FAILURE", "ERROR", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED", "STARTUP_FAILURE")))
+                 | .name] | join(",")),
+               ([$checks[] | select(.results | all(IN("SUCCESS", "NEUTRAL", "SKIPPED")))] | length)]
+            | map(tostring) | join("|")'
+          threads_query='query($owner: String!, $name: String!, $number: Int!) {
+            repository(owner: $owner, name: $name) {
+              pullRequest(number: $number) { reviewThreads(first: 100) { nodes { isResolved } } }
+            }
+          }'
+
+          number="${url##*/}"
+          read_errors=0
+          auto_errors=0
+          update_errors=0
+          for ((attempt = 1; attempt <= ${SYNC_ATTEMPTS:-80}; attempt++)); do
+            if [ "$attempt" -gt 1 ]; then
+              sleep "${SYNC_INTERVAL:-30}"
+            fi
+
+            if ! view=$(GH_TOKEN="$READ_TOKEN" gh pr view "$url" \
+              --json state,mergeable,autoMergeRequest,statusCheckRollup --jq "$filter"); then
+              read_errors=$((read_errors + 1))
+              [ "$read_errors" -lt 10 ] || fail "no se pudo leer el estado del pull request"
+              continue
+            fi
+            read_errors=0
+            IFS='|' read -r state mergeable auto failed passed <<<"$view"
+
+            case "$state" in
+              MERGED)
+                echo "dev quedó sincronizado con main: $url" | tee -a "$GITHUB_STEP_SUMMARY"
+                exit 0
+                ;;
+              CLOSED) fail "el pull request se cerró sin integrarse" ;;
+            esac
+            [ "$mergeable" != CONFLICTING ] || fail "hay conflictos entre main y dev"
+            [ -z "$failed" ] || fail "falló un check obligatorio ($failed)"
+
+            if [ "$auto" != true ]; then
+              if ! gh pr merge "$url" --auto --merge; then
+                auto_errors=$((auto_errors + 1))
+                [ "$auto_errors" -lt 3 ] || fail "no se pudo activar el auto-merge"
+              fi
+              continue
+            fi
+
+            # dev exige ramas al día: si avanzó, se incorpora a la rama de sincronización.
+            behind=$(gh api "repos/$GH_REPO/compare/dev...$branch" --jq .behind_by) || behind=0
+            if [ "$behind" -gt 0 ]; then
+              if ! gh api -X PUT "repos/$GH_REPO/pulls/$number/update-branch" >/dev/null; then
+                update_errors=$((update_errors + 1))
+                [ "$update_errors" -lt 3 ] || fail "no se pudo actualizar la rama de sincronización"
+              fi
+              continue
+            fi
+
+            if [ "$passed" -eq 2 ]; then
+              threads=$(GH_TOKEN="$READ_TOKEN" gh api graphql -f "query=$threads_query" \
+                -f "owner=${GH_REPO%/*}" -f "name=${GH_REPO#*/}" -F "number=$number" \
+                --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not)] | length') ||
+                threads=0
+              [ "$threads" -eq 0 ] || fail "hay conversaciones sin resolver ($threads)"
+            fi
+          done
+
+          fail "el pull request no se integró a tiempo"

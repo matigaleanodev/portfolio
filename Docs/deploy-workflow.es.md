@@ -114,11 +114,11 @@ El workflow de deploy ahora espera estos secrets o variables en `portfolio`:
 
 ## Releases versionadas
 
-La versión del paquete y las notas en ambos idiomas (`Docs/releases/vX.Y.Z.es.md` y `Docs/releases/vX.Y.Z.md`) se preparan en una rama `release/vX.Y.Z` con un PR hacia `dev`. La promoción es un pull request de `dev` a `main` (ver [integración de pull requests](#integración-de-pull-requests)).
+La versión del paquete (`package.json` y lockfile) y las notas en ambos idiomas (`Docs/releases/vX.Y.Z.es.md` y `Docs/releases/vX.Y.Z.md`) se preparan en una rama de trabajo con un PR hacia `dev`. La promoción es un pull request de `dev` a `main` (ver [integración de pull requests](#integración-de-pull-requests)).
 
-El tag y la release de GitHub se crean después de validar producción, desde la web: **Releases** → **Draft a new release**, tag `vX.Y.Z`, título `Portfolio vX.Y.Z`, las notas de `Docs/releases/vX.Y.Z.es.md` y **Set as the latest release**. En **Target** se elige el commit validado, el que informa `gitSha` en `publication-state.json`, y no la rama `main`, que puede avanzar antes de publicar. Si la lista de la web no lo ofrece, crear la release con `gh release create vX.Y.Z --target <sha-validado> --title "Portfolio vX.Y.Z" --notes-file Docs/releases/vX.Y.Z.es.md --latest`. Antes de publicar, comprobar que `package.json` en esa revisión declare la versión `X.Y.Z` y que el tag no exista. Si la validación falla, no se crea.
+Al integrar en `main` un pull request del propio repositorio que cambia la versión, `release.yml` crea el tag anotado `vX.Y.Z` sobre el merge commit y publica la release de GitHub `Portfolio vX.Y.Z`, con las notas en español y marcada como la última. No publica si la versión baja, ni si no cambia y ya tiene tag: una versión que quedó sin publicar sale con el siguiente pull request integrado en `main`. Falla sin publicar si faltan esas notas, si una rama `release/` no coincide con la versión o si el tag ya existe en otra revisión.
 
-`release.yml` solo actúa cuando se integra en `main` un PR cuya rama empieza con `release/v`, y publica el tag y la release en ese momento, sin esperar el deploy. Este flujo no lo usa: no abrir hacia `main` un PR desde una rama `release/`. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.
+La release se publica al integrar, sin esperar el deploy: la validación de producción es posterior y un problema se corrige con un revert o una versión nueva. El deploy de Firebase y la sincronización de `dev` corren de manera independiente con el push a `main`.
 
 ## Contrato y pruebas de navegador antes del deploy
 
@@ -126,7 +126,7 @@ El generador del conocimiento del chat resuelve los enlaces de proyectos contra 
 
 ## Validación continua
 
-`ci.yml` corre en pull requests y pushes hacia `dev` y `main`, sin secretos y separado del deploy. Usa Node 22, las dependencias de los lockfiles, caché de npm y cancela las ejecuciones reemplazadas de la misma rama.
+`ci.yml` corre en pull requests y pushes hacia `dev` y `main`, sin secretos y separado del deploy. Usa Node 22, las dependencias de los lockfiles, caché de npm y cancela las ejecuciones reemplazadas de un mismo pull request; las de push no se cancelan.
 
 | Job       | Contenido                                                                                            |
 | --------- | ---------------------------------------------------------------------------------------------------- |
@@ -166,7 +166,7 @@ Reglas de `dev` y `main`, sin bypass para nadie:
 - Conversaciones de revisión resueltas. No se exige aprobación de otra persona.
 - Único método de integración: merge commit.
 
-El auto-merge es el nativo de GitHub y es opcional: se activa en cada pull request con **Enable auto-merge** y GitHub integra cuando se cumplen todas las reglas. Hacia `main` solo se activa con autorización expresa del propietario; GitHub no impone esa restricción. Integra el head que exista en ese momento, incluidos commits agregados después de activarlo.
+El auto-merge es el nativo de GitHub y es opcional: se activa en cada pull request con **Enable auto-merge** y GitHub integra cuando se cumplen todas las reglas. Hacia `main` solo se activa con autorización expresa del propietario; GitHub no impone esa restricción. Integra el head que exista en ese momento, incluidos commits agregados después de activarlo. La excepción es el pull request de [sincronización](#sincronización-de-main-hacia-dev) hacia `dev`, donde lo activa el workflow.
 
 Casos que requieren una acción adicional:
 
@@ -179,9 +179,11 @@ Integrar en `main` despliega automáticamente: ver [pipeline actual](#pipeline-a
 
 ### Sincronización de `main` hacia `dev`
 
-Después de cada push a `main`, `sync-dev.yml` abre un pull request desde `fix/sync-main-<sha>` hacia `dev` si `dev` no contiene esa revisión. No integra nada. Usa `DEV_SYNC_PAT`, que necesita escritura de contenido y de pull requests: con `GITHUB_TOKEN`, la CI del pull request quedaría esperando aprobación manual.
+Después de cada push a `main`, `sync-dev.yml` abre un pull request desde `fix/sync-main-<sha>` hacia `dev` si `dev` no contiene esa revisión, activa el auto-merge nativo con merge commit, actualiza la rama si `dev` avanza y espera hasta que quede integrado. No requiere aprobación ni acciones manuales, y las reglas de `dev` se aplican sin excepciones.
 
-Ese pull request se integra con el mismo botón. Si está atrasado o tiene conflictos, **Update branch** o **Resolve conflicts** actualizan la rama de sincronización. Mientras `dev` no contenga `main`, un pull request de `dev` a `main` queda desactualizado y no se puede integrar.
+La corrida falla e informa el pull request en su resumen si hay conflictos, falla `verify` o `CodeRabbit`, quedan conversaciones sin resolver, el pull request se cierra, no se puede leer su estado, activar el auto-merge o actualizar la rama, o no se integra dentro del plazo (80 lecturas cada 30 segundos, con un máximo de 50 minutos para el job). Si el auto-merge ya estaba activado, GitHub integra cuando se corrige la causa; si no, volver a ejecutar el workflow retoma el mismo pull request.
+
+Usa `DEV_SYNC_PAT`, con escritura de contenido y de pull requests, para crear el pull request, activar el auto-merge y actualizar la rama: con `GITHUB_TOKEN`, la CI quedaría esperando aprobación manual. El estado se lee con `GITHUB_TOKEN`. Si `main` trae cambios en `.github/workflows/` que `dev` no tiene, el token necesita además escritura de workflows. Mientras `dev` no contenga `main`, un pull request de `dev` a `main` queda desactualizado y no se puede integrar.
 
 ## Revisión vigente, reintentos y rollback
 

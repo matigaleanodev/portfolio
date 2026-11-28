@@ -9,8 +9,9 @@ describe('workflow de validación', () => {
     expect(workflow).toContain(`  ${event}:\n    branches: [main, dev]\n`);
   });
 
-  it('cancela las ejecuciones reemplazadas de la misma rama', () => {
-    expect(workflow).toContain('cancel-in-progress: true');
+  it('cancela solo las ejecuciones reemplazadas de pull requests', () => {
+    // Una corrida de push cancelada dejaría un verify fallido en la revisión que se sincroniza.
+    expect(workflow).toContain("cancel-in-progress: ${{ github.event_name == 'pull_request' }}");
   });
 
   it('no recibe credenciales ni publica', () => {
